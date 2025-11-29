@@ -1,0 +1,222 @@
+[
+    {
+        "name": "US Dollar",
+        "code": "USD",
+        "symbol": "$"
+    },
+    {
+        "name": "Euro",
+        "code": "EUR",
+        "symbol": "€"
+    },
+    {
+        "name": "Japanese Yen",
+        "code": "JPY",
+        "symbol": "¥"
+    },
+    {
+        "name": "British Pound",
+        "code": "GBP",
+        "symbol": "£"
+    },
+    {
+        "name": "Chinese Yuan",
+        "code": "CNY",
+        "symbol": "¥"
+    },
+    {
+        "name": "Swiss Franc",
+        "code": "CHF",
+        "symbol": "Fr"
+    },
+    {
+        "name": "Canadian Dollar",
+        "code": "CAD",
+        "symbol": "$"
+    },
+    {
+        "name": "Australian Dollar",
+        "code": "AUD",
+        "symbol": "$"
+    },
+    {
+        "name": "Indian Rupee",
+        "code": "INR",
+        "symbol": "₹"
+    },
+    {
+        "name": "South Korean Won",
+        "code": "KRW",
+        "symbol": "₩"
+    },
+    {
+        "name": "Brazilian Real",
+        "code": "BRL",
+        "symbol": "R$"
+    },
+    {
+        "name": "Russian Ruble",
+        "code": "RUB",
+        "symbol": "₽"
+    },
+    {
+        "name": "Hong Kong Dollar",
+        "code": "HKD",
+        "symbol": "$"
+    },
+    {
+        "name": "Singapore Dollar",
+        "code": "SGD",
+        "symbol": "$"
+    },
+    {
+        "name": "Mexican Peso",
+        "code": "MXN",
+        "symbol": "$"
+    },
+    {
+        "name": "Turkish Lira",
+        "code": "TRY",
+        "symbol": "₺"
+    },
+    {
+        "name": "Saudi Riyal",
+        "code": "SAR",
+        "symbol": "﷼"
+    },
+    {
+        "name": "Kuwaiti Dinar",
+        "code": "KWD",
+        "symbol": "د.ك"
+    },
+    {
+        "name": "UAE Dirham",
+        "code": "AED",
+        "symbol": "د.إ"
+    },
+    {
+        "name": "Swedish Krona",
+        "code": "SEK",
+        "symbol": "kr"
+    },
+    {
+        "name": "Danish Krone",
+        "code": "DKK",
+        "symbol": "kr"
+    },
+    {
+        "name": "Norwegian Krone",
+        "code": "NOK",
+        "symbol": "kr"
+    },
+    {
+        "name": "Polish Złoty",
+        "code": "PLN",
+        "symbol": "zł"
+    },
+    {
+        "name": "Israeli Shekel",
+        "code": "ILS",
+        "symbol": "₪"
+    },
+    {
+        "name": "New Zealand Dollar",
+        "code": "NZD",
+        "symbol": "$"
+    },
+    {
+        "name": "South African Rand",
+        "code": "ZAR",
+        "symbol": "R"
+    },
+    {
+        "name": "Qatari Riyal",
+        "code": "QAR",
+        "symbol": "ر.ق"
+    },
+    {
+        "name": "Czech Koruna",
+        "code": "CZK",
+        "symbol": "Kč"
+    },
+    {
+        "name": "Romanian Leu",
+        "code": "RON",
+        "symbol": "lei"
+    },
+    {
+        "name": "Hungarian Forint",
+        "code": "HUF",
+        "symbol": "Ft"
+    },
+    {
+        "name": "New Taiwan Dollar",
+        "code": "TWD",
+        "symbol": "NT$"
+    },
+    {
+        "name": "Thai Baht",
+        "code": "THB",
+        "symbol": "฿"
+    },
+    {
+        "name": "Malaysian Ringgit",
+        "code": "MYR",
+        "symbol": "RM"
+    },
+    {
+        "name": "Indonesian Rupiah",
+        "code": "IDR",
+        "symbol": "Rp"
+    },
+    {
+        "name": "Philippine Peso",
+        "code": "PHP",
+        "symbol": "₱"
+    },
+    {
+        "name": "Nigerian Naira",
+        "code": "NGN",
+        "symbol": "₦"
+    },
+    {
+        "name": "Egyptian Pound",
+        "code": "EGP",
+        "symbol": "E£"
+    },
+    {
+        "name": "Moroccan Dirham",
+        "code": "MAD",
+        "symbol": "د.م."
+    },
+    {
+        "name": "Argentine Peso",
+        "code": "ARS",
+        "symbol": "$"
+    },
+    {
+        "name": "Chilean Peso",
+        "code": "CLP",
+        "symbol": "$"
+    },
+    {
+        "name": "Colombian Peso",
+        "code": "COP",
+        "symbol": "$"
+    },
+    {
+        "name": "Pakistani Rupee",
+        "code": "PKR",
+        "symbol": "₨"
+    },
+    {
+        "name": "Peruvian Sol",
+        "code": "PEN",
+        "symbol": "S/"
+    },
+    {
+        "name": "Vietnamese Dong",
+        "code": "VND",
+        "symbol": "₫"
+    }
+]

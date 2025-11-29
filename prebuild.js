@@ -1,0 +1,1 @@
+// This file is used to build i18n.json into individual locale files before the main build process.

@@ -1,0 +1,37 @@
+{
+  "name": "shop",
+  "version": "1.0.0",
+  "description": "A modern serverless eCommerce engine using pure Web Components with built-in multilingual and multi-currency capabilities.",
+  "keywords": [
+    "shop",
+    "ecommerce",
+    "serverless",
+    "web",
+    "component",
+    "html",
+    "js",
+    "javascript",
+    "css"
+  ],
+  "homepage": "https://github.com/akaoio/shop#readme",
+  "bugs": {
+    "url": "https://github.com/akaoio/shop/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akaoio/shop.git"
+  },
+  "license": "MIT",
+  "author": "mimiza",
+  "type": "module",
+  "scripts": {
+    "start": "live-server --port=8080 --open=./index.html --watch=./src",
+    "prebuild": "node prebuild.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write \"src/**/*.js\""
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "prettier": "^3.7.2"
+  }
+}

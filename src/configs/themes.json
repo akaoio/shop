@@ -1,0 +1,17 @@
+[
+    {
+        "code": "light",
+        "icon": {
+            "icon": "bi bi-sun-fill",
+            "className": "has-text-warning"
+        },
+        "className": "has-text-info"
+    },
+    {
+        "code": "dark",
+        "icon": {
+            "icon": "bi bi-moon-stars-fill",
+            "className": "has-text-primary"
+        }
+    }
+]
