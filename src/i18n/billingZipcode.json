@@ -1,0 +1,20 @@
+{
+    "ar": "الرمز البريدي للفواتير",
+    "de": "Rechnungs-PLZ",
+    "en": "Billing Zip Code",
+    "es": "Código postal de facturación",
+    "fr": "Code postal de facturation",
+    "he": "מיקוד חיוב",
+    "hi": "बिलिंग पिन कोड",
+    "it": "CAP di fatturazione",
+    "ja": "請求先の郵便番号",
+    "ko": "청구 우편번호",
+    "no": "Faktura postnummer",
+    "pt": "CEP de cobrança",
+    "ru": "Почтовый индекс плательщика",
+    "th": "รหัสไปรษณีย์บิล",
+    "ur": "بلنگ زپ کوڈ",
+    "vi": "Mã bưu điện thanh toán",
+    "zh": "账单邮编",
+    "zh-TW": "帳單郵編"
+}
