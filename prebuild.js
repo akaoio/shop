@@ -9,7 +9,7 @@ console.log(`${icons.sync} ${color.info("Loading configuration and data...")}`)
 const srcPaths = {
     index: ["src", "index.html"],
     statics: ["src", "statics"],
-    i18n: ["src", "i18n"],
+    i18n: ["src", "statics", "i18n"],
     items: ["src", "items"],
     sites: ["src", "sites"]
 }
