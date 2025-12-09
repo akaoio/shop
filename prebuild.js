@@ -1,7 +1,5 @@
 import { write, load, copy, dir } from "./src/core/Utils/files.js"
 import { color, icons } from "./src/core/Colors.js"
-import fs from 'fs'
-import path from 'path'
 
 console.log(`${icons.start} ${color.header("Starting prebuild process...")}`)
 
@@ -12,7 +10,8 @@ const srcPaths = {
     index: ["src", "index.html"],
     statics: ["src", "statics"],
     i18n: ["src", "i18n"],
-    items: ["src", "items"]
+    items: ["src", "items"],
+    sites: ["src", "sites"]
 }
 
 const destPaths = {
@@ -35,18 +34,17 @@ const i18nFiles = i18nDir.filter(file => file.endsWith('.json'))
 
 // Load items and their metadata
 const itemDirs = await dir(srcPaths.items)
-const items = itemDirs.filter(name => {
-    const itemPath = path.join(process.cwd(), srcPaths.items.join('/'), name)
-    return fs.statSync(itemPath).isDirectory()
-})
-
 const allTags = new Set()
 
-for (const item of items) {
-    const metaPath = [...srcPaths.items, item, 'meta.json']
-    const meta = await load(metaPath)
-    if (meta?.tags) {
-        meta.tags.forEach(tag => allTags.add(tag))
+// Filter directories by checking if they have a meta.json file
+const items = []
+for (const name of itemDirs) {
+    const meta = await load([...srcPaths.items, name, 'meta.json'])
+    if (meta) {
+        items.push(name)
+        if (meta?.tags) {
+            meta.tags.forEach(tag => allTags.add(tag))
+        }
     }
 }
 
@@ -59,7 +57,15 @@ for (const file of jsonStaticFiles) {
     await copy([...srcPaths.statics, file], [...destPaths.statics, file])
 }
 
+// Copy items folder
+await copy(srcPaths.items, [...destPaths.statics, "items"])
+
+// Copy sites folder
+await copy(srcPaths.sites, [...destPaths.statics, "sites"])
+
 console.log(`${icons.done} ${color.ok(`Copied ${jsonStaticFiles.length} static files to /build/statics/`)}`)
+console.log(`${icons.done} ${color.ok(`Copied items folder to /build/statics/items/`)}`)
+console.log(`${icons.done} ${color.ok(`Copied sites folder to /build/statics/sites/`)}`)
 
 // ============ Process i18n and Generate Locale Files ============
 console.log(`${icons.sync} ${color.info("Processing i18n files...")}`)
