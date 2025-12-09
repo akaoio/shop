@@ -1,0 +1,23 @@
+{
+    "price": 199.99,
+    "sale": 129.99,
+    "currency": "USD",
+    "brand": "AudioMax",
+    "sku": "WH-2024",
+    "tags": [
+        "electronics",
+        "audio",
+        "wearable"
+    ],
+    "attributes": [
+        {
+            "name": "color",
+            "values": [
+                "black",
+                "silver",
+                "blue",
+                "rose gold"
+            ]
+        }
+    ]
+}

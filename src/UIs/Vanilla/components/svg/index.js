@@ -1,0 +1,25 @@
+import { html } from "core/UI.js"
+import styles from "./styles.css.js"
+
+export class SVG extends HTMLElement {
+    constructor() {
+        super()
+        this.attachShadow({ mode: "open" })
+        this.shadowRoot.appendChild(styles.cloneNode(true))
+    }
+
+    static get observedAttributes() {
+        return ["src"]
+    }
+
+    attributeChangedCallback(name, last, value) {
+        if (name !== "src" || last === value) return
+        const svg = this.shadowRoot.querySelector("svg")
+        if (svg) this.shadowRoot.removeChild(svg)
+        fetch(value)
+            .then((res) => res.text())
+            .then((svg) => this.shadowRoot.appendChild(html`${svg}`.cloneNode(true)))
+    }
+}
+
+customElements.define("ui-svg", SVG)

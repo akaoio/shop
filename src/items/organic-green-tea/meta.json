@@ -1,0 +1,30 @@
+{
+    "price": 24.99,
+    "sale": 17.99,
+    "currency": "USD",
+    "brand": "GreenLeaf Premium",
+    "sku": "OGT-2024",
+    "tags": [
+        "beverages",
+        "organic",
+        "tea"
+    ],
+    "attributes": [
+        {
+            "name": "size",
+            "values": [
+                "50g",
+                "100g",
+                "250g",
+                "500g"
+            ]
+        },
+        {
+            "name": "type",
+            "values": [
+                "loose leaf",
+                "tea bags"
+            ]
+        }
+    ]
+}

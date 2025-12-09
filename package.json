@@ -32,6 +32,12 @@
   },
   "devDependencies": {
     "live-server": "^1.2.2",
-    "prettier": "^3.7.2"
+    "prettier": "^3.7.2",
+    "air": "github:akaoio/air",
+    "bootstrap-icons": "^1.11.3",
+    "concurrently": "^9.1.0",
+    "cryptocurrency-icons": "^0.18.1",
+    "ethers": "^6.13.5",
+    "qrcode": "^1.5.3"
   }
 }
