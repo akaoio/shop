@@ -108,11 +108,19 @@ for (const locale of locales) {
     await copy(srcPaths.index, [...destPaths.build, locale, "index.html"])
     routeCount++
 
+    // Item directory root: /build/{locale}/item/index.html
+    await copy(srcPaths.index, [...destPaths.build, locale, "item", "index.html"])
+    routeCount++
+
     // Item routes: /build/{locale}/item/{item}/index.html
     for (const item of items) {
         await copy(srcPaths.index, [...destPaths.build, locale, "item", item, "index.html"])
         routeCount++
     }
+
+    // Tag directory root: /build/{locale}/tag/index.html
+    await copy(srcPaths.index, [...destPaths.build, locale, "tag", "index.html"])
+    routeCount++
 
     // Tag routes: /build/{locale}/tag/{tag}/index.html
     for (const tag of allTags) {
@@ -133,7 +141,9 @@ console.log(`${icons.done} ${color.ok("I18n Files")}: ${i18nFiles.length}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
 console.log(`  ${color.secondary("- Root")}: 1`)
 console.log(`  ${color.secondary("- Locale roots")}: ${locales.length}`)
+console.log(`  ${color.secondary("- Item directory roots")}: ${locales.length}`)
 console.log(`  ${color.secondary("- Item routes")}: ${locales.length * items.length}`)
+console.log(`  ${color.secondary("- Tag directory roots")}: ${locales.length}`)
 console.log(`  ${color.secondary("- Tag routes")}: ${locales.length * allTags.size}`)
 console.log(`${color.header("========================================")}`);
 console.log(`${icons.done} ${color.header("Prebuild completed successfully!")}`)
