@@ -1,7 +1,7 @@
 import { write, load, copy, dir } from "./src/core/Utils/files.js"
 import { color, icons } from "./src/core/Colors.js"
 
-console.log(`${icons.start} ${color.header("Starting prebuild process...")}`)
+console.log(`${icons.start} ${color.header("Starting build process...")}`)
 
 // ============ Load Data Once ============
 console.log(`${icons.sync} ${color.info("Loading configuration and data...")}`)
@@ -169,4 +169,4 @@ console.log(`  ${color.secondary("- Item routes")}: ${locales.length * items.len
 console.log(`  ${color.secondary("- Tag directory roots")}: ${locales.length}`)
 console.log(`  ${color.secondary("- Tag routes")}: ${locales.length * allTags.size}`)
 console.log(`${color.header("========================================")}`);
-console.log(`${icons.done} ${color.header("Prebuild completed successfully!")}`)
+console.log(`${icons.done} ${color.header("Build completed successfully!")}`)
