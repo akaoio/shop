@@ -11,13 +11,18 @@ const srcPaths = {
     statics: ["src", "statics"],
     i18n: ["src", "statics", "i18n"],
     items: ["src", "items"],
-    sites: ["src", "sites"]
+    sites: ["src", "sites"],
+    core: ["src", "core"],
+    UI: ["src", "UI"],
+    importmap: ["importmap.json"]
 }
 
 const destPaths = {
     build: ["build"],
     statics: ["build", "statics"],
-    locales: ["build", "statics", "locales"]
+    locales: ["build", "statics", "locales"],
+    core: ["build", "core"],
+    UI: ["build", "UI"]
 }
 
 // Load locales configuration
@@ -63,9 +68,21 @@ await copy(srcPaths.items, [...destPaths.statics, "items"])
 // Copy sites folder
 await copy(srcPaths.sites, [...destPaths.statics, "sites"])
 
+// Copy core folder
+await copy(srcPaths.core, destPaths.core)
+
+// Copy UI folder
+await copy(srcPaths.UI, destPaths.UI)
+
+// Copy importmap.json
+await copy(srcPaths.importmap, [...destPaths.build, "importmap.json"])
+
 console.log(`${icons.done} ${color.ok(`Copied ${dataFiles.length} static files to /build/statics/`)}`)
 console.log(`${icons.done} ${color.ok(`Copied items folder to /build/statics/items/`)}`)
 console.log(`${icons.done} ${color.ok(`Copied sites folder to /build/statics/sites/`)}`)
+console.log(`${icons.done} ${color.ok(`Copied core folder to /build/core/`)}`)
+console.log(`${icons.done} ${color.ok(`Copied UI folder to /build/UI/`)}`)
+console.log(`${icons.done} ${color.ok(`Copied importmap.json to /build/`)}`)
 
 // ============ Process i18n and Generate Locale Files ============
 console.log(`${icons.sync} ${color.info("Processing i18n files...")}`)

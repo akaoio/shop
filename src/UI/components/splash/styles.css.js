@@ -1,5 +1,5 @@
-import inAnimation from "css/animations/in.css.js"
-import outAnimation from "css/animations/out.css.js"
+import inAnimation from "/css/animations/in.css.js"
+import outAnimation from "/css/animations/out.css.js"
 import { css } from "core/UI.js"
 
 export const styles = css`

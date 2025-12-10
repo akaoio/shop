@@ -1,6 +1,6 @@
 import { css } from "core/UI.js"
-import icon from "css/elements/icon.css.js"
-import buttons from "css/elements/buttons.css.js"
+import icon from "/css/elements/icon.css.js"
+import buttons from "/css/elements/buttons.css.js"
 
 export const styles = css`
     ${icon}
