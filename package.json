@@ -26,15 +26,14 @@
   "type": "module",
   "scripts": {
     "start": "live-server --port=8080 --open=./index.html --watch=./src",
-    "prebuild": "node prebuild.js",
+    "build": "node build.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write \"src/**/*.js\""
   },
   "devDependencies": {
     "bootstrap-icons": "^1.11.3",
-    "concurrently": "^9.1.0",
     "live-server": "^1.2.2",
     "prettier": "^3.7.2",
-    "qrcode": "^1.5.3"
+    "yaml": "^2.8.2"
   }
 }
