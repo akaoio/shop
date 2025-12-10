@@ -1,0 +1,26 @@
+price: 89.99
+sale: 59.99
+currency: USD
+brand: Speedster
+sku: SLR-2024
+tags:
+  - footwear
+  - sports
+  - running
+attributes:
+  - name: size
+    values:
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+      - "11"
+      - "12"
+  - name: color
+    values:
+      - black
+      - white
+      - blue
+      - red
+      - green

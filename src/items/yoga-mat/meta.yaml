@@ -1,0 +1,22 @@
+price: 59.99
+sale: 39.99
+currency: USD
+brand: ZenFlow
+sku: YM-2024
+tags:
+  - fitness
+  - yoga
+  - wellness
+attributes:
+  - name: color
+    values:
+      - purple
+      - pink
+      - teal
+      - gray
+      - navy
+  - name: thickness
+    values:
+      - 4mm
+      - 6mm
+      - 8mm

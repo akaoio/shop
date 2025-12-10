@@ -1,0 +1,22 @@
+price: 34.99
+sale: 24.99
+currency: USD
+brand: HydroMax
+sku: SSB-2024
+tags:
+  - drinkware
+  - hydration
+  - eco-friendly
+attributes:
+  - name: capacity
+    values:
+      - 500ml
+      - 750ml
+      - 1L
+  - name: color
+    values:
+      - silver
+      - black
+      - blue
+      - rose gold
+      - midnight

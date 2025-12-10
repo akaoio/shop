@@ -21,25 +21,25 @@ const destPaths = {
 }
 
 // Load locales configuration
-const localesConfig = await load([...srcPaths.statics, "locales.json"])
+const localesConfig = await load([...srcPaths.statics, "locales.yaml"])
 const locales = localesConfig.map(locale => locale.code)
 
 // Load static files
 const staticFiles = await dir(srcPaths.statics)
-const jsonStaticFiles = staticFiles.filter(file => file.endsWith('.json'))
+const dataFiles = staticFiles.filter(file => file.endsWith('.json') || file.endsWith('.yaml') || file.endsWith('.yml'))
 
 // Load i18n data
 const i18nDir = await dir(srcPaths.i18n)
-const i18nFiles = i18nDir.filter(file => file.endsWith('.json'))
+const i18nFiles = i18nDir.filter(file => file.endsWith('.json') || file.endsWith('.yaml') || file.endsWith('.yml'))
 
 // Load items and their metadata
 const itemDirs = await dir(srcPaths.items)
 const allTags = new Set()
 
-// Filter directories by checking if they have a meta.json file
+// Filter directories by checking if they have a meta.yaml file
 const items = []
 for (const name of itemDirs) {
-    const meta = await load([...srcPaths.items, name, 'meta.json'])
+    const meta = await load([...srcPaths.items, name, 'meta.yaml'])
     if (meta) {
         items.push(name)
         if (meta?.tags) {
@@ -53,7 +53,7 @@ console.log(`${icons.done} ${color.ok(`Loaded: ${locales.length} locales, ${item
 // ============ Copy Static Files ============
 console.log(`${icons.sync} ${color.info("Copying static files...")}`)
 
-for (const file of jsonStaticFiles) {
+for (const file of dataFiles) {
     await copy([...srcPaths.statics, file], [...destPaths.statics, file])
 }
 
@@ -63,7 +63,7 @@ await copy(srcPaths.items, [...destPaths.statics, "items"])
 // Copy sites folder
 await copy(srcPaths.sites, [...destPaths.statics, "sites"])
 
-console.log(`${icons.done} ${color.ok(`Copied ${jsonStaticFiles.length} static files to /build/statics/`)}`)
+console.log(`${icons.done} ${color.ok(`Copied ${dataFiles.length} static files to /build/statics/`)}`)
 console.log(`${icons.done} ${color.ok(`Copied items folder to /build/statics/items/`)}`)
 console.log(`${icons.done} ${color.ok(`Copied sites folder to /build/statics/sites/`)}`)
 
@@ -77,7 +77,7 @@ locales.forEach(locale => {
 
 // Load all i18n translations
 for (const file of i18nFiles) {
-    const keyName = file.replace('.json', '')
+    const keyName = file.replace(/\.(json|yaml|yml)$/, '')
     const translations = await load([...srcPaths.i18n, file])
 
     for (const locale of locales) {
@@ -142,7 +142,7 @@ console.log(`\n${color.header("========================================")}`);
 console.log(`${icons.done} ${color.ok("Locales")}: ${locales.length}`)
 console.log(`${icons.done} ${color.ok("Items")}: ${items.length}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
-console.log(`${icons.done} ${color.ok("Static Files")}: ${jsonStaticFiles.length}`)
+console.log(`${icons.done} ${color.ok("Static Files")}: ${dataFiles.length}`)
 console.log(`${icons.done} ${color.ok("I18n Files")}: ${i18nFiles.length}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
 console.log(`  ${color.secondary("- Root")}: 1`)

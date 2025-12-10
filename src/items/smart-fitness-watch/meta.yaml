@@ -1,0 +1,22 @@
+price: 249.99
+sale: 179.99
+currency: USD
+brand: FitPro
+sku: SFW-2024
+tags:
+  - electronics
+  - wearable
+  - fitness
+attributes:
+  - name: color
+    values:
+      - black
+      - white
+      - gold
+      - space gray
+      - emerald
+  - name: band
+    values:
+      - sport band
+      - leather
+      - mesh

@@ -1,0 +1,10 @@
+localhost:
+  name: mimiza
+  domain: localhost
+  brand:
+    text: /images/akao-text.svg
+    symbol: /images/akao-symbol.svg
+  favicon: /images/favicon.svg
+  env: development
+  locale: en
+  fiat: USD

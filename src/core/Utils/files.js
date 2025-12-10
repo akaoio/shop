@@ -1,8 +1,12 @@
 import { NODE, BROWSER, WIN } from "./environments.js"
 
 let fs = null
+let YAML = null
 
-if (NODE) fs = await import("fs")
+if (NODE) {
+    fs = await import("fs")
+    YAML = await import("yaml")
+}
 
 export const root = () => {
     // On NodeJS, return the root directory path
@@ -42,7 +46,7 @@ export const ensure = async (path) => {
     }
 }
 
-// Function to write JSON content to a specified path
+// Function to write JSON or YAML content to a specified path
 export const write = async (items = [], content) => {
     if (!content) return
     const file = items[items.length - 1]
@@ -57,7 +61,14 @@ export const write = async (items = [], content) => {
 
     if (file.includes(".")) {
         try {
-            const data = file.endsWith(".json") ? JSON.stringify(content, null, 4) : content
+            let data
+            if (file.endsWith(".json")) {
+                data = JSON.stringify(content, null, 4)
+            } else if (file.endsWith(".yaml") || file.endsWith(".yml")) {
+                data = YAML.stringify(content)
+            } else {
+                data = content
+            }
             fs.writeFileSync(filePath, data, "utf8")
             return { success: true, path: filePath }
         } catch (error) {
@@ -82,9 +93,18 @@ export const load = async (items) => {
                     return
                 }
                 const text = await response.text()
-                // Parse JSON if possible else return raw data
+                // Parse JSON or YAML if possible else return raw data
                 try {
-                    const data = filePath.endsWith(".json") ? JSON.parse(text) : text
+                    let data
+                    if (filePath.endsWith(".json")) {
+                        data = JSON.parse(text)
+                    } else if (filePath.endsWith(".yaml") || filePath.endsWith(".yml")) {
+                        // In browser, we'd need to load YAML parser dynamically
+                        // For now, return raw text or implement YAML browser support
+                        data = text
+                    } else {
+                        data = text
+                    }
                     return data?.abi || data
                 } catch {
                     return text
@@ -118,9 +138,16 @@ export const load = async (items) => {
                         if (Object.keys(dirContent).length > 0) {
                             files[entryName] = dirContent
                         }
-                    } else if (entry.isFile() && entryName.endsWith(".json")) {
-                        // For JSON files, load them directly
-                        const baseName = entryName.substring(0, entryName.length - 5) // Remove .json
+                    } else if (entry.isFile() && (entryName.endsWith(".json") || entryName.endsWith(".yaml") || entryName.endsWith(".yml"))) {
+                        // For JSON/YAML files, load them directly
+                        let baseName
+                        if (entryName.endsWith(".json")) {
+                            baseName = entryName.substring(0, entryName.length - 5) // Remove .json
+                        } else if (entryName.endsWith(".yaml")) {
+                            baseName = entryName.substring(0, entryName.length - 5) // Remove .yaml
+                        } else if (entryName.endsWith(".yml")) {
+                            baseName = entryName.substring(0, entryName.length - 4) // Remove .yml
+                        }
                         const fileContent = await load([...items, entryName])
                         if (fileContent) {
                             files[baseName] = fileContent
@@ -131,8 +158,15 @@ export const load = async (items) => {
             }
 
             const raw = fs.readFileSync(filePath, "utf8")
-            // Parse JSON if possible else return raw data
-            const data = filePath.endsWith(".json") ? JSON.parse(raw) : raw
+            // Parse JSON or YAML if possible else return raw data
+            let data
+            if (filePath.endsWith(".json")) {
+                data = JSON.parse(raw)
+            } else if (filePath.endsWith(".yaml") || filePath.endsWith(".yml")) {
+                data = YAML.parse(raw)
+            } else {
+                data = raw
+            }
             // Return ABI if data has key "abi", else return the whole data object
             if (data) return data?.abi || data
         } catch (error) {
@@ -197,8 +231,26 @@ export const copy = async (src, dest) => {
             const destDir = dest.slice(0, -1).join(WIN ? "\\" : "/")
             // Ensure destination directory exists
             await ensure(destDir)
-            fs.copyFileSync(srcPath, destPath)
-            return { success: true, path: destPath }
+
+            // Convert YAML to JSON if source is YAML
+            const srcFileName = src[src.length - 1]
+            if (srcFileName.endsWith('.yaml') || srcFileName.endsWith('.yml')) {
+                // Load YAML content
+                const raw = fs.readFileSync(srcPath, "utf8")
+                const data = YAML.parse(raw)
+
+                // Change destination to .json
+                const destFileName = dest[dest.length - 1].replace(/\.(yaml|yml)$/, '.json')
+                const newDest = [...dest.slice(0, -1), destFileName]
+                const newDestPath = join(newDest)
+
+                // Write as JSON
+                fs.writeFileSync(newDestPath, JSON.stringify(data, null, 4), "utf8")
+                return { success: true, path: newDestPath }
+            } else {
+                fs.copyFileSync(srcPath, destPath)
+                return { success: true, path: destPath }
+            }
         }
 
         // If source is a directory, copy recursively
@@ -212,16 +264,20 @@ export const copy = async (src, dest) => {
             // Copy each entry recursively
             for (const entry of entries) {
                 const newSrc = [...src, entry.name]
-                const newDest = [...dest, entry.name]
+                let newDest = [...dest, entry.name]
+
+                // Convert YAML extensions to JSON for destination
+                if (entry.isFile() && (entry.name.endsWith('.yaml') || entry.name.endsWith('.yml'))) {
+                    const jsonName = entry.name.replace(/\.(yaml|yml)$/, '.json')
+                    newDest = [...dest, jsonName]
+                }
 
                 if (entry.isDirectory()) {
                     // Recursively copy subdirectory
                     await copy(newSrc, newDest)
                 } else {
-                    // Copy file
-                    const newSrcPath = join(newSrc)
-                    const newDestPath = join(newDest)
-                    fs.copyFileSync(newSrcPath, newDestPath)
+                    // Copy file (will convert YAML to JSON if needed)
+                    await copy(newSrc, newDest)
                 }
             }
             return { success: true, path: destPath }
