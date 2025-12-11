@@ -1,4 +1,4 @@
-import { html } from "core/UI.js"
+import { html } from "/core/UI.js"
 import "../navigator/index.js"
 import "../icon/index.js"
 import "../a/index.js"

@@ -1,7 +1,7 @@
-import { Indexes, Statics } from "../core/Stores.js"
-import Thread from "../core/Thread.js"
-import { clone } from "../core/Utils.js"
-import { Construct } from "../core/Construct.js"
+import { Indexes, Statics } from "/core/Stores.js"
+import Thread from "/core/Thread.js"
+import { clone } from "/core/Utils.js"
+import { Construct } from "/core/Construct.js"
 
 const thread = new Thread()
 

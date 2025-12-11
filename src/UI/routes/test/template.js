@@ -2,7 +2,7 @@ import "../../components/header/index.js"
 import "../../components/footer/index.js"
 import "../../components/button/index.js"
 import "../../layouts/main/index.js"
-import { html } from "core/UI.js"
+import { html } from "/core/UI.js"
 
 export const template = html`
     <layout-main>

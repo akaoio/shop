@@ -1,4 +1,4 @@
-import { Context } from "core/Context.js"
+import { Context } from "/core/Context.js"
 import template from "./template.js"
 
 export class MODAL extends HTMLElement {

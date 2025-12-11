@@ -1,6 +1,6 @@
 import template from "./template.js"
-import { Statics } from "core/Stores.js"
-import { Context, setLocale } from "core/Context.js"
+import { Statics } from "/core/Stores.js"
+import { Context, setLocale } from "/core/Context.js"
 
 export class LOCALES extends HTMLElement {
     constructor() {

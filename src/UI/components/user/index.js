@@ -1,5 +1,5 @@
-import { Elements } from "core/Stores.js"
-import { Access } from "core/Access.js"
+import { Elements } from "/core/Stores.js"
+import { Access } from "/core/Access.js"
 import template from "./template.js"
 
 export class USER extends HTMLElement {

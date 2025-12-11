@@ -1,5 +1,5 @@
 import template from "./template.js"
-import { Context, setTheme } from "core/Context.js"
+import { Context, setTheme } from "/core/Context.js"
 
 export class THEMES extends HTMLElement {
     constructor() {

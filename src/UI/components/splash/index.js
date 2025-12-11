@@ -1,8 +1,8 @@
-import { Statics } from "core/Stores.js"
+import { Statics } from "/core/Stores.js"
 import "../svg/index.js"
-import { Progress } from "core/Progress.js"
+import { Progress } from "/core/Progress.js"
 import styles from "./styles.css.js"
-import { html } from "core/UI.js"
+import { html } from "/core/UI.js"
 
 export class SPLASH extends HTMLElement {
     constructor() {

@@ -1,5 +1,5 @@
 import styles from "./styles.css.js"
-import { html } from "core/UI.js"
+import { html } from "/core/UI.js"
 import "../icon/index.js"
 import "../identicon/index.js"
 

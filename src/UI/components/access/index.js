@@ -1,6 +1,6 @@
-import { Elements } from "core/Stores.js"
-import { Context } from "core/Context.js"
-import { Access, signup, signin } from "core/Access.js"
+import { Elements } from "/core/Stores.js"
+import { Context } from "/core/Context.js"
+import { Access, signup, signin } from "/core/Access.js"
 import template from "./template.js"
 
 export class ACCESS extends HTMLElement {

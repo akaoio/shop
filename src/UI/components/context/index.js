@@ -1,4 +1,4 @@
-import { Context } from "core/Context.js"
+import { Context } from "/core/Context.js"
 
 export class CONTEXT extends HTMLElement {
     constructor() {

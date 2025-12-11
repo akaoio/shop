@@ -1,6 +1,6 @@
 import template from "./template.js"
-import { Statics } from "core/Stores.js"
-import { Context, setFiat } from "core/Context.js"
+import { Statics } from "/core/Stores.js"
+import { Context, setFiat } from "/core/Context.js"
 
 export class FIATS extends HTMLElement {
     constructor() {

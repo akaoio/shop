@@ -12,7 +12,10 @@ export class Threads {
 
     // Register a new thread
     register = async (name, configs = {}) => {
+        // If thread already exists, return it
         if (this.threads[name]) return this.threads[name]
+
+        // Create path to thread file
         const path = join([NODE && "src", "threads", `${name}.js`].filter(Boolean))
         if (configs?.main) this.threads[name] = import(`../threads/${name}.js`)
         else if (configs?.worker) {

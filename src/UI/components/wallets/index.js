@@ -1,5 +1,5 @@
 import template, { item } from "./template.js"
-import { Access, setWallet } from "core/Access.js"
+import { Access, setWallet } from "/core/Access.js"
 
 export class WALLETS extends HTMLElement {
     constructor() {

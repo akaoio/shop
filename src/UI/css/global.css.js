@@ -1,4 +1,4 @@
-import { css } from "core/UI.js"
+import { css } from "/core/UI.js"
 import externals from "./externals.css.js"
 import vars from "./vars.css.js"
 import light from "./light.css.js"

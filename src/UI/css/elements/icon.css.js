@@ -1,5 +1,5 @@
 import inAnimation from "../animations/in.css.js"
-import { css } from "core/UI.js"
+import { css } from "/core/UI.js"
 
 export const styles = css`
     ${inAnimation}

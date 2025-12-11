@@ -1,6 +1,6 @@
 import icon from "/css/elements/icon.css.js"
 import radioItem from "/css/elements/radio-item.css.js"
-import { css } from "core/UI.js"
+import { css } from "/core/UI.js"
 
 export const styles = css`
     ${icon}

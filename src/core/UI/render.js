@@ -1,4 +1,4 @@
-import { BROWSER } from "core/Utils/environments.js"
+import { BROWSER } from "/core/Utils/environments.js"
 
 export async function render(UI) {
     if (!BROWSER) return

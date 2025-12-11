@@ -1,6 +1,6 @@
 import "../../layouts/main/index.js"
 import "../../components/context/index.js"
-import { html } from "core/UI.js"
+import { html } from "/core/UI.js"
 import styles from "./styles.css.js"
 
 export const template = html`

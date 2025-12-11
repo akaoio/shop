@@ -1,6 +1,6 @@
 import template from "./template.js"
-import { States } from "core/States.js"
-import { html } from "core/UI.js"
+import { States } from "/core/States.js"
+import { html } from "/core/UI.js"
 
 export class SELECT extends HTMLElement {
     constructor() {

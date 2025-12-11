@@ -1,4 +1,4 @@
-import { html } from "core/UI.js"
+import { html } from "/core/UI.js"
 import styles from "./styles.css.js"
 
 export class SVG extends HTMLElement {

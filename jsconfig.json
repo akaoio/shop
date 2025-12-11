@@ -1,15 +1,15 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
+        "baseUrl": "./src",
         "paths": {
-            "core/*": [
-                "./src/core/*"
+            "/core/*": [
+                "core/*"
             ],
-            "UI/*": [
-                "./src/UI/*"
+            "/UI/*": [
+                "UI/*"
             ],
-            "css/*": [
-                "./src/UI/css/*"
+            "/css/*": [
+                "UI/css/*"
             ]
         }
     }

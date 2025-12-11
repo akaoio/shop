@@ -1,4 +1,4 @@
-import { navigate } from "core/Router.js"
+import { navigate } from "/core/Router.js"
 
 export class A extends HTMLAnchorElement {
     constructor() {

@@ -1,6 +1,6 @@
 import icon from "/css/elements/icon.css.js"
 import bloom from "/css/animations/bloom.css.js"
-import { css } from "core/UI.js"
+import { css } from "/core/UI.js"
 
 export const styles = css`
     ${icon}

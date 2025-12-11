@@ -1,7 +1,7 @@
 import container from "/css/elements/container.css.js"
 import close from "/css/elements/close.css.js"
 import inAnimation from "/css/animations/in.css.js"
-import { css } from "core/UI.js"
+import { css } from "/core/UI.js"
 
 export const styles = css`
     ${container}

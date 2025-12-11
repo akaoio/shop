@@ -2,8 +2,8 @@ import "../a/index.js"
 import "../user/index.js"
 import "../svg/index.js"
 import styles from "./styles.css.js"
-import { html } from "core/UI.js"
-import { Statics } from "core/Stores.js"
+import { html } from "/core/UI.js"
+import { Statics } from "/core/Stores.js"
 
 export const template = html`
     ${styles}

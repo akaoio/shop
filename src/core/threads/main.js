@@ -1,12 +1,12 @@
-import UI from "core/UI.js"
-import { BROWSER, NODE } from "core/Utils/environments.js"
-import { events } from "core/Events.js"
-import { Progress } from "core/Progress.js"
-import { Statics } from "core/Stores.js"
-import { load } from "core/Utils/files.js"
-import { merge } from "core/Utils/data.js"
-import { Construct } from "core/Construct.js"
-import Thread from "core/Thread.js"
+import UI from "/core/UI.js"
+import { BROWSER, NODE } from "/core/Utils/environments.js"
+import { events } from "/core/Events.js"
+import { Progress } from "/core/Progress.js"
+import { Statics } from "/core/Stores.js"
+import { load } from "/core/Utils/files.js"
+import { merge } from "/core/Utils/data.js"
+import { Construct } from "/core/Construct.js"
+import Thread from "/core/Thread.js"
 
 const thread = new Thread()
 

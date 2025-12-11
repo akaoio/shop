@@ -1,5 +1,5 @@
 import icon from "./icon.css.js"
-import { css } from "core/UI.js"
+import { css } from "/core/UI.js"
 
 export const styles = css`
     ${icon}

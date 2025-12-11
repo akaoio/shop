@@ -1,6 +1,6 @@
-import { Statics } from "core/Stores.js"
-import { Context } from "core/Context.js"
-import { setHead, setHistory } from "core/Router.js"
+import { Statics } from "/core/Stores.js"
+import { Context } from "/core/Context.js"
+import { setHead, setHistory } from "/core/Router.js"
 
 export function render() {
     // Initial render

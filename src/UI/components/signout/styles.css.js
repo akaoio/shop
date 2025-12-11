@@ -1,4 +1,4 @@
-import { css } from "core/UI.js"
+import { css } from "/core/UI.js"
 import icon from "/css/elements/icon.css.js"
 import buttons from "/css/elements/buttons.css.js"
 
