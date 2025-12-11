@@ -11,6 +11,5 @@ export const Statics = globalThis.Statics
 globalThis.Lives = globalThis.Lives || {}
 export const Lives = globalThis.Lives
 
-export const Chains = {}
 export const Wallets = {}
 export const Elements = {}
