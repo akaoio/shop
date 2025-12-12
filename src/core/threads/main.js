@@ -21,9 +21,6 @@ events.on("authenticate", () => {
 
 Progress.set({
     Site: false,
-    Chains: false,
-    Dexs: false,
-    Wallets: false,
     DB: false,
     User: false,
     Context: false
@@ -34,9 +31,6 @@ thread.init = async () => {
     if (!site) throw new Error("No site configs found during preload")
     if (BROWSER) UI.splash(true)
     Progress.set({ Site: true })
-    Progress.set({ Chains: await Construct.Chains() })
-    Progress.set({ Dexs: await Construct.Dexs() })
-    Progress.set({ Wallets: await Construct.Wallets() })
     Progress.set({ DB: await Construct.DB() })
     Progress.set({ User: await Construct.User() })
     const locale = (globalThis?.localStorage && globalThis.localStorage.getItem("locale")) || site.locale
