@@ -1,7 +1,12 @@
-import { write, load, copy, dir, hash } from "./src/core/Utils/files.js"
+import { write, load, copy, dir, hash, remove } from "./src/core/Utils/files.js"
 import { color, icons } from "./src/core/Colors.js"
 
 console.log(`${icons.start} ${color.header("Starting build process...")}`)
+
+// ============ Clean Build Folder ============
+console.log(`${icons.sync} ${color.info("Cleaning build folder...")}`)
+await remove(["build"])
+console.log(`${icons.done} ${color.ok("Cleaned build folder")}`)
 
 // ============ Load Data Once ============
 console.log(`${icons.sync} ${color.info("Loading configuration and data...")}`)
