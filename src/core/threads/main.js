@@ -41,7 +41,6 @@ thread.init = async () => {
             locales: [NODE && "src", "statics", "locales.json"],
             fiats: [NODE && "src", "statics", "fiats.json"],
             themes: [NODE && "src", "statics", "themes.json"],
-            dexs: [NODE && "src", "statics", "dexs.json"],
             dictionary: [NODE && "src", "statics", "locales", `${locale}.json`]
         })
     )

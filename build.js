@@ -16,7 +16,7 @@ const srcPaths = {
     statics: ["src", "statics"],
     i18n: ["src", "statics", "i18n"],
     items: ["src", "items"],
-    sites: ["src", "sites"],
+    sites: ["src", "statics", "sites"],
     core: ["src", "core"],
     UI: ["src", "UI"],
     importmap: ["importmap.json"]
