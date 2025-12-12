@@ -1,4 +1,4 @@
-import { Indexes, Chains, Wallets, Statics } from "./Stores.js"
+import { Indexes, Statics } from "./Stores.js"
 import { Context, getTheme, getLocale, getFiat, getReferrer } from "./Context.js"
 import { getRoute } from "./Router.js"
 import { NODE, BROWSER } from "./Utils/environments.js"
@@ -55,5 +55,3 @@ export const Construct = {
         return true
     }
 }
-
-export { Chains, Wallets }

@@ -1,6 +1,6 @@
 import { events } from "../Events.js"
 
-export const notify = ({ content, callback, className, autoClose, onClose }) => {
+export function notify({ content, callback, className, autoClose, onClose }) {
     events.emit("notify", {
         content,
         callback,
@@ -10,7 +10,7 @@ export const notify = ({ content, callback, className, autoClose, onClose }) => 
     })
 }
 
-export const prompt = ({ content, callback, className, autoClose, onClose }) => {
+export function prompt({ content, callback, className, autoClose, onClose }) {
     events.emit("prompt", {
         content,
         callback,

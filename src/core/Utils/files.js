@@ -1,14 +1,21 @@
+// Import environment detection flags to determine runtime context
 import { NODE, BROWSER, WIN } from "./environments.js"
 
+// Lazy-loaded modules that are only available in Node.js environment
 let fs = null
 let YAML = null
 
+// Dynamically import Node.js-specific modules when running in Node.js
 if (NODE) {
     fs = await import("fs")
     YAML = await import("yaml")
 }
 
-export const root = () => {
+/**
+ * Get the root path/URL based on the current environment
+ * @returns {string} The origin URL in browser, or current working directory in Node.js
+ */
+export function root() {
     // On NodeJS, return the root directory path
     // On browser, return the root URL
     // Use globalThis
@@ -16,26 +23,39 @@ export const root = () => {
     return process.cwd() // Default to cwd for Node.js and testing environments
 }
 
-export const join = (slugs) => {
+/**
+ * Join path segments into a complete path/URL
+ * @param {string|string[]} slugs - Path segments to join
+ * @returns {string} Complete path or URL
+ */
+export function join(slugs) {
+    // Convert single string to array for consistent handling
     if (typeof slugs === "string") slugs = [slugs]
     // Filter out empty strings and undefined values
     slugs = slugs.filter((slug) => slug)
+    // Use backslash for Windows file paths, forward slash for URLs and Unix paths
     const seperator = WIN && !BROWSER ? "\\" : "/"
 
-    // Handle browser URLs
+    // Handle browser URLs - always use forward slashes
     if (BROWSER) return root() + "/" + slugs.join("/")
 
-    // Handle Node.js paths
+    // Handle Node.js paths - use appropriate separator for OS
     return root() + seperator + slugs.join(seperator)
 }
 
-// Helper function to ensure directory exists
-export const ensure = async (path) => {
+/**
+ * Ensure a directory exists, creating it recursively if needed
+ * @param {string} path - Directory path to ensure exists
+ * @returns {Promise<boolean>} True if directory exists or was created, false on error
+ */
+export async function ensure(path) {
+    // Check if file system module is available (Node.js only)
     if (!fs) {
         console.error("File system not available in browser environment")
         return false
     }
     try {
+        // Create directory recursively if it doesn't exist
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path, { recursive: true })
         }
@@ -46,8 +66,13 @@ export const ensure = async (path) => {
     }
 }
 
-// Function to write JSON or YAML content to a specified path
-export const write = async (items = [], content) => {
+/**
+ * Write content to a file in JSON, YAML, or plain text format
+ * @param {string[]} items - Path segments including filename
+ * @param {*} content - Content to write (will be serialized based on file extension)
+ * @returns {Promise<{success: boolean, path: string}|undefined>} Result object or undefined
+ */
+export async function write(items = [], content) {
     if (!content) return
     const file = items[items.length - 1]
     // If the last item of items is a file, remove it from items to make dir
@@ -56,17 +81,19 @@ export const write = async (items = [], content) => {
     const dir = join(items)
     const filePath = join([...items, file])
 
-    // Ensure directory exists
+    // Ensure directory exists before writing
     if (!(await ensure(dir))) return
 
     if (file.includes(".")) {
         try {
             let data
+            // Serialize content based on file extension
             if (file.endsWith(".json")) {
                 data = JSON.stringify(content, null, 4)
             } else if (file.endsWith(".yaml") || file.endsWith(".yml")) {
                 data = YAML.stringify(content)
             } else {
+                // Plain text or other format - write as-is
                 data = content
             }
             fs.writeFileSync(filePath, data, "utf8")
@@ -77,14 +104,21 @@ export const write = async (items = [], content) => {
     }
 }
 
-// Function to load JSON content from a specified path
-export const load = async (items) => {
+/**
+ * Load content from files or directories (JSON, YAML, or plain text)
+ * Supports loading single files, entire directories, or nested object structures
+ * @param {string|string[]|object} items - Path segments, single path, or object of paths
+ * @returns {Promise<*>} Loaded content (parsed for JSON/YAML, raw for others)
+ */
+export async function load(items) {
     const content = {}
+    // Normalize single string to array
     if (typeof items == "string") items = [items]
+    // Handle array of path segments (file or directory path)
     if (Array.isArray(items)) {
         const filePath = join(items)
 
-        // Browser environment
+        // Browser environment - use fetch API to load files
         if (BROWSER) {
             try {
                 const response = await fetch(filePath)
@@ -105,8 +139,10 @@ export const load = async (items) => {
                     } else {
                         data = text
                     }
+                    // Return ABI property if present, otherwise return full data
                     return data?.abi || data
                 } catch {
+                    // If parsing fails, return raw text
                     return text
                 }
             } catch (error) {
@@ -115,7 +151,7 @@ export const load = async (items) => {
             }
         }
 
-        // Node.js environment
+        // Node.js environment - use fs module for file operations
         if (!NODE) return
 
         try {
@@ -130,6 +166,7 @@ export const load = async (items) => {
                 const files = {}
                 const entries = fs.readdirSync(filePath, { withFileTypes: true })
 
+                // Iterate through directory entries
                 for (const entry of entries) {
                     const entryName = entry.name
                     if (entry.isDirectory()) {
@@ -139,7 +176,7 @@ export const load = async (items) => {
                             files[entryName] = dirContent
                         }
                     } else if (entry.isFile() && (entryName.endsWith(".json") || entryName.endsWith(".yaml") || entryName.endsWith(".yml"))) {
-                        // For JSON/YAML files, load them directly
+                        // For JSON/YAML files, load them directly and strip extension from key
                         let baseName
                         if (entryName.endsWith(".json")) {
                             baseName = entryName.substring(0, entryName.length - 5) // Remove .json
@@ -157,6 +194,7 @@ export const load = async (items) => {
                 return files
             }
 
+            // Read file as text
             const raw = fs.readFileSync(filePath, "utf8")
             // Parse JSON or YAML if possible else return raw data
             let data
@@ -174,8 +212,10 @@ export const load = async (items) => {
             return
         }
     }
+    // Handle object input - load multiple paths as key-value pairs
     if (typeof items === "object" && items !== null) {
         if (!Array.isArray(items)) {
+            // Process all entries in parallel for better performance
             const promises = Object.entries(items).map(async ([key, value]) => {
                 // Recursively handle nested objects
                 if (typeof value === "object" && value !== null && !Array.isArray(value)) {
@@ -190,15 +230,22 @@ export const load = async (items) => {
     return content
 }
 
-// Function to find a path from a list of possible paths
-export const find = async (paths) => {
+/**
+ * Find the first existing path from a list of possible paths
+ * @param {string|string[]} paths - Path or array of paths to check
+ * @returns {Promise<string|null>} First existing path, or throws error if none found
+ * @throws {Error} If no path exists
+ */
+export async function find(paths) {
     if (!fs) {
         console.error("File system not available in browser environment")
         return null
     }
 
+    // Normalize single string to array
     if (typeof paths === "string") paths = [paths]
 
+    // Check each path in order and return first match
     for (const path of paths) {
         if (fs.existsSync(join(path))) {
             return path
@@ -207,8 +254,14 @@ export const find = async (paths) => {
     throw new Error(`Could not find path in: ${paths.join(", ")}`)
 }
 
-// Function to copy files or directories
-export const copy = async (src, dest) => {
+/**
+ * Copy files or directories from source to destination
+ * Automatically converts YAML files to JSON during copy
+ * @param {string[]} src - Source path segments
+ * @param {string[]} dest - Destination path segments
+ * @returns {Promise<{success: boolean, path: string}|undefined>} Result object or undefined
+ */
+export async function copy(src, dest) {
     if (!fs) {
         console.error("File system not available in browser environment")
         return
@@ -239,15 +292,16 @@ export const copy = async (src, dest) => {
                 const raw = fs.readFileSync(srcPath, "utf8")
                 const data = YAML.parse(raw)
 
-                // Change destination to .json
+                // Change destination filename extension to .json
                 const destFileName = dest[dest.length - 1].replace(/\.(yaml|yml)$/, '.json')
                 const newDest = [...dest.slice(0, -1), destFileName]
                 const newDestPath = join(newDest)
 
-                // Write as JSON
+                // Write as JSON with pretty formatting
                 fs.writeFileSync(newDestPath, JSON.stringify(data, null, 4), "utf8")
                 return { success: true, path: newDestPath }
             } else {
+                // Copy non-YAML files as-is
                 fs.copyFileSync(srcPath, destPath)
                 return { success: true, path: destPath }
             }
@@ -266,7 +320,7 @@ export const copy = async (src, dest) => {
                 const newSrc = [...src, entry.name]
                 let newDest = [...dest, entry.name]
 
-                // Convert YAML extensions to JSON for destination
+                // Convert YAML extensions to JSON for destination files
                 if (entry.isFile() && (entry.name.endsWith('.yaml') || entry.name.endsWith('.yml'))) {
                     const jsonName = entry.name.replace(/\.(yaml|yml)$/, '.json')
                     newDest = [...dest, jsonName]
@@ -287,8 +341,12 @@ export const copy = async (src, dest) => {
     }
 }
 
-// Function to read directory contents
-export const dir = async (items) => {
+/**
+ * Read directory contents and return list of file/folder names
+ * @param {string[]} items - Path segments to the directory
+ * @returns {Promise<string[]>} Array of file and directory names, or empty array on error
+ */
+export async function dir(items) {
     if (!fs) {
         console.error("File system not available in browser environment")
         return []
@@ -307,6 +365,7 @@ export const dir = async (items) => {
             return []
         }
 
+        // Return array of entry names (files and directories)
         return fs.readdirSync(dirPath)
     } catch (error) {
         console.error("Error reading directory:", dirPath, error)
@@ -314,8 +373,12 @@ export const dir = async (items) => {
     }
 }
 
-// Function to check if a file exists
-export const exist = async (items) => {
+/**
+ * Check if a file or directory exists at the given path
+ * @param {string[]} items - Path segments to check
+ * @returns {Promise<boolean>} True if path exists, false otherwise
+ */
+export async function exist(items) {
     if (!fs) {
         console.error("File system not available in browser environment")
         return false

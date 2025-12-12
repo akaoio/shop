@@ -1,10 +1,10 @@
-export const randomInt = (min, max) => {
+export function randomInt(min, max) {
     min = Math.ceil(min || 0)
     max = Math.floor(max || 10000)
     return Math.floor(Math.random() * (max - min) + min)
 }
 
-export const randomText = (l, c) => {
+export function randomText(l, c) {
     var s = ""
     l = l || 24
     c = c || "0123456789ABCDEFGHIJKLMNOPQRSTUVWXZabcdefghijklmnopqrstuvwxyz"
@@ -15,15 +15,20 @@ export const randomText = (l, c) => {
     return s
 }
 
-export const randomKey = (int) => (int || Date.now()).toString(36) + randomText(7)
+export function randomKey(int) {
+    return (int || Date.now()).toString(36) + randomText(7)
+}
 
-export const randomItem = (data) => (Array.isArray(data) ? data[Math.floor(Math.random() * data.length)] : null)
+export function randomItem(data) {
+    return Array.isArray(data) ? data[Math.floor(Math.random() * data.length)] : null
+}
 
-export const sortStrings = (...strings) =>
-    strings
+export function sortStrings(...strings) {
+    return strings
         .map((str) => ({
             original: str,
             lowercase: str.toLowerCase()
         }))
         .sort((a, b) => (a.lowercase < b.lowercase ? -1 : a.lowercase > b.lowercase ? 1 : 0))
         .map((pair) => pair.original)
+}

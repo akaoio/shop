@@ -1,4 +1,4 @@
-export const reset = () => {
+export function reset() {
     // Clear all data in localStorage
     localStorage.clear()
     console.log("localStorage has been cleared.")

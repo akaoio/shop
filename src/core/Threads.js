@@ -6,7 +6,6 @@
 
 import { NODE } from "./Utils/environments.js"
 import { events } from "./Events.js"
-import { Lives } from "./Stores.js"
 import { merge, diff } from "./Utils/data.js"
 import { randomKey } from "./Utils/random.js"
 import { join } from "./Utils/files.js"
