@@ -1,5 +1,6 @@
 // Import environment detection flags to determine runtime context
 import { NODE, BROWSER, WIN } from "./environments.js"
+import { sha256 } from "./crypto.js"
 
 // Lazy-loaded modules that are only available in Node.js environment
 let fs = null
@@ -389,5 +390,55 @@ export async function exist(items) {
     } catch (error) {
         console.error("Error checking file existence:", error)
         return false
+    }
+}
+
+/**
+ * Calculate hash of a directory by hashing all files recursively
+ * @param {string[]} items - Path segments to the directory
+ * @param {string[]} exclude - Array of file paths to exclude from hashing (relative to directory)
+ * @returns {Promise<string>} Hash of the directory contents
+ */
+export async function hash(items, exclude = []) {
+    if (!fs) {
+        console.error("File system not available")
+        return ""
+    }
+
+    const dirPath = join(items)
+    let combinedContent = ""
+
+    async function processDirectory(path, relativePath = "") {
+        const entries = fs.readdirSync(path, { withFileTypes: true })
+
+        // Sort entries to ensure consistent hashing
+        entries.sort((a, b) => a.name.localeCompare(b.name))
+
+        for (const entry of entries) {
+            const fullPath = WIN && !BROWSER ? `${path}\\${entry.name}` : `${path}/${entry.name}`
+            const relPath = relativePath ? `${relativePath}/${entry.name}` : entry.name
+
+            // Skip excluded files/directories
+            if (exclude.some(ex => relPath === ex || relPath.startsWith(ex + "/"))) {
+                continue
+            }
+
+            if (entry.isDirectory()) {
+                combinedContent += entry.name
+                await processDirectory(fullPath, relPath)
+            } else if (entry.isFile()) {
+                combinedContent += entry.name
+                const content = fs.readFileSync(fullPath, 'utf8')
+                combinedContent += content
+            }
+        }
+    }
+
+    try {
+        await processDirectory(dirPath)
+        return sha256(combinedContent)
+    } catch (error) {
+        console.error("Error hashing directory:", error)
+        return ""
     }
 }

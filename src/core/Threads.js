@@ -70,20 +70,11 @@ export class Threads {
     /**
      * Process incoming responses from worker threads.
      * Routes messages to appropriate handlers based on message type.
-     * @param {Object} data - Message data from worker (contains queue, response, or Lives)
+     * @param {Object} data - Message data from worker (contains queue, response)
      */
     process = (data) => {
         if (typeof data !== "object") return
-        // data is an object that contains { queue, response } or { Lives }
-
-        // If this is a Lives, it's a one way message from the thread to main thread,
-        // Update the Lives
-        // "Lives" is just an object to hold Lives updates from thread
-        if (data?.Lives) {
-            // Update global data
-            this.update(data?.Lives)
-            return
-        }
+        // data is an object that contains { queue, response }
 
         const queue = data?.queue
         // queue and response are used for managing queues (responses to method calls)
@@ -118,27 +109,6 @@ export class Threads {
         if (!thread || !method || !this.threads?.[thread]) return
         // Send message without queue ID (no response expected)
         this.threads[thread].postMessage({ method, params })
-    }
-
-    /**
-     * Update global Lives state with changes from threads.
-     * Deep merges data, emits events for each changed key, and filters to only changed values.
-     * @param {Object} data - Data updates to merge into Lives
-     */
-    update = (data) => {
-        if (typeof data !== "object") return
-
-        // Reduce the data to only the keys that are different
-        data = diff(Lives, data)
-
-        // Merge "data" into Lives for data updates
-        merge(Lives, data)
-
-        // Emit events for each key that changed (components can listen to "Lives.keyName")
-        for (const key in data) {
-            const event = "Lives." + key // Other components can listen to events like "Lives.balances"
-            events.emit(event, data[key])
-        }
     }
 }
 

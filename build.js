@@ -1,4 +1,4 @@
-import { write, load, copy, dir } from "./src/core/Utils/files.js"
+import { write, load, copy, dir, hash } from "./src/core/Utils/files.js"
 import { color, icons } from "./src/core/Colors.js"
 
 console.log(`${icons.start} ${color.header("Starting build process...")}`)
@@ -153,6 +153,14 @@ for (const locale of locales) {
 }
 
 console.log(`${icons.done} ${color.ok(`Created ${routeCount} route index.html files`)}`)
+
+// ============ Generate Version Hash ============
+console.log(`${icons.sync} ${color.info("Generating version hash...")}`)
+
+const buildHash = await hash(destPaths.build, ["statics/version.json"])
+await write([...destPaths.build, "statics", "version.json"], { version: buildHash })
+
+console.log(`${icons.done} ${color.ok(`Generated version hash: ${buildHash}`)}`)
 
 // ============ Summary ============
 console.log(`\n${color.header("========================================")}`);
