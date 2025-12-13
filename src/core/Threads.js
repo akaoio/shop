@@ -5,8 +5,6 @@
  */
 
 import { NODE } from "./Utils/environments.js"
-import { events } from "./Events.js"
-import { merge, diff } from "./Utils/data.js"
 import { randomKey } from "./Utils/random.js"
 import { join } from "./Utils/files.js"
 
@@ -43,22 +41,16 @@ export class Threads {
             // Set up error and message handlers for the worker
             if (NODE) {
                 // Node.js: Handle worker errors
-                this.threads[name].on("error", (error) => {
-                    console.error(`Worker ${name} error:`, error)
-                })
+                this.threads[name].on("error", (error) => console.error(`Worker ${name} error:`, error))
                 // Node.js: Handle worker exit
                 this.threads[name].on("exit", (code) => {
-                    if (code !== 0) {
-                        console.error(`Worker ${name} stopped with exit code ${code}`)
-                    }
+                    if (code !== 0) console.error(`Worker ${name} stopped with exit code ${code}`)
                 })
                 // Node.js: Handle incoming messages from worker
                 this.threads[name].on("message", (data) => this.process(data))
             } else {
                 // Browser: Handle worker errors
-                this.threads[name].onerror = (error) => {
-                    console.error(`Worker ${name} error:`, error)
-                }
+                this.threads[name].onerror = (error) => console.error(`Worker ${name} error:`, error)
                 // Browser: Handle incoming messages from worker
                 this.threads[name].onmessage = (event) => this.process(event?.data)
             }

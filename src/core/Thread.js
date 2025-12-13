@@ -49,12 +49,11 @@ export default class Thread {
         // Browser Web Worker: listens for messages from main thread
         if (typeof onmessage !== "undefined") onmessage = (event) => this.process(event.data)
         // Node.js Worker Thread: set up parent port listener
-        if (NODE)
-            import("worker_threads").then(({ parentPort }) => {
-                if (!parentPort) return
-                this.parent = parentPort
-                this.parent.on("message", (data) => this.process(data))
-            })
+        if (NODE) import("worker_threads").then(({ parentPort }) => {
+            if (!parentPort) return
+            this.parent = parentPort
+            this.parent.on("message", (data) => this.process(data))
+        })
         // Initialize site and thread (calls init() if defined)
         Construct.Site().then(async () => {
             if (typeof this?.init === "function") await this.init()

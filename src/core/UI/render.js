@@ -1,8 +1,8 @@
 import { BROWSER } from "/core/Utils/environments.js"
 
-export async function render(UI) {
+export async function render() {
     if (!BROWSER) return
-    const main = await import(`UI/${UI}/main.js`)
+    const main = await import(`/UI/main.js`)
     if (!main.render) return
     main.render()
 }

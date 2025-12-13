@@ -46,7 +46,7 @@ thread.init = async function () {
     )
     if (BROWSER) {
         Progress.set({ Context: await Construct.Context() })
-        UI.render("Vanilla")
+        UI.render()
         UI.splash(false)
     }
 }
