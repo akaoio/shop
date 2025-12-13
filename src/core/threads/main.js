@@ -26,7 +26,7 @@ Progress.set({
     Context: false
 })
 
-thread.init = async () => {
+thread.init = async function () {
     const { site } = Statics
     if (!site) throw new Error("No site configs found during preload")
     if (BROWSER) UI.splash(true)

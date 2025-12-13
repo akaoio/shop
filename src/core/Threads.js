@@ -25,7 +25,7 @@ export class Threads {
      * @param {Object} configs - Configuration object { main: boolean, worker: boolean }
      * @returns {Promise} Thread object or module
      */
-    register = async (name, configs = {}) => {
+    async register(name, configs = {}) {
         // If thread already exists, return it
         if (this.threads[name]) return this.threads[name]
 
@@ -72,7 +72,7 @@ export class Threads {
      * Routes messages to appropriate handlers based on message type.
      * @param {Object} data - Message data from worker (contains queue, response)
      */
-    process = (data) => {
+    process(data) {
         if (typeof data !== "object") return
         // data is an object that contains { queue, response }
 
@@ -90,7 +90,7 @@ export class Threads {
      * Creates a unique queue ID and stores the callback for when response arrives.
      * @param {Object} options - { thread, method, params, callback }
      */
-    queue = ({ thread, method, params, callback }) => {
+    queue({ thread, method, params, callback }) {
         if (!thread || !this.threads?.[thread]) return
         const queue = randomKey()
         if (this.queues?.[queue]) return this.queues[queue]
@@ -105,7 +105,7 @@ export class Threads {
      * Used for one-way messages or updates that don't require callbacks.
      * @param {Object} options - { thread, method, params }
      */
-    call = ({ thread, method, params }) => {
+    call({ thread, method, params }) {
         if (!thread || !method || !this.threads?.[thread]) return
         // Send message without queue ID (no response expected)
         this.threads[thread].postMessage({ method, params })

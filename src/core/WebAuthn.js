@@ -31,7 +31,7 @@ export class WebAuthn {
      * @param {string} options.attachment - Authenticator attachment (e.g., 'platform', 'cross-platform')
      * @returns {Promise<Object>} Credential object with id, pub (public key), and other metadata
      */
-    create = ({ id, name, displayName, attachment } = {}) => {
+    create({ id, name, displayName, attachment } = {}) {
         // Convert user ID to bytes or generate random ID
         id = id ? new TextEncoder().encode(id) : crypto.getRandomValues(new Uint8Array(32))
         name = name || ""
@@ -105,7 +105,7 @@ export class WebAuthn {
      * @param {ArrayBuffer|undefined} options.id - Specific credential ID to authenticate with (optional)
      * @returns {Promise<Object>} Assertion object with credential information
      */
-    authenticate = ({ id } = {}) => {
+    authenticate({ id } = {}) {
         // Generate a random challenge for this authentication
         const challenge = crypto.getRandomValues(new Uint8Array(32))
 
@@ -150,7 +150,7 @@ export class WebAuthn {
      * @param {ArrayBuffer|undefined} options.id - Specific credential ID to use for signing (optional)
      * @returns {Promise<Object>} Signature object with data, signature, and authenticator data
      */
-    sign = ({ data, id } = {}) => {
+    sign({ data, id } = {}) {
         // Convert data to challenge bytes (used by the authenticator)
         const challenge = new TextEncoder().encode(data)
 

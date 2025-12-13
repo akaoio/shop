@@ -5,21 +5,21 @@ export class Chain {
         this.path = [...parentPath, key]
     }
 
-    get = (key) => {
+    get(key) {
         return new Chain(this.db, key, this.path)
     }
 
-    put = async (value) => {
+    async put(value) {
         return await this.db._put(this.path, value)
     }
 
-    once = async (callback) => {
+    async once(callback) {
         const value = await this.db._get(this.path)
         if (callback) callback(value)
         return value
     }
 
-    on = async (callback) => {
+    async on(callback) {
         const pathString = this.path.join(".")
         if (!this.db.callbacks.has(pathString)) {
             this.db.callbacks.set(pathString, new Set())
@@ -36,7 +36,7 @@ export class Chain {
         return () => this.off(callback)
     }
 
-    off = (callback) => {
+    off(callback) {
         const pathString = this.path.join(".")
         const callbacks = this.db.callbacks.get(pathString)
         if (callbacks) {
@@ -47,14 +47,14 @@ export class Chain {
         }
     }
 
-    map = async (callback) => {
+    async map(callback) {
         const value = await this.db._get(this.path)
         if (value && typeof value === "object") {
             Object.entries(value).forEach(([key, val]) => callback(val, key))
         }
     }
 
-    del = async () => {
+    async del() {
         return this.db._del(this.path)
     }
 }

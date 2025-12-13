@@ -25,7 +25,7 @@ export class Events {
      * @param {Function} listener - Callback function to execute when event fires
      * @returns {Function} Unsubscribe function that removes the listener
      */
-    on = (event, listener) => {
+    on(event, listener) {
         if (BROWSER && !NODE) EVENTS.addEventListener(event, listener)
         else if (NODE && !BROWSER) EVENTS.on(event, listener)
         // Return unsubscribe function with self-reference for convenience
@@ -41,7 +41,7 @@ export class Events {
      * @param {string} event - The event name to stop listening for
      * @param {Function} listener - The callback function to remove
      */
-    off = (event, listener) => {
+    off(event, listener) {
         if (BROWSER && !NODE) EVENTS.removeEventListener(event, listener)
         else if (NODE && !BROWSER) EVENTS.removeListener(event, listener)
     }
@@ -53,7 +53,7 @@ export class Events {
      * @param {string} event - The event name to emit
      * @param {*} detail - Event payload/data to pass to listeners
      */
-    emit = (event, detail) => {
+    emit(event, detail) {
         // Browser: create and dispatch CustomEvent
         if (BROWSER && !NODE) {
             const e = new CustomEvent(event, { detail })

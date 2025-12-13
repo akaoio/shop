@@ -34,7 +34,7 @@ export class States {
      * @param {*} b - Second value to compare
      * @returns {boolean} True if values are deeply equal
      */
-    same = (a, b) => {
+    same(a, b) {
         if (a === b) return true
         if (!a || !b || typeof a !== typeof b || typeof a !== "object") return false
         // Recursively compare array elements
@@ -53,7 +53,7 @@ export class States {
      * @param {Object} target - The state object
      * @param {Object} receiver - The proxy receiver
      */
-    notify = (key, value, last, target, receiver) => {
+    notify(key, value, last, target, receiver) {
         const data = { target, key, value, last, receiver }
         // Notify all global subscribers
         this.SET.forEach((sub) => typeof sub === "function" && sub(data))
@@ -81,7 +81,7 @@ export class States {
      * @param {string|string[]|Object} data - Property name(s) to check
      * @returns {boolean} True if all specified properties exist
      */
-    has = (data) => {
+    has(data) {
         if (!data) return false
         if (typeof data === "string") return data in this.states
         if (Array.isArray(data)) return data.every((k) => k in this.states)
@@ -93,7 +93,7 @@ export class States {
      * @param {string|string[]|Object} data - Property name(s) to retrieve
      * @returns {*} State value(s) - returns value, array of values, or mapped object
      */
-    get = (data) => {
+    get(data) {
         if (!data) return
         if (typeof data === "string") return this.states[data]
         if (Array.isArray(data)) return data.map((k) => this.states[k])
@@ -105,7 +105,7 @@ export class States {
      * Set state values.
      * @param {string|string[]|Object} data - Property name(s) and value(s) to set
      */
-    set = (data) => {
+    set(data) {
         if (!data) return
         // String: set to true
         if (typeof data === "string") this.states[data] = true
@@ -121,7 +121,7 @@ export class States {
      * @param {...*} args - Variable arguments: [key], callback function, [target, property], boolean for immediate call
      * @returns {Function} Unsubscribe function
      */
-    on = (...args) => {
+    on(...args) {
         const [first, ...rest] = args
         // Determine if subscription is for a specific key/path
         const key = typeof first === "string" || Array.isArray(first) ? first : null
@@ -161,7 +161,7 @@ export class States {
      * @param {string|null} key - State key to unsubscribe from (null for global)
      * @param {Function|Array} sub - Subscriber function or property assignment target
      */
-    off = (key, sub) => {
+    off(key, sub) {
         if (!key) this.SET.delete(sub)
         else if (this.MAP.has(key)) this.MAP.get(key).delete(sub)
     }
@@ -170,7 +170,7 @@ export class States {
      * Clear all subscribers for a specific key.
      * @param {string} key - State key to clear subscribers for
      */
-    clear = (key) => {
+    clear(key) {
         if (this.MAP.has(key)) this.MAP.get(key).clear()
     }
 }

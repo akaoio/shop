@@ -10,12 +10,12 @@ import { authenticate } from "/core/Gun.js"
 
 const thread = new Thread()
 
-events.on("authenticate", () => {
+events.on("authenticate", function () {
     if (!Context.get("authenticated")) return
     thread.scanBalances()
 })
 
-thread.init = async () => {
+thread.init = async function () {
     await Construct.Chains()
     await Construct.Dexs()
     await Construct.Wallets()
@@ -27,18 +27,18 @@ thread.init = async () => {
     // thread.listenForNewBlocks()
 }
 
-thread.authenticate = async (pair) => {
+thread.authenticate = async function (pair) {
     if (!thread.initialized || Context.get("authenticated")) return
     pair = pair || (await Indexes.Auth.get("pair").once())
     if (pair && !Context.get("authenticated")) authenticate(pair)
 }
 
 // This method is used to create new Wallets
-thread.wallets = async ({ seed } = {}) => {
+thread.wallets = async function ({ seed } = {}) {
     await Construct.Wallets({ seed })
 }
 
-thread.scanPools = () => {
+thread.scanPools = function () {
     Object.entries(Statics.defis).forEach(([id, configs]) => {
         const chain = Chains[configs.chain]
         if (!chain) return
@@ -111,7 +111,7 @@ thread.scanPools = () => {
 }
 
 // This method is used to scan the balances for the authenticated user
-thread.scanBalances = () => {
+thread.scanBalances = function () {
     // Process all chains simultaneously
     Object.entries(Statics.chains).forEach(([id, configs]) => {
         const chain = Chains[id]
@@ -148,7 +148,7 @@ thread.scanBalances = () => {
 }
 
 // Listen for new blocks on all chains
-thread.listenForNewBlocks = () => {
+thread.listenForNewBlocks = function () {
     Object.entries(Statics.chains).forEach(([id, configs]) => {
         const chain = Chains[id]
         // Skip if no WebSocket connection available

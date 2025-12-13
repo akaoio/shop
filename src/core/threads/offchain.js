@@ -8,12 +8,12 @@ const thread = new Thread()
 // This object is used to access global variables in web workers
 const forex = {}
 
-thread.init = async () => {
+thread.init = async function () {
     await Construct.DB()
     await thread.forex()
 }
 
-thread.forex = async () => {
+thread.forex = async function () {
     const pub = Statics?.site?.market?.pub
     if (!pub) return
     // Initialize forex store

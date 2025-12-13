@@ -5,7 +5,7 @@ import { NODE, BROWSER } from "./Utils/environments.js"
 import { load } from "./Utils/files.js"
 
 export const Construct = {
-    Site: async () => {
+    Site: async function () {
         const hostname = BROWSER && globalThis.location?.hostname
         Statics.domain = BROWSER && ["localhost", "127.0.0.1"].includes(hostname) ? "localhost" : hostname.split(".").slice(-2).join(".")
         const { version } = await load([NODE && "src", "statics", "version.json"].filter(Boolean))
@@ -25,7 +25,7 @@ export const Construct = {
         console.log("Constructed: Site")
         return true
     },
-    DB: async () => {
+    DB: async function () {
         if (!Statics.site) return
         await import("./DB.js")
         globalThis.gun = GUN({ peers: Statics.site?.peers || [] })
@@ -33,7 +33,7 @@ export const Construct = {
         console.log("Constructed: DB")
         return true
     },
-    User: async () => {
+    User: async function () {
         globalThis.user = globalThis.gun.user()
         const { authenticate } = await import("./Gun.js")
         // Try to recall authentication
@@ -42,7 +42,7 @@ export const Construct = {
         console.log("Constructed: User")
         return true
     },
-    Context: async () => {
+    Context: async function () {
         Context.set({
             route: getRoute(),
             theme: getTheme(),

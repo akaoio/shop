@@ -3,7 +3,7 @@ import { Indexes, Statics } from "./Stores.js"
 import { signAndHash } from "./Utils.js"
 import { Context } from "./Context.js"
 
-export const generateCerts = () => {
+export function generateCerts() {
     const { sea, user } = globalThis
     if (!user.is) return // Make sure to run this function only when user is authenticated
 
@@ -11,7 +11,7 @@ export const generateCerts = () => {
     sea.certify("*", { "*": "message", "+": "*" }, user?._?.sea, (cert) => user.get("cert").get("message").put(cert))
 }
 
-export const signup = (data, callback) => {
+export function signup(data, callback) {
     const { Gun, gun, user, sea } = globalThis
     const { referrer, name, username, password } = data
     if (data.username && data.password && callback) {
@@ -87,7 +87,7 @@ export const signup = (data, callback) => {
     }
 }
 
-export const authenticate = (...args) => {
+export function authenticate(...args) {
     let { user } = globalThis
 
     const credentials = typeof args[0] === "string" && typeof args[1] === "string" ? [args[0], args[1]] : typeof args[0] === "object" ? [args[0]] : []
@@ -111,7 +111,7 @@ export const authenticate = (...args) => {
     )
 }
 
-export const signout = (callback) => {
+export function signout(callback) {
     globalThis.user.leave()
     Indexes.Auth.get("pair").del()
     Indexes.Wallet.get("seed").del()
@@ -120,7 +120,7 @@ export const signout = (callback) => {
     if (callback) callback()
 }
 
-export const changePassword = (password, callback) => {
+export function changePassword(password, callback) {
     let { user } = globalThis
     user.auth(
         user._.sea,

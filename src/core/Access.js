@@ -73,7 +73,7 @@ export function setWallet({ id, total } = {}) {
  * @param {Object} credential - WebAuthn credential from create() or authenticate()
  * @returns {Object} Credential object with authentication state updated
  */
-const next = async (credential) => {
+async function next(credential) {
     if (!credential || !credential?.id) return { error: "Invalid credential" }
     const { sea } = globalThis
     // Generate deterministic hash from credential ID to seed key pair generation
@@ -97,7 +97,7 @@ const next = async (credential) => {
  * @param {Object} credential - WebAuthn credential containing pub
  * @returns {Object} Encrypted public key data
  */
-const save = async (credential) => {
+async function save(credential) {
     const { gun, sea } = globalThis
     const pair = Access.get("pair")
     if (!pair) return { error: "No pair found" }
@@ -116,7 +116,7 @@ const save = async (credential) => {
  * Called after signin to recover the passkey pub.
  * @returns {Object} Decrypted public key or error
  */
-const restore = async () => {
+async function restore() {
     const { gun, sea } = globalThis
     const pair = Access.get("pair")
     if (!pair) return { error: "No pair found" }
@@ -136,7 +136,7 @@ const restore = async () => {
  * @param {Object} data - WebAuthn credential creation options
  * @returns {Promise<Object>} Credential object or error
  */
-export const signup = (data) => {
+export const signup = function (data) {
     return webauthn
         .create(data)
         .then(next)
@@ -154,7 +154,7 @@ export const signup = (data) => {
  * @param {Object} data - WebAuthn authentication options
  * @returns {Promise<Object>} Credential object or error
  */
-export const signin = (data) => {
+export const signin = function (data) {
     return webauthn
         .authenticate(data)
         .then(next)
@@ -169,6 +169,6 @@ export const signin = (data) => {
  * Sign out the current user.
  * Clears all authentication state and user information from Access store.
  */
-export const signout = () => {
+export const signout = function () {
     Access.set({ authenticated: false, id: null, pub: null, pair: null, wallet: null })
 }
