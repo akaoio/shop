@@ -63,7 +63,7 @@ export function filterData(data = {}, prefix = "") {
     return Object.entries(data).filter((item) => typeof item[0] === "string" && item[0].indexOf(prefix) > -1)
 }
 
-export const logic = (exp, data) => {
+export function logic(exp, data) {
     const isLogic = (_) => typeof _ === "object" && _ !== null && (_["AND"] || _["OR"] || _["&&"] || _["||"]) && !Array.isArray(_) && Object.keys(_).length === 1
 
     const ops = {

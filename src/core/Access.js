@@ -136,7 +136,7 @@ async function restore() {
  * @param {Object} data - WebAuthn credential creation options
  * @returns {Promise<Object>} Credential object or error
  */
-export const signup = function (data) {
+export function signup(data) {
     return webauthn
         .create(data)
         .then(next)
@@ -154,7 +154,7 @@ export const signup = function (data) {
  * @param {Object} data - WebAuthn authentication options
  * @returns {Promise<Object>} Credential object or error
  */
-export const signin = function (data) {
+export function signin(data) {
     return webauthn
         .authenticate(data)
         .then(next)
@@ -169,6 +169,6 @@ export const signin = function (data) {
  * Sign out the current user.
  * Clears all authentication state and user information from Access store.
  */
-export const signout = function () {
+export function signout() {
     Access.set({ authenticated: false, id: null, pub: null, pair: null, wallet: null })
 }
