@@ -15,7 +15,7 @@ const srcPaths = {
     index: ["src", "index.html"],
     statics: ["src", "statics"],
     i18n: ["src", "statics", "i18n"],
-    items: ["src", "items"],
+    items: ["src", "statics", "items"],
     sites: ["src", "statics", "sites"],
     core: ["src", "core"],
     UI: ["src", "UI"],
@@ -60,18 +60,52 @@ for (const name of itemDirs) {
 
 console.log(`${icons.done} ${color.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size} unique tags`)}`)
 
-// ============ Copy Static Files ============
-console.log(`${icons.sync} ${color.info("Copying static files...")}`)
+// ============ Build Static Files ============
+console.log(`${icons.sync} ${color.info("Building static files...")}`)
 
+// Build YAML files to JSON
 for (const file of dataFiles) {
-    await copy([...srcPaths.statics, file], [...destPaths.statics, file])
+    if (file.endsWith('.yaml') || file.endsWith('.yml')) {
+        const data = await load([...srcPaths.statics, file])
+        const jsonFile = file.replace(/\.(yaml|yml)$/, '.json')
+        await write([...destPaths.statics, jsonFile], data)
+    }
 }
+console.log(`${icons.done} ${color.ok(`Built ${dataFiles.length} static files to /build/statics/`)}`)
 
-// Copy items folder
-await copy(srcPaths.items, [...destPaths.statics, "items"])
+// Build items: Load YAML and write as JSON
+console.log(`${icons.sync} ${color.info("Building items (YAML → JSON)...")}`)
+for (const item of items) {
+    const itemFiles = await dir([...srcPaths.items, item])
 
-// Copy sites folder
-await copy(srcPaths.sites, [...destPaths.statics, "sites"])
+    for (const file of itemFiles) {
+        if (file.endsWith('.yaml') || file.endsWith('.yml')) {
+            const data = await load([...srcPaths.items, item, file])
+            const jsonFile = file.replace(/\.(yaml|yml)$/, '.json')
+            await write([...destPaths.statics, "items", item, jsonFile], data)
+        }
+    }
+}
+console.log(`${icons.done} ${color.ok(`Built ${items.length} items to /build/statics/items/`)}`)
+
+// Build sites: Load YAML configs and write as JSON
+console.log(`${icons.sync} ${color.info("Building sites (YAML → JSON)...")}`)
+const siteDirs = await dir(srcPaths.sites)
+for (const site of siteDirs) {
+    const siteFiles = await dir([...srcPaths.sites, site])
+
+    for (const file of siteFiles) {
+        if (file.endsWith('.yaml') || file.endsWith('.yml')) {
+            const data = await load([...srcPaths.sites, site, file])
+            const jsonFile = file.replace(/\.(yaml|yml)$/, '.json')
+            await write([...destPaths.statics, "sites", site, jsonFile], data)
+        } else {
+            // Copy non-YAML files as-is
+            await copy([...srcPaths.sites, site, file], [...destPaths.statics, "sites", site, file])
+        }
+    }
+}
+console.log(`${icons.done} ${color.ok(`Built ${siteDirs.length} sites to /build/statics/sites/`)}`)
 
 // Copy core folder
 await copy(srcPaths.core, destPaths.core)
@@ -82,9 +116,9 @@ await copy(srcPaths.UI, destPaths.UI)
 // Copy importmap.json
 await copy(srcPaths.importmap, [...destPaths.build, "importmap.json"])
 
-console.log(`${icons.done} ${color.ok(`Copied ${dataFiles.length} static files to /build/statics/`)}`)
-console.log(`${icons.done} ${color.ok(`Copied items folder to /build/statics/items/`)}`)
-console.log(`${icons.done} ${color.ok(`Copied sites folder to /build/statics/sites/`)}`)
+console.log(`${icons.done} ${color.ok(`Built ${dataFiles.length} static files`)}`)
+console.log(`${icons.done} ${color.ok(`Built ${items.length} items`)}`)
+console.log(`${icons.done} ${color.ok(`Built ${siteDirs.length} sites`)}`)
 console.log(`${icons.done} ${color.ok(`Copied core folder to /build/core/`)}`)
 console.log(`${icons.done} ${color.ok(`Copied UI folder to /build/UI/`)}`)
 console.log(`${icons.done} ${color.ok(`Copied importmap.json to /build/`)}`)
@@ -126,33 +160,36 @@ console.log(`${icons.done} ${color.ok(`Created ${locales.length} locale files`)}
 // ============ Generate Routes ============
 console.log(`${icons.sync} ${color.info("Generating routes...")}`)
 
+// Load index.html once
+const indexContent = await load(srcPaths.index)
+
 // Root index.html
-await copy(srcPaths.index, [...destPaths.build, "index.html"])
+await write([...destPaths.build, "index.html"], indexContent)
 let routeCount = 1
 
 // For each locale, create locale root and routes
 for (const locale of locales) {
     // Locale root: /build/{locale}/index.html
-    await copy(srcPaths.index, [...destPaths.build, locale, "index.html"])
+    await write([...destPaths.build, locale, "index.html"], indexContent)
     routeCount++
 
     // Item directory root: /build/{locale}/item/index.html
-    await copy(srcPaths.index, [...destPaths.build, locale, "item", "index.html"])
+    await write([...destPaths.build, locale, "item", "index.html"], indexContent)
     routeCount++
 
     // Item routes: /build/{locale}/item/{item}/index.html
     for (const item of items) {
-        await copy(srcPaths.index, [...destPaths.build, locale, "item", item, "index.html"])
+        await write([...destPaths.build, locale, "item", item, "index.html"], indexContent)
         routeCount++
     }
 
     // Tag directory root: /build/{locale}/tag/index.html
-    await copy(srcPaths.index, [...destPaths.build, locale, "tag", "index.html"])
+    await write([...destPaths.build, locale, "tag", "index.html"], indexContent)
     routeCount++
 
     // Tag routes: /build/{locale}/tag/{tag}/index.html
     for (const tag of allTags) {
-        await copy(srcPaths.index, [...destPaths.build, locale, "tag", tag, "index.html"])
+        await write([...destPaths.build, locale, "tag", tag, "index.html"], indexContent)
         routeCount++
     }
 }

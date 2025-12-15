@@ -287,7 +287,7 @@ export async function find(paths) {
 
 /**
  * Copy files or directories from source to destination
- * Automatically converts YAML files to JSON during copy
+ * Pure copy - preserves original files without any transformation
  * @param {string[]} src - Source path segments
  * @param {string[]} dest - Destination path segments
  * @returns {Promise<{success: boolean, path: string}|undefined>} Result object or undefined
@@ -316,26 +316,9 @@ export async function copy(src, dest) {
             // Ensure destination directory exists
             await ensure(destDir)
 
-            // Convert YAML to JSON if source is YAML
-            const srcFileName = src[src.length - 1]
-            if (srcFileName.endsWith('.yaml') || srcFileName.endsWith('.yml')) {
-                // Load YAML content
-                const raw = fs.readFileSync(srcPath, "utf8")
-                const data = YAML.parse(raw)
-
-                // Change destination filename extension to .json
-                const destFileName = dest[dest.length - 1].replace(/\.(yaml|yml)$/, '.json')
-                const newDest = [...dest.slice(0, -1), destFileName]
-                const newDestPath = join(newDest)
-
-                // Write as JSON with pretty formatting
-                fs.writeFileSync(newDestPath, JSON.stringify(data, null, 4), "utf8")
-                return { success: true, path: newDestPath }
-            } else {
-                // Copy non-YAML files as-is
-                fs.copyFileSync(srcPath, destPath)
-                return { success: true, path: destPath }
-            }
+            // Copy file as-is without any transformation
+            fs.copyFileSync(srcPath, destPath)
+            return { success: true, path: destPath }
         }
 
         // If source is a directory, copy recursively
@@ -349,21 +332,9 @@ export async function copy(src, dest) {
             // Copy each entry recursively
             for (const entry of entries) {
                 const newSrc = [...src, entry.name]
-                let newDest = [...dest, entry.name]
+                const newDest = [...dest, entry.name]
 
-                // Convert YAML extensions to JSON for destination files
-                if (entry.isFile() && (entry.name.endsWith('.yaml') || entry.name.endsWith('.yml'))) {
-                    const jsonName = entry.name.replace(/\.(yaml|yml)$/, '.json')
-                    newDest = [...dest, jsonName]
-                }
-
-                if (entry.isDirectory()) {
-                    // Recursively copy subdirectory
-                    await copy(newSrc, newDest)
-                } else {
-                    // Copy file (will convert YAML to JSON if needed)
-                    await copy(newSrc, newDest)
-                }
+                await copy(newSrc, newDest)
             }
             return { success: true, path: destPath }
         }
