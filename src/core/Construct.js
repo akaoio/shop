@@ -1,6 +1,5 @@
 import { Indexes, Statics } from "./Stores.js"
-import { Context, getTheme, getLocale, getFiat, getReferrer } from "./Context.js"
-import { getRoute } from "./Router.js"
+import { Context, getRoute, getTheme, getLocale, getFiat, getReferrer } from "./Context.js"
 import { NODE, BROWSER } from "./Utils/environments.js"
 import { load } from "./Utils/files.js"
 

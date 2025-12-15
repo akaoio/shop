@@ -1,4 +1,4 @@
-import { navigate } from "/core/Router.js"
+import { navigate } from "/core/Context.js"
 
 export class A extends HTMLAnchorElement {
     constructor() {
@@ -15,8 +15,8 @@ export class A extends HTMLAnchorElement {
 
     click = (e) => {
         e.preventDefault()
-        const route = this.getAttribute("to") || this.getAttribute("href")
-        if (route) navigate(route)
+        const path = this.getAttribute("to") || this.getAttribute("href")
+        if (path) navigate(path)
     }
 }
 
