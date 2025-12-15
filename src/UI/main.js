@@ -26,7 +26,7 @@ async function handleRoute(route) {
     const component = components[route] || (await import(`./routes/${route}/index.js`))
     if (!component) return
     components[route] = component
-    const name = route.replace("-", "").toUpperCase()
+    const name = route?.replace("-", "").toUpperCase()
     if (!component[name] && !component?.default) return
     const Component = component[name] || component?.default
     const element = new Component()

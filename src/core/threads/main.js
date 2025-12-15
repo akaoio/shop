@@ -33,7 +33,7 @@ thread.init = async function () {
     Progress.set({ Site: true })
     Progress.set({ DB: await Construct.DB() })
     Progress.set({ User: await Construct.User() })
-    const locale = (globalThis?.localStorage && globalThis.localStorage.getItem("locale")) || site.locale
+    const locale = globalThis?.localStorage?.getItem?.("locale") || site.locale
     if (!locale) throw new Error("No locale found during preload")
     merge(
         Statics,

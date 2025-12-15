@@ -30,10 +30,11 @@ export function setTheme(theme) {
     Context.set({ theme })
 }
 
-export function getLocale() {
+export function getLocale(path = "") {
     if (!BROWSER) return
+    const extract = (path || globalThis.location?.pathname).replace(/^\/([a-z]{2}(?:-[A-Z]{2})?)(?:\/.*)?$/, "$1").replace(/^\/.*$/, "")
     const memory = globalThis.localStorage ? globalThis.localStorage.getItem("locale") : null
-    const code = memory || Statics.site?.locale
+    const code = extract || memory || Statics.site?.locale
     if (code && code !== memory && globalThis?.localStorage) globalThis.localStorage.setItem("locale", code)
     const locale = Statics.locales?.find?.((element) => element.code == code)
     if (!locale) return Statics.locales?.[0]
