@@ -366,25 +366,24 @@ export async function dir(items, pattern = null) {
             console.error("Path is not a directory:", dirPath)
             return []
         }
-        const entries = fs.readdirSync(dirPath, { withFileTypes: true })
+        // If no pattern provided, return immediate children (non-recursive)
+        if (!pattern) return fs.readdirSync(dirPath)
+
         const results = []
 
-        for (const entry of entries) {
-            const rel = entry.name
-            const subItems = [...items, entry.name]
-            const relPath = rel
-
-            if (entry.isDirectory()) {
-                // Push directory itself
-                if (!pattern || new RegExp(pattern).test(relPath)) results.push(relPath)
-                // Recurse and prefix child paths
-                const sub = await dir(subItems, pattern)
-                for (const s of sub) results.push(`${relPath}/${s}`)
-            } else if (entry.isFile()) {
-                if (!pattern || new RegExp(pattern).test(relPath)) results.push(relPath)
+        const walk = async (baseItems, prefix = "") => {
+            const currentPath = join(baseItems)
+            if (!fs.existsSync(currentPath)) return
+            const entries = fs.readdirSync(currentPath, { withFileTypes: true })
+            for (const entry of entries) {
+                const nextItems = [...baseItems, entry.name]
+                const relPath = prefix ? `${prefix}/${entry.name}` : entry.name
+                if (entry.isDirectory()) await walk(nextItems, relPath)
+                else if (entry.isFile() && pattern.test(relPath)) results.push(relPath)
             }
         }
 
+        await walk(items, "")
         return results
     } catch (error) {
         console.error("Error reading directory:", dirPath, error)

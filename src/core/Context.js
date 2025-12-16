@@ -2,6 +2,7 @@ import { BROWSER } from "./Utils/environments.js"
 import { States } from "./States.js"
 import { Statics } from "./Stores.js"
 import { load } from "./Utils/files.js"
+import Router from "./Router.js"
 
 export const Context = new States({
     route: getRoute(),
@@ -10,6 +11,10 @@ export const Context = new States({
     fiat: getFiat(),
     referrer: null
 })
+
+// Listen to the popstate event, which is triggered when the user navigates back to the previous page
+// Updates Context route to match the URL
+if (BROWSER) globalThis.addEventListener("popstate", () => Context.set({ route: getRoute() }))
 
 // Cache imported components
 const components = {}
@@ -229,7 +234,3 @@ export function getReferrer() {
         })
     }).catch((error) => console.error(error))
 }
-
-// Listen to the popstate event, which is triggered when the user navigates back to the previous page
-// Updates Context route to match the URL
-if (BROWSER) globalThis.addEventListener("popstate", () => Context.set({ route: getRoute() }))

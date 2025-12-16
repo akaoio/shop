@@ -6,11 +6,11 @@ import { load } from "./Utils/files.js"
 export const Construct = {
     Site: async function () {
         const hostname = BROWSER && globalThis.location?.hostname
-        Statics.domain = BROWSER && ["localhost", "127.0.0.1"].includes(hostname) ? "localhost" : hostname.split(".").slice(-2).join(".")
+        Statics.domain = BROWSER && /^(localhost|\d+\.\d+\.\d+\.\d+)$/.test(hostname) ? "localhost" : hostname.split(".").slice(-2).join(".")
         Statics.routes = await load([NODE && "src", "statics", "routes.json"].filter(Boolean))
         const { version } = await load([NODE && "src", "statics", "version.json"].filter(Boolean))
         Statics.site = await Indexes.Statics.get("site").once()
-        if (!Statics.site || version !== Statics.site?.version) {
+        if (!Statics.site || version !== Statics?.site?.version) {
             Statics.site = await load([NODE && "src", "statics", "sites", Statics.domain, "configs.json"].filter(Boolean))
             if (!Statics.site) return
             Statics.site.version = version
