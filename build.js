@@ -11,7 +11,7 @@ console.log(`${icons.done} ${color.ok("Cleaned build folder")}`)
 // ============ Load Data Once ============
 console.log(`${icons.sync} ${color.info("Loading configuration and data...")}`)
 
-const srcPaths = {
+const src = {
     index: ["src", "index.html"],
     statics: ["src", "statics"],
     i18n: ["src", "statics", "i18n"],
@@ -22,7 +22,7 @@ const srcPaths = {
     importmap: ["importmap.json"]
 }
 
-const destPaths = {
+const build = {
     build: ["build"],
     statics: ["build", "statics"],
     locales: ["build", "statics", "locales"],
@@ -31,25 +31,25 @@ const destPaths = {
 }
 
 // Load locales configuration
-const localesConfig = await load([...srcPaths.statics, "locales.yaml"])
+const localesConfig = await load([...src.statics, "locales.yaml"])
 const locales = localesConfig.map(locale => locale.code)
 
 // Load static files
-const staticFiles = await dir(srcPaths.statics)
+const staticFiles = await dir(src.statics)
 const dataFiles = staticFiles.filter(file => file.endsWith('.json') || file.endsWith('.yaml') || file.endsWith('.yml'))
 
 // Load i18n data
-const i18nDir = await dir(srcPaths.i18n)
+const i18nDir = await dir(src.i18n)
 const i18nFiles = i18nDir.filter(file => file.endsWith('.json') || file.endsWith('.yaml') || file.endsWith('.yml'))
 
 // Load items and their metadata
-const itemDirs = await dir(srcPaths.items)
+const itemDirs = await dir(src.items)
 const allTags = new Set()
 
 // Filter directories by checking if they have a meta.yaml file
 const items = []
 for (const name of itemDirs) {
-    const meta = await load([...srcPaths.items, name, 'meta.yaml'])
+    const meta = await load([...src.items, name, 'meta.yaml'])
     if (meta) {
         items.push(name)
         if (meta?.tags) {
@@ -66,9 +66,9 @@ console.log(`${icons.sync} ${color.info("Building static files...")}`)
 // Build YAML files to JSON
 for (const file of dataFiles) {
     if (file.endsWith('.yaml') || file.endsWith('.yml')) {
-        const data = await load([...srcPaths.statics, file])
+        const data = await load([...src.statics, file])
         const jsonFile = file.replace(/\.(yaml|yml)$/, '.json')
-        await write([...destPaths.statics, jsonFile], data)
+        await write([...build.statics, jsonFile], data)
     }
 }
 console.log(`${icons.done} ${color.ok(`Built ${dataFiles.length} static files to /build/statics/`)}`)
@@ -76,13 +76,13 @@ console.log(`${icons.done} ${color.ok(`Built ${dataFiles.length} static files to
 // Build items: Load YAML and write as JSON
 console.log(`${icons.sync} ${color.info("Building items (YAML → JSON)...")}`)
 for (const item of items) {
-    const itemFiles = await dir([...srcPaths.items, item])
+    const itemFiles = await dir([...src.items, item])
 
     for (const file of itemFiles) {
         if (file.endsWith('.yaml') || file.endsWith('.yml')) {
-            const data = await load([...srcPaths.items, item, file])
+            const data = await load([...src.items, item, file])
             const jsonFile = file.replace(/\.(yaml|yml)$/, '.json')
-            await write([...destPaths.statics, "items", item, jsonFile], data)
+            await write([...build.statics, "items", item, jsonFile], data)
         }
     }
 }
@@ -90,31 +90,31 @@ console.log(`${icons.done} ${color.ok(`Built ${items.length} items to /build/sta
 
 // Build sites: Load YAML configs and write as JSON
 console.log(`${icons.sync} ${color.info("Building sites (YAML → JSON)...")}`)
-const siteDirs = await dir(srcPaths.sites)
+const siteDirs = await dir(src.sites)
 for (const site of siteDirs) {
-    const siteFiles = await dir([...srcPaths.sites, site])
+    const siteFiles = await dir([...src.sites, site])
 
     for (const file of siteFiles) {
         if (file.endsWith('.yaml') || file.endsWith('.yml')) {
-            const data = await load([...srcPaths.sites, site, file])
+            const data = await load([...src.sites, site, file])
             const jsonFile = file.replace(/\.(yaml|yml)$/, '.json')
-            await write([...destPaths.statics, "sites", site, jsonFile], data)
+            await write([...build.statics, "sites", site, jsonFile], data)
         } else {
             // Copy non-YAML files as-is
-            await copy([...srcPaths.sites, site, file], [...destPaths.statics, "sites", site, file])
+            await copy([...src.sites, site, file], [...build.statics, "sites", site, file])
         }
     }
 }
 console.log(`${icons.done} ${color.ok(`Built ${siteDirs.length} sites to /build/statics/sites/`)}`)
 
 // Copy core folder
-await copy(srcPaths.core, destPaths.core)
+await copy(src.core, build.core)
 
 // Copy UI folder
-await copy(srcPaths.UI, destPaths.UI)
+await copy(src.UI, build.UI)
 
 // Copy importmap.json
-await copy(srcPaths.importmap, [...destPaths.build, "importmap.json"])
+await copy(src.importmap, [...build.build, "importmap.json"])
 
 console.log(`${icons.done} ${color.ok(`Built ${dataFiles.length} static files`)}`)
 console.log(`${icons.done} ${color.ok(`Built ${items.length} items`)}`)
@@ -134,7 +134,7 @@ locales.forEach(locale => {
 // Load all i18n translations
 for (const file of i18nFiles) {
     const keyName = file.replace(/\.(json|yaml|yml)$/, '')
-    const translations = await load([...srcPaths.i18n, file])
+    const translations = await load([...src.i18n, file])
 
     for (const locale of locales) {
         if (translations?.[locale]) {
@@ -152,7 +152,7 @@ for (const locale of locales) {
             return obj
         }, {})
 
-    await write([...destPaths.locales, `${locale}.json`], sortedData)
+    await write([...build.locales, `${locale}.json`], sortedData)
 }
 
 console.log(`${icons.done} ${color.ok(`Created ${locales.length} locale files`)}`)
@@ -161,35 +161,35 @@ console.log(`${icons.done} ${color.ok(`Created ${locales.length} locale files`)}
 console.log(`${icons.sync} ${color.info("Generating routes...")}`)
 
 // Load index.html once
-const indexContent = await load(srcPaths.index)
+const indexContent = await load(src.index)
 
 // Root index.html
-await write([...destPaths.build, "index.html"], indexContent)
+await write([...build.build, "index.html"], indexContent)
 let routeCount = 1
 
 // For each locale, create locale root and routes
 for (const locale of locales) {
     // Locale root: /build/{locale}/index.html
-    await write([...destPaths.build, locale, "index.html"], indexContent)
+    await write([...build.build, locale, "index.html"], indexContent)
     routeCount++
 
     // Item directory root: /build/{locale}/item/index.html
-    await write([...destPaths.build, locale, "item", "index.html"], indexContent)
+    await write([...build.build, locale, "item", "index.html"], indexContent)
     routeCount++
 
     // Item routes: /build/{locale}/item/{item}/index.html
     for (const item of items) {
-        await write([...destPaths.build, locale, "item", item, "index.html"], indexContent)
+        await write([...build.build, locale, "item", item, "index.html"], indexContent)
         routeCount++
     }
 
     // Tag directory root: /build/{locale}/tag/index.html
-    await write([...destPaths.build, locale, "tag", "index.html"], indexContent)
+    await write([...build.build, locale, "tag", "index.html"], indexContent)
     routeCount++
 
     // Tag routes: /build/{locale}/tag/{tag}/index.html
     for (const tag of allTags) {
-        await write([...destPaths.build, locale, "tag", tag, "index.html"], indexContent)
+        await write([...build.build, locale, "tag", tag, "index.html"], indexContent)
         routeCount++
     }
 }
@@ -199,8 +199,8 @@ console.log(`${icons.done} ${color.ok(`Created ${routeCount} route index.html fi
 // ============ Generate Version Hash ============
 console.log(`${icons.sync} ${color.info("Generating version hash...")}`)
 
-const buildHash = await hash(destPaths.build, ["statics/version.json"])
-await write([...destPaths.build, "statics", "version.json"], { version: buildHash })
+const buildHash = await hash(build.build, ["statics/version.json"])
+await write([...build.build, "statics", "version.json"], { version: buildHash })
 
 console.log(`${icons.done} ${color.ok(`Generated version hash: ${buildHash}`)}`)
 
