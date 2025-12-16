@@ -19,9 +19,11 @@ export class Router {
         locales = locales.length ? locales : Statics?.locales || []
         locales = locales.map(l => (typeof l === "string" ? l : l.code)).filter(Boolean)
         const locale = globalThis?.localStorage?.getItem?.("locale") || site?.locale || locales?.[0]
-        const segments = path.replace(/^\/+|\/+$/g, "").split("/").filter(Boolean)
+        let segments = path.replace(/^\/+|\/+$/g, "").split("/").filter(Boolean)
         const result = { locale, params: {}, route: "home" }
         if (segments.length) {
+            // Remove last segment if it's a file (contains a file extension)
+            if (/\.[a-zA-Z0-9]+$/.test(segments[segments.length - 1])) segments.pop()
             // Check if first part is a supported locale or matches locale pattern
             if (locales.includes(segments[0]) || /^[a-z]{2}(-[A-Z]{2})?$/.test(segments[0])) result.locale = segments.shift()
             // Check against known route patterns
