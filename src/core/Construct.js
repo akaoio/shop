@@ -1,7 +1,8 @@
 import { Indexes, Statics } from "./Stores.js"
-import { Context, getRoute, getTheme, getLocale, getFiat, getReferrer } from "./Context.js"
+import { Context, getTheme, getFiat, getReferrer } from "./Context.js"
 import { NODE, BROWSER } from "./Utils/environments.js"
 import { load } from "./Utils/files.js"
+import Router from "./Router.js"
 
 export const Construct = {
     Site: async function () {
@@ -43,10 +44,12 @@ export const Construct = {
         return true
     },
     Context: async function () {
+        const router = Router.process()
         Context.set({
-            route: getRoute(),
+            path: router.path,
+            route: router.route,
+            locale: router.locale,
             theme: getTheme(),
-            locale: getLocale(),
             dictionary: Statics.dictionary,
             fiat: getFiat(),
             referrer: globalThis.localStorage ? globalThis.localStorage.getItem("referrer") : await getReferrer()

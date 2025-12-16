@@ -13,17 +13,16 @@ export class Router {
     // - Input: "/fr/tag/some-tag" -> Output: { locale: "fr", params: { tag: "some-tag" } }
     // - Input: "/vi/item/asdf-qwer-zxvc" -> Output: { locale: "vi", params: { slug: "asdf-qwer-zxvc" } }
     static process({ path = "", routes = [], locales = [], site = {} } = {}) {
+        // Remove last segment if it's a file (contains a file extension)
         path = path || globalThis?.location?.pathname
         site = Object.keys(site).length ? site : Statics?.site || {}
         routes = routes.length ? routes : Statics?.routes || []
         locales = locales.length ? locales : Statics?.locales || []
         locales = locales.map(l => (typeof l === "string" ? l : l.code)).filter(Boolean)
         const locale = globalThis?.localStorage?.getItem?.("locale") || site?.locale || locales?.[0]
-        let segments = path.replace(/^\/+|\/+$/g, "").split("/").filter(Boolean)
+        let segments = path.replace(/^\/+|\/+$|\/\w+\.\w+$/g, "").split("/").filter(Boolean)
         const result = { locale, params: {}, route: "home" }
         if (segments.length) {
-            // Remove last segment if it's a file (contains a file extension)
-            if (/\.[a-zA-Z0-9]+$/.test(segments[segments.length - 1])) segments.pop()
             // Check if first part is a supported locale or matches locale pattern
             if (locales.includes(segments[0]) || /^[a-z]{2}(-[A-Z]{2})?$/.test(segments[0])) result.locale = segments.shift()
             // Check against known route patterns
@@ -38,6 +37,8 @@ export class Router {
         }
         // Create new path including locale
         result.path = `/${[result.locale, ...segments].join("/")}`
+        // Update document lang attribute
+        if (globalThis.document && globalThis.document.documentElement.lang !== result.locale) globalThis.document.documentElement.lang = result.locale
         return result
     }
 
