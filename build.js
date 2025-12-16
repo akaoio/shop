@@ -1,140 +1,188 @@
 import { write, load, copy, dir, hash, remove } from "./src/core/Utils/files.js"
 import { color, icons } from "./src/core/Colors.js"
 
-console.log(`${icons.start} ${color.header("Starting build process...")}`)
+// ============ Configuration ============
+const YAML_EXTENSIONS = ['.yaml', '.yml']
+const isYamlFile = file => YAML_EXTENSIONS.some(ext => file.endsWith(ext))
+const toJsonFilename = file => file.replace(/\.(yaml|yml)$/, '.json')
 
-// ============ Clean Build Folder ============
-console.log(`${icons.sync} ${color.info("Cleaning build folder...")}`)
-await remove(["build"])
-console.log(`${icons.done} ${color.ok("Cleaned build folder")}`)
-
-// ============ Load Data Once ============
-console.log(`${icons.sync} ${color.info("Loading configuration and data...")}`)
-
-const src = {
-    index: ["src", "index.html"],
-    statics: ["src", "statics"],
-    i18n: ["src", "statics", "i18n"],
-    items: ["src", "statics", "items"],
-    sites: ["src", "statics", "sites"],
-    core: ["src", "core"],
-    UI: ["src", "UI"],
-    importmap: ["importmap.json"]
+const paths = {
+    src: {
+        index: ["src", "index.html"],
+        statics: ["src", "statics"],
+        i18n: ["src", "statics", "i18n"],
+        items: ["src", "statics", "items"],
+        sites: ["src", "statics", "sites"],
+        core: ["src", "core"],
+        UI: ["src", "UI"],
+        routes: ["src", "UI", "routes"],
+        importmap: ["importmap.json"]
+    },
+    build: {
+        root: ["build"],
+        statics: ["build", "statics"],
+        locales: ["build", "statics", "locales"],
+        core: ["build", "core"],
+        UI: ["build", "UI"]
+    }
 }
 
-const build = {
-    build: ["build"],
-    statics: ["build", "statics"],
-    locales: ["build", "statics", "locales"],
-    core: ["build", "core"],
-    UI: ["build", "UI"]
+// ============ Helper Functions ============
+const log = {
+    start: msg => console.log(`${icons.start} ${color.header(msg)}`),
+    info: msg => console.log(`${icons.sync} ${color.info(msg)}`),
+    ok: msg => console.log(`${icons.done} ${color.ok(msg)}`),
+    section: msg => console.log(`\n${color.header(msg)}`)
 }
 
-// Load locales configuration
-const localesConfig = await load([...src.statics, "locales.yaml"])
+async function processYamlDirectory(srcPath, destPath, { recursive = false, filter = null } = {}) {
+    const files = await dir(srcPath)
+    const filtered = filter ? files.filter(filter) : files
+    let processed = 0
+
+    for (const file of filtered) {
+        const fullSrcPath = [...srcPath, file]
+
+        if (recursive) {
+            const subFiles = await dir(fullSrcPath)
+            for (const subFile of subFiles) {
+                if (isYamlFile(subFile)) {
+                    const data = await load([...fullSrcPath, subFile])
+                    await write([...destPath, file, toJsonFilename(subFile)], data)
+                    processed++
+                } else {
+                    await copy([...fullSrcPath, subFile], [...destPath, file, subFile])
+                }
+            }
+        } else if (isYamlFile(file)) {
+            const data = await load(fullSrcPath)
+            await write([...destPath, toJsonFilename(file)], data)
+            processed++
+        }
+    }
+
+    return { total: filtered.length, processed }
+}
+
+async function copyAssets(assets) {
+    for (const { src, dest, label } of assets) {
+        await copy(src, dest)
+        log.ok(`Copied ${label}`)
+    }
+}
+
+
+async function generateRoutes(locales, items, tags, indexContent) {
+    const routes = [
+        { path: [...paths.build.root, "index.html"], label: "Root" }
+    ]
+
+    for (const locale of locales) {
+        routes.push(
+            { path: [...paths.build.root, locale, "index.html"], label: `/${locale}` },
+            { path: [...paths.build.root, locale, "item", "index.html"], label: `/${locale}/item` }
+        )
+
+        for (const item of items) {
+            routes.push({
+                path: [...paths.build.root, locale, "item", item, "index.html"],
+                label: `/${locale}/item/${item}`
+            })
+        }
+
+        routes.push({
+            path: [...paths.build.root, locale, "tag", "index.html"],
+            label: `/${locale}/tag`
+        })
+
+        for (const tag of tags) {
+            routes.push({
+                path: [...paths.build.root, locale, "tag", tag, "index.html"],
+                label: `/${locale}/tag/${tag}`
+            })
+        }
+    }
+
+    for (const route of routes) {
+        await write(route.path, indexContent)
+    }
+
+    return routes.length
+}
+
+// ============ Main Build Process ============
+log.start("Starting build process...")
+
+// Clean
+log.info("Cleaning build folder...")
+await remove([paths.build.root])
+log.ok("Cleaned build folder")
+
+// Load configuration
+log.info("Loading configuration and data...")
+const localesConfig = await load([...paths.src.statics, "locales.yaml"])
 const locales = localesConfig.map(locale => locale.code)
 
-// Load static files
-const staticFiles = await dir(src.statics)
-const dataFiles = staticFiles.filter(file => file.endsWith('.json') || file.endsWith('.yaml') || file.endsWith('.yml'))
-
-// Load i18n data
-const i18nDir = await dir(src.i18n)
-const i18nFiles = i18nDir.filter(file => file.endsWith('.json') || file.endsWith('.yaml') || file.endsWith('.yml'))
-
-// Load items and their metadata
-const itemDirs = await dir(src.items)
+// Load items metadata
+const itemDirs = await dir(paths.src.items)
+const items = []
 const allTags = new Set()
 
-// Filter directories by checking if they have a meta.yaml file
-const items = []
 for (const name of itemDirs) {
-    const meta = await load([...src.items, name, 'meta.yaml'])
+    const meta = await load([...paths.src.items, name, 'meta.yaml'])
     if (meta) {
         items.push(name)
-        if (meta?.tags) {
-            meta.tags.forEach(tag => allTags.add(tag))
-        }
+        meta.tags?.forEach(tag => allTags.add(tag))
     }
 }
 
-console.log(`${icons.done} ${color.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size} unique tags`)}`)
+log.ok(`Loaded: ${locales.length} locales, ${items.length} items, ${allTags.size} unique tags`)
 
-// ============ Build Static Files ============
-console.log(`${icons.sync} ${color.info("Building static files...")}`)
+// Build static files (YAML → JSON)
+log.info("Building static files...")
+const { processed: staticCount } = await processYamlDirectory(
+    paths.src.statics,
+    paths.build.statics,
+    { filter: file => isYamlFile(file) || file.endsWith('.json') }
+)
+log.ok(`Built ${staticCount} static files`)
 
-// Build YAML files to JSON
-for (const file of dataFiles) {
-    if (file.endsWith('.yaml') || file.endsWith('.yml')) {
-        const data = await load([...src.statics, file])
-        const jsonFile = file.replace(/\.(yaml|yml)$/, '.json')
-        await write([...build.statics, jsonFile], data)
-    }
-}
-console.log(`${icons.done} ${color.ok(`Built ${dataFiles.length} static files to /build/statics/`)}`)
+// Build items
+log.info("Building items (YAML → JSON)...")
+await processYamlDirectory(paths.src.items, [...paths.build.statics, "items"], { recursive: true })
+log.ok(`Built ${items.length} items`)
 
-// Build items: Load YAML and write as JSON
-console.log(`${icons.sync} ${color.info("Building items (YAML → JSON)...")}`)
-for (const item of items) {
-    const itemFiles = await dir([...src.items, item])
+// Build sites
+log.info("Building sites (YAML → JSON)...")
+const siteDirs = await dir(paths.src.sites)
+await processYamlDirectory(paths.src.sites, [...paths.build.statics, "sites"], { recursive: true })
+log.ok(`Built ${siteDirs.length} sites`)
 
-    for (const file of itemFiles) {
-        if (file.endsWith('.yaml') || file.endsWith('.yml')) {
-            const data = await load([...src.items, item, file])
-            const jsonFile = file.replace(/\.(yaml|yml)$/, '.json')
-            await write([...build.statics, "items", item, jsonFile], data)
-        }
-    }
-}
-console.log(`${icons.done} ${color.ok(`Built ${items.length} items to /build/statics/items/`)}`)
+// Copy assets
+await copyAssets([
+    { src: paths.src.core, dest: paths.build.core, label: "core folder" },
+    { src: paths.src.UI, dest: paths.build.UI, label: "UI folder" },
+    { src: paths.src.importmap, dest: [...paths.build.root, "importmap.json"], label: "importmap.json" }
+])
 
-// Build sites: Load YAML configs and write as JSON
-console.log(`${icons.sync} ${color.info("Building sites (YAML → JSON)...")}`)
-const siteDirs = await dir(src.sites)
-for (const site of siteDirs) {
-    const siteFiles = await dir([...src.sites, site])
+// Build routes list using regex pattern and post-process
+log.info("Building routes list...")
+const found = await dir(paths.src.routes, /index\.js$/)
+// Keep only directories that have index.js by stripping the suffix
+const routeDirs = Array.from(new Set(found
+    .filter(p => p.endsWith('index.js'))
+    .map(p => p.replace(/\/index\.js$/, ''))))
+await write([...paths.build.statics, "routes.json"], routeDirs)
+log.ok(`Built routes list with ${routeDirs.length} routes`)
 
-    for (const file of siteFiles) {
-        if (file.endsWith('.yaml') || file.endsWith('.yml')) {
-            const data = await load([...src.sites, site, file])
-            const jsonFile = file.replace(/\.(yaml|yml)$/, '.json')
-            await write([...build.statics, "sites", site, jsonFile], data)
-        } else {
-            // Copy non-YAML files as-is
-            await copy([...src.sites, site, file], [...build.statics, "sites", site, file])
-        }
-    }
-}
-console.log(`${icons.done} ${color.ok(`Built ${siteDirs.length} sites to /build/statics/sites/`)}`)
+// Process i18n
+log.info("Processing i18n files...")
+const i18nFiles = await dir(paths.src.i18n)
+const localeData = Object.fromEntries(locales.map(l => [l, {}]))
 
-// Copy core folder
-await copy(src.core, build.core)
-
-// Copy UI folder
-await copy(src.UI, build.UI)
-
-// Copy importmap.json
-await copy(src.importmap, [...build.build, "importmap.json"])
-
-console.log(`${icons.done} ${color.ok(`Built ${dataFiles.length} static files`)}`)
-console.log(`${icons.done} ${color.ok(`Built ${items.length} items`)}`)
-console.log(`${icons.done} ${color.ok(`Built ${siteDirs.length} sites`)}`)
-console.log(`${icons.done} ${color.ok(`Copied core folder to /build/core/`)}`)
-console.log(`${icons.done} ${color.ok(`Copied UI folder to /build/UI/`)}`)
-console.log(`${icons.done} ${color.ok(`Copied importmap.json to /build/`)}`)
-
-// ============ Process i18n and Generate Locale Files ============
-console.log(`${icons.sync} ${color.info("Processing i18n files...")}`)
-
-const localeData = {}
-locales.forEach(locale => {
-    localeData[locale] = {}
-})
-
-// Load all i18n translations
-for (const file of i18nFiles) {
+for (const file of i18nFiles.filter(f => isYamlFile(f) || f.endsWith('.json'))) {
     const keyName = file.replace(/\.(json|yaml|yml)$/, '')
-    const translations = await load([...src.i18n, file])
+    const translations = await load([...paths.src.i18n, file])
 
     for (const locale of locales) {
         if (translations?.[locale]) {
@@ -143,80 +191,32 @@ for (const file of i18nFiles) {
     }
 }
 
-// Write locale files
 for (const locale of locales) {
-    const sortedData = Object.keys(localeData[locale])
-        .sort()
-        .reduce((obj, key) => {
-            obj[key] = localeData[locale][key]
-            return obj
-        }, {})
-
-    await write([...build.locales, `${locale}.json`], sortedData)
+    const sorted = Object.keys(localeData[locale]).sort().reduce((obj, key) => {
+        obj[key] = localeData[locale][key]
+        return obj
+    }, {})
+    await write([...paths.build.locales, `${locale}.json`], sorted)
 }
+log.ok(`Created ${locales.length} locale files`)
 
-console.log(`${icons.done} ${color.ok(`Created ${locales.length} locale files`)}`)
+// Generate routes
+log.info("Generating routes...")
+const indexContent = await load(paths.src.index)
+const routeCount = await generateRoutes(locales, items, allTags, indexContent)
+log.ok(`Created ${routeCount} route files`)
 
-// ============ Generate Routes ============
-console.log(`${icons.sync} ${color.info("Generating routes...")}`)
+// Generate version hash
+log.info("Generating version hash...")
+const buildHash = await hash(paths.build.root, ["statics/version.json"])
+await write([...paths.build.root, "statics", "version.json"], { version: buildHash })
+log.ok(`Generated version hash: ${buildHash}`)
 
-// Load index.html once
-const indexContent = await load(src.index)
-
-// Root index.html
-await write([...build.build, "index.html"], indexContent)
-let routeCount = 1
-
-// For each locale, create locale root and routes
-for (const locale of locales) {
-    // Locale root: /build/{locale}/index.html
-    await write([...build.build, locale, "index.html"], indexContent)
-    routeCount++
-
-    // Item directory root: /build/{locale}/item/index.html
-    await write([...build.build, locale, "item", "index.html"], indexContent)
-    routeCount++
-
-    // Item routes: /build/{locale}/item/{item}/index.html
-    for (const item of items) {
-        await write([...build.build, locale, "item", item, "index.html"], indexContent)
-        routeCount++
-    }
-
-    // Tag directory root: /build/{locale}/tag/index.html
-    await write([...build.build, locale, "tag", "index.html"], indexContent)
-    routeCount++
-
-    // Tag routes: /build/{locale}/tag/{tag}/index.html
-    for (const tag of allTags) {
-        await write([...build.build, locale, "tag", tag, "index.html"], indexContent)
-        routeCount++
-    }
-}
-
-console.log(`${icons.done} ${color.ok(`Created ${routeCount} route index.html files`)}`)
-
-// ============ Generate Version Hash ============
-console.log(`${icons.sync} ${color.info("Generating version hash...")}`)
-
-const buildHash = await hash(build.build, ["statics/version.json"])
-await write([...build.build, "statics", "version.json"], { version: buildHash })
-
-console.log(`${icons.done} ${color.ok(`Generated version hash: ${buildHash}`)}`)
-
-// ============ Summary ============
-console.log(`\n${color.header("========================================")}`);
+// Summary
+log.section("========================================")
 console.log(`${icons.done} ${color.ok("Locales")}: ${locales.length}`)
 console.log(`${icons.done} ${color.ok("Items")}: ${items.length}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
-console.log(`${icons.done} ${color.ok("Static Files")}: ${dataFiles.length}`)
-console.log(`${icons.done} ${color.ok("I18n Files")}: ${i18nFiles.length}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
-console.log(`  ${color.secondary("- Root")}: 1`)
-console.log(`  ${color.secondary("- Locale roots")}: ${locales.length}`)
-console.log(`  ${color.secondary("- Item directory roots")}: ${locales.length}`)
-console.log(`  ${color.secondary("- Item routes")}: ${locales.length * items.length}`)
-console.log(`  ${color.secondary("- Tag directory roots")}: ${locales.length}`)
-console.log(`  ${color.secondary("- Tag routes")}: ${locales.length * allTags.size}`)
-console.log(`${color.header("========================================")}`);
-console.log(`${icons.done} ${color.header("Build completed successfully!")}`)
+log.section("========================================")
+log.start("Build completed successfully!")

@@ -348,7 +348,7 @@ export async function copy(src, dest) {
  * @param {string[]} items - Path segments to the directory
  * @returns {Promise<string[]>} Array of file and directory names, or empty array on error
  */
-export async function dir(items) {
+export async function dir(items, pattern = null) {
     if (!fs) {
         console.error("File system not available in browser environment")
         return []
@@ -366,9 +366,26 @@ export async function dir(items) {
             console.error("Path is not a directory:", dirPath)
             return []
         }
+        const entries = fs.readdirSync(dirPath, { withFileTypes: true })
+        const results = []
 
-        // Return array of entry names (files and directories)
-        return fs.readdirSync(dirPath)
+        for (const entry of entries) {
+            const rel = entry.name
+            const subItems = [...items, entry.name]
+            const relPath = rel
+
+            if (entry.isDirectory()) {
+                // Push directory itself
+                if (!pattern || new RegExp(pattern).test(relPath)) results.push(relPath)
+                // Recurse and prefix child paths
+                const sub = await dir(subItems, pattern)
+                for (const s of sub) results.push(`${relPath}/${s}`)
+            } else if (entry.isFile()) {
+                if (!pattern || new RegExp(pattern).test(relPath)) results.push(relPath)
+            }
+        }
+
+        return results
     } catch (error) {
         console.error("Error reading directory:", dirPath, error)
         return []
