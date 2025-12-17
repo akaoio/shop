@@ -9,6 +9,8 @@ export class States {
      * @param {Object} states - Initial state object (default: empty object)
      */
     constructor(states = {}) {
+        // Notifications as results of state changes
+        this.notifications = []
         // Set of global subscribers notified on any state change
         this.SET = new Set()
         // Map of path-specific subscribers (key -> Set of subscribers)
@@ -21,7 +23,7 @@ export class States {
                 if (!this.MAP.has(key)) this.MAP.set(key, new Set())
                 const result = Reflect.set(target, key, value, receiver)
                 // Only notify if value actually changed (deep equality check)
-                if (!this.same(last, value)) this.notify(key, value, last, target, receiver)
+                if (!this.same(last, value)) this.notifications.push({ key, value, last, target, receiver })
                 return result
             }
         })
@@ -53,8 +55,8 @@ export class States {
      * @param {Object} target - The state object
      * @param {Object} receiver - The proxy receiver
      */
-    notify(key, value, last, target, receiver) {
-        const data = { target, key, value, last, receiver }
+    notify(data = {}) {
+        const { key, value } = data
         // Notify all global subscribers
         this.SET.forEach((sub) => typeof sub === "function" && sub(data))
 
@@ -110,9 +112,14 @@ export class States {
         // String: set to true
         if (typeof data === "string") this.states[data] = true
         // Array: set each key to true
-        else if (Array.isArray(data)) data.forEach((k) => (this.states[k] = true))
+        else if (Array.isArray(data)) data.forEach((k) => this.states[k] = true)
         // Object: set each key-value pair
-        else Object.entries(data).forEach(([k, v]) => (this.states[k] = v))
+        else Object.entries(data).forEach(([k, v]) => this.states[k] = v)
+        // Notify changes after all sets are done
+        while (this.notifications.length) {
+            const { key, value, last, target, receiver } = this.notifications.shift()
+            this.notify({ key, value, last, target, receiver })
+        }
     }
 
     /**

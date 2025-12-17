@@ -18,13 +18,19 @@ export class Router {
         site = Object.keys(site).length ? site : Statics?.site || {}
         routes = routes.length ? routes : Statics?.routes || []
         locales = locales.length ? locales : Statics?.locales || []
-        locales = locales.map(l => (typeof l === "string" ? l : l.code)).filter(Boolean)
-        const locale = globalThis?.localStorage?.getItem?.("locale") || site?.locale || locales?.[0]
         let segments = path.replace(/^\/+|\/+$|\/\w+\.\w+$/g, "").split("/").filter(Boolean)
-        const result = { locale, params: {}, route: "home" }
+        let locale = globalThis?.localStorage?.getItem?.("locale") || site?.locale || locales?.[0]?.code
+        const result = {
+            locale: locales.find(l => l.code === locale),
+            params: {},
+            route: "home"
+        }
         if (segments.length) {
             // Check if first part is a supported locale or matches locale pattern
-            if (locales.includes(segments[0]) || /^[a-z]{2}(-[A-Z]{2})?$/.test(segments[0])) result.locale = segments.shift()
+            if (locales.some(l => l.code === segments?.[0]) || /^[a-z]{2}(-[A-Z]{2})?$/.test(segments[0])) {
+                locale = segments.shift()
+                result.locale = locales.find(l => l.code === locale)
+            }
             // Check against known route patterns
             for (const route of routes) {
                 const params = this.match(segments, route)
@@ -36,9 +42,7 @@ export class Router {
             }
         }
         // Create new path including locale
-        result.path = `/${[result.locale, ...segments].join("/")}`
-        // Update document lang attribute
-        if (globalThis.document && globalThis.document.documentElement.lang !== result.locale) globalThis.document.documentElement.lang = result.locale
+        result.path = `/${[result.locale.code, ...segments].join("/")}`
         return result
     }
 

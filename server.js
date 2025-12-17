@@ -1,4 +1,13 @@
 import server from "live-server"
+import chokidar from "chokidar"
+import { spawn } from "child_process"
+
+// Watch for changes in src directory and rebuild
+console.log("🔍 Watching for file changes...")
+chokidar.watch("src/**/*").on("change", (path) => {
+    console.log(`📝 Change detected in ${path}, rebuilding...`)
+    spawn("npm", ["run", "build"], { stdio: "inherit" })
+})
 
 server.start({
     port: 8080, // Set the server port. Defaults to 8080.

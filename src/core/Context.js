@@ -4,7 +4,6 @@ import { Statics } from "./Stores.js"
 import { load } from "./Utils/files.js"
 
 export const Context = new States({
-    path: globalThis?.location?.pathname || "",
     theme: getTheme(),
     fiat: getFiat(),
     referrer: null
@@ -72,10 +71,10 @@ export function setHistory(route) {
 }
 
 export function navigate(path = "") {
-    const locale = getLocale(path)
-    const route = getRoute(path)
-    if (Context.get("route") === route) return
-    Context.set({ route })
+    // const locale = getLocale(path)
+    // const route = getRoute(path)
+    // if (Context.get("route") === route) return
+    // Context.set({ route })
 }
 
 export function getTheme() {
@@ -97,20 +96,16 @@ export function setTheme(theme) {
 }
 
 export function setLocale(code) {
-    // Don't proceed if new locale code is not different with the current locale code
-    if (code === Context.get("locale")?.code) return
-
-    if (globalThis.localStorage) globalThis.localStorage.setItem("locale", code)
+    if (code && globalThis?.localStorage?.getItem("locale") !== code) globalThis.localStorage.setItem("locale", code)
     const locale = Statics.locales?.find?.((e) => e.code == code)
     if (!locale) return
     // Update document lang attribute
     if (globalThis.document && globalThis.document.documentElement.lang !== locale.code) globalThis.document.documentElement.lang = locale.code
-
     // Load dictionary based on new locale code
     load(["statics", "locales", `${code}.json`]).then((data) => {
         if (!data) return
         // Update dictionary
-        globalThis.dictionary = data
+        globalThis.dictionary = Statics.dictionary = data
         // Only run after dictionary is loaded
         Context.set({ locale, dictionary: data })
     })

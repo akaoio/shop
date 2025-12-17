@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "bootstrap-icons": "^1.11.3",
+    "chokidar": "^3.6.0",
     "live-server": "^1.2.2",
     "prettier": "^3.7.2",
     "yaml": "^2.8.2"
