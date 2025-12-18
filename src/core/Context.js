@@ -9,10 +9,6 @@ export const Context = new States({
     referrer: null
 })
 
-// Listen to the popstate event, which is triggered when the user navigates back to the previous page
-// Updates Context route to match the URL
-if (BROWSER) globalThis.addEventListener("popstate", () => Context.set({ route: getRoute() }))
-
 /**
  * Update page metadata (title, description, favicon).
  * Creates or updates HTML head elements for SEO and branding.
@@ -53,12 +49,6 @@ export function setHead({ title = "", description = "" } = {}) {
     }
 }
 
-/**
- * Update browser history with the new route.
- * Adds or removes the 'p' query parameter from the URL without reloading the page.
- * Uses history.pushState for browser back/forward compatibility.
- * @param {string} route - The route to navigate to (empty string removes the parameter)
- */
 export function setHistory(route) {
     if (!globalThis.history || !globalThis.location) return
     try {
@@ -71,10 +61,7 @@ export function setHistory(route) {
 }
 
 export function navigate(path = "") {
-    // const locale = getLocale(path)
-    // const route = getRoute(path)
-    // if (Context.get("route") === route) return
-    // Context.set({ route })
+    Context.set(Router.process({ path }))
 }
 
 export function getTheme() {

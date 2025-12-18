@@ -1,5 +1,5 @@
 import { BROWSER } from "/core/Utils/environments.js"
-import { Context, setHead, setHistory } from "/core/Context.js"
+import { Context, setHead } from "/core/Context.js"
 
 // Cache imported components
 const components = {}
@@ -28,7 +28,6 @@ export async function render() {
     const { dictionary } = Statics
     const word = route?.replace("-", "").toLowerCase()
     setHead({ title: dictionary[word] })
-    setHistory(route)
 }
 
 export default render

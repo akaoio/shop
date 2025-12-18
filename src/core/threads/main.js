@@ -1,5 +1,5 @@
 import UI from "/core/UI.js"
-import { BROWSER, NODE } from "/core/Utils/environments.js"
+import { BROWSER } from "/core/Utils/environments.js"
 import { events } from "/core/Events.js"
 import { Progress } from "/core/Progress.js"
 import { Statics } from "/core/Stores.js"
@@ -7,7 +7,8 @@ import { load } from "/core/Utils/files.js"
 import { merge } from "/core/Utils/data.js"
 import { Construct } from "/core/Construct.js"
 import Thread from "/core/Thread.js"
-import { Context, setLocale } from "/core/Context.js"
+import { Context, setHistory, setLocale } from "/core/Context.js"
+import Router from "/core/Router.js"
 
 const thread = new Thread()
 
@@ -35,8 +36,14 @@ thread.init = async function () {
     Progress.set({ DB: await Construct.DB() })
     Progress.set({ User: await Construct.User() })
     const locale = Context.get("locale")?.code || globalThis?.localStorage?.getItem?.("locale") || site.locale
-    Context.on("path", UI.render)
+    Context.on("path", ({ value: path }) => {
+        UI.render()
+        setHistory(path)
+    })
     Context.on("locale", ({ value: locale }) => setLocale(locale.code))
+    // Listen to the popstate event, which is triggered when the user navigates back to the previous page
+    // Updates Context with the new route info
+    if (BROWSER) globalThis.addEventListener("popstate", () => Context.set(Router.process()))
     if (!locale) throw new Error("No locale found during preload")
     merge(
         Statics,
