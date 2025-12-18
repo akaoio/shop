@@ -7,7 +7,7 @@ import { load } from "/core/Utils/files.js"
 import { merge } from "/core/Utils/data.js"
 import { Construct } from "/core/Construct.js"
 import Thread from "/core/Thread.js"
-import { Context, setHistory, setLocale } from "/core/Context.js"
+import { Context, setHead, setHistory, setLocale } from "/core/Context.js"
 import Router from "/core/Router.js"
 
 const thread = new Thread()
@@ -35,11 +35,13 @@ thread.init = async function () {
     Progress.set({ Site: true })
     Progress.set({ DB: await Construct.DB() })
     Progress.set({ User: await Construct.User() })
-    const locale = Context.get("locale")?.code || globalThis?.localStorage?.getItem?.("locale") || site.locale
     Context.on("path", ({ value: path }) => {
         UI.render()
         setHistory(path)
+        const word = Context.get("route")?.replace?.("-", "")?.toLowerCase?.()
+        if (word) setHead({ title: Statics?.dictionary?.[word] })
     })
+    const locale = Context.get("locale")?.code || globalThis?.localStorage?.getItem?.("locale") || site.locale
     Context.on("locale", ({ value: locale }) => setLocale(locale.code))
     // Listen to the popstate event, which is triggered when the user navigates back to the previous page
     // Updates Context with the new route info
@@ -51,8 +53,7 @@ thread.init = async function () {
             routes: ["statics", "routes.json"],
             locales: ["statics", "locales.json"],
             fiats: ["statics", "fiats.json"],
-            themes: ["statics", "themes.json"],
-            dictionary: ["statics", "locales", `${locale}.json`]
+            themes: ["statics", "themes.json"]
         })
     )
     if (BROWSER) {

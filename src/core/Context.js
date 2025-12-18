@@ -1,6 +1,6 @@
 import { BROWSER } from "./Utils/environments.js"
 import { States } from "./States.js"
-import { Statics } from "./Stores.js"
+import { Indexes, Statics } from "./Stores.js"
 import { load } from "./Utils/files.js"
 
 export const Context = new States({
@@ -82,20 +82,23 @@ export function setTheme(theme) {
     Context.set({ theme })
 }
 
-export function setLocale(code) {
+export async function setLocale(code) {
     if (code && globalThis?.localStorage?.getItem("locale") !== code) globalThis.localStorage.setItem("locale", code)
     const locale = Statics.locales?.find?.((e) => e.code == code)
+    Statics.dictionaries = Statics.dictionaries || await Indexes.Statics.get("dictionaries").once() || {}
     if (!locale) return
     // Update document lang attribute
     if (globalThis.document && globalThis.document.documentElement.lang !== locale.code) globalThis.document.documentElement.lang = locale.code
     // Load dictionary based on new locale code
-    load(["statics", "locales", `${code}.json`]).then((data) => {
-        if (!data) return
-        // Update dictionary
-        globalThis.dictionary = Statics.dictionary = data
-        // Only run after dictionary is loaded
-        Context.set({ locale, dictionary: data })
-    })
+    const data = Statics.dictionaries?.[code] || await load(["statics", "locales", `${code}.json`])
+    if (!data) return
+    // Cache loaded dictionary
+    Statics.dictionaries[code] = data
+    Indexes.Statics.get("dictionaries").put(Statics.dictionaries)
+    // Update dictionary
+    globalThis.dictionary = Statics.dictionary = Statics.dictionaries[code]
+    // Only run after dictionary is loaded
+    Context.set({ locale, dictionary: Statics.dictionaries[code] })
 }
 
 export function getFiat() {
