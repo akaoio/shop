@@ -47,8 +47,7 @@ thread.init = async function () {
     Context.on("path", ({ value: path }) => {
         const state = Context.get({ path: null, route: null, locale: null })
         path = path || state.path
-
-        UI.render({ path, route, locale })
+        UI.render({ path, route: state.route, locale: state.locale })
         Router.setHistory(path)
         const word = Context.get("route")?.replace?.("-", "")?.toLowerCase?.()
         if (word) Router.setHead({ title: Statics?.dictionary?.[word] })

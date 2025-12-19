@@ -17,7 +17,7 @@ export class WebAuthn {
         this.configs = { configs }
         // Set relying party (RP) information - identifies the website to the authenticator
         this.configs.rp = this.configs?.rp || {}
-        this.configs.rp.id = this.configs.rp?.id || Statics.site.domain
+        this.configs.rp.id = this.configs.rp?.id || Statics.domain
         this.configs.rp.name = this.configs.rp?.name || Statics.site.name
     }
 

@@ -147,6 +147,16 @@ const { processed: staticCount } = await processYamlDirectory(
 )
 log.ok(`Built ${staticCount} static files`)
 
+// Build domains mapping
+log.info("Building domains mapping...")
+const domainsData = await load([...paths.src.statics, "domains.yaml"])
+let domainCount = 0
+for (const [domain, value] of Object.entries(domainsData)) {
+    await write([...paths.build.statics, "domains", `${domain}.json`], { site: value })
+    domainCount++
+}
+log.ok(`Built ${domainCount} domain mappings`)
+
 // Build items
 log.info("Building items (YAML → JSON)...")
 await processYamlDirectory(paths.src.items, [...paths.build.statics, "items"], { recursive: true })

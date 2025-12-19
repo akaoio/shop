@@ -7,20 +7,15 @@ import Router from "./Router.js"
 export const Construct = {
     Site: async function () {
         const hostname = BROWSER && globalThis.location?.hostname
-        Statics.domain = BROWSER && /^(localhost|\d+\.\d+\.\d+\.\d+)$/.test(hostname) ? "localhost" : hostname.split(".").slice(-2).join(".")
-        const { version } = await load(["statics", "version.json"].filter(Boolean))
+        Statics.domain = /^(localhost|\d+\.\d+\.\d+\.\d+)$/.test(hostname) ? "localhost" : hostname.split(".").slice(-2).join(".")
+        const { version } = await load(["statics", "version.json"])
         Statics.site = await Indexes.Statics.get("site").once()
         if (!Statics.site || version !== Statics?.site?.version) {
-            Statics.site = await load(["statics", "sites", Statics.domain, "configs.json"].filter(Boolean))
+            const domain = await load(["statics", "domains", `${Statics.domain}.json`])
+            Statics.site = await load(["statics", "sites", domain.site, "configs.json"])
             if (!Statics.site) return
             Statics.site.version = version
             Indexes.Statics.get("site").put(Statics.site)
-        }
-        // Redirect to the main domain if current domain is different
-        if (BROWSER && Statics.site.domain && Statics.domain !== Statics.site.domain && globalThis?.location) {
-            const url = new URL(globalThis.location.href)
-            url.host = Statics.site.domain
-            globalThis.location.href = url.href
         }
         console.log("Constructed: Site")
         return true

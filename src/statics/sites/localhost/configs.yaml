@@ -1,5 +1,4 @@
-name: mimiza
-domain: localhost
+name: localhost
 brand:
   text: /images/akao-text.svg
   symbol: /images/akao-symbol.svg
