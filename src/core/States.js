@@ -100,7 +100,7 @@ export class States {
         if (typeof data === "string") return this.states[data]
         if (Array.isArray(data)) return data.map((k) => this.states[k])
         // Map object values to their state counterparts
-        return Object.entries(data).reduce((acc, [k, v]) => ({ ...acc, [k]: this.states[v] }), {})
+        return Object.entries(data).reduce((acc, [k, v]) => ({ ...acc, [k]: v ? this.states[v] : this.states[k] }), {})
     }
 
     /**

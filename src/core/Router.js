@@ -1,4 +1,7 @@
 import { Statics } from "./Stores.js"
+import { Context } from "./Context.js"
+import { Indexes } from "./Stores.js"
+import { load } from "./Utils/files.js"
 
 export class Router {
     // This function takes a URL path as input and returns an object. It works step by step as following:
@@ -42,7 +45,7 @@ export class Router {
             }
         }
         // Create new path including locale
-        result.path = `/${[result.locale.code, ...segments].join("/")}`
+        result.path = `/${[result.locale.code, ...segments].join("/")}/`
         return result
     }
 
@@ -87,6 +90,83 @@ export class Router {
         // All pattern parts consumed; ensure all segments matched
         if (si !== segments.length) return null
         return params
+    }
+
+    /**
+     * Update page metadata (title, description, favicon).
+     * Creates or updates HTML head elements for SEO and branding.
+     * @param {Object} options - Configuration object
+     * @param {string} options.title - Page title (site name appended automatically)
+     * @param {string} options.description - Meta description for SEO
+     */
+    static setHead({ title = "", description = "" } = {}) {
+        if (typeof document === "undefined") return
+        // Update page title with site name
+        document.title = title + (title ? " | " : "") + Statics?.site?.name
+
+        // Update or create description meta tag
+        const _description = document.querySelector('meta[name="description"]')
+        if (_description) _description.setAttribute("content", description)
+        else {
+            const _description = document.createElement("meta")
+            _description.name = "description"
+            _description.content = description
+            document.head.appendChild(_description)
+        }
+
+        // Update or create favicon link
+        if (Statics?.site?.favicon) {
+            // Check if the favicon link tag already exists
+            const _favicon = document.querySelector('link[rel="icon"]')
+            // Update existing favicon href if different
+            if (_favicon?.href && _favicon.href !== Statics?.site?.favicon) _favicon.href = Statics?.site?.favicon
+            // Create new favicon link tag if not present
+            else {
+                const _favicon = document.createElement("link")
+                _favicon.rel = "icon"
+                // Determine favicon type based on file extension
+                _favicon.type = Statics?.site?.favicon.endsWith(".svg") ? "image/svg+xml" : "image/x-icon"
+                _favicon.href = Statics?.site?.favicon
+                document.head.appendChild(_favicon)
+            }
+        }
+    }
+
+    static setHistory(path = "") {
+        if (!globalThis.history || !globalThis.location) return
+        try {
+            const url = new URL(globalThis?.location?.href)
+            if (path) url.pathname = path
+            // Check if the URL has changed from the old URL, then update browser history without reloading
+            if (url.pathname !== globalThis.history.state?.path) globalThis.history.pushState({ path: url.pathname }, "", url)
+        } catch (error) {
+            console.error("Error setting history:", error)
+        }
+    }
+
+    static async setLocale(code) {
+        if (code && globalThis?.localStorage?.getItem("locale") !== code) globalThis.localStorage.setItem("locale", code)
+        const locale = Statics.locales?.find?.((e) => e.code == code)
+        Statics.dictionaries = Statics.dictionaries || await Indexes.Statics.get("dictionaries").once() || {}
+        if (!locale) return
+        // Update document lang attribute
+        if (globalThis.document && globalThis.document.documentElement.lang !== locale.code) globalThis.document.documentElement.lang = locale.code
+        // Load dictionary based on new locale code
+        const data = Statics.dictionaries?.[code] || await load(["statics", "locales", `${code}.json`])
+        if (!data) return
+        // Cache loaded dictionary
+        Statics.dictionaries[code] = data
+        Indexes.Statics.get("dictionaries").put(Statics.dictionaries)
+        // Update dictionary
+        globalThis.dictionary = Statics.dictionary = Statics.dictionaries[code]
+        // Only run after dictionary is loaded
+        const payload = { dictionary: Statics.dictionaries[code] }
+        if (Context.get("locale")?.code !== code) payload.locale = locale
+        Context.set(payload)
+    }
+
+    static navigate(path = "") {
+        Context.set(Router.process({ path }))
     }
 }
 

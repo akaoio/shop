@@ -1,68 +1,12 @@
 import { BROWSER } from "./Utils/environments.js"
 import { States } from "./States.js"
-import { Indexes, Statics } from "./Stores.js"
-import { load } from "./Utils/files.js"
+import { Statics } from "./Stores.js"
 
 export const Context = new States({
     theme: getTheme(),
     fiat: getFiat(),
     referrer: null
 })
-
-/**
- * Update page metadata (title, description, favicon).
- * Creates or updates HTML head elements for SEO and branding.
- * @param {Object} options - Configuration object
- * @param {string} options.title - Page title (site name appended automatically)
- * @param {string} options.description - Meta description for SEO
- */
-export function setHead({ title = "", description = "" } = {}) {
-    if (typeof document === "undefined") return
-    // Update page title with site name
-    document.title = title + (title ? " | " : "") + Statics?.site?.name
-
-    // Update or create description meta tag
-    const _description = document.querySelector('meta[name="description"]')
-    if (_description) _description.setAttribute("content", description)
-    else {
-        const _description = document.createElement("meta")
-        _description.name = "description"
-        _description.content = description
-        document.head.appendChild(_description)
-    }
-
-    // Update or create favicon link
-    if (Statics?.site?.favicon) {
-        // Check if the favicon link tag already exists
-        const _favicon = document.querySelector('link[rel="icon"]')
-        // Update existing favicon href if different
-        if (_favicon?.href && _favicon.href !== Statics?.site?.favicon) _favicon.href = Statics?.site?.favicon
-        // Create new favicon link tag if not present
-        else {
-            const _favicon = document.createElement("link")
-            _favicon.rel = "icon"
-            // Determine favicon type based on file extension
-            _favicon.type = Statics?.site?.favicon.endsWith(".svg") ? "image/svg+xml" : "image/x-icon"
-            _favicon.href = Statics?.site?.favicon
-            document.head.appendChild(_favicon)
-        }
-    }
-}
-
-export function setHistory(route) {
-    if (!globalThis.history || !globalThis.location) return
-    try {
-        const url = globalThis?.location?.href
-        // Check if the URL has changed from the old URL, then update browser history without reloading
-        if (url !== globalThis.history.state?.path) globalThis.history.pushState({ path: url }, "", url)
-    } catch (error) {
-        console.error("Error setting history:", error)
-    }
-}
-
-export function navigate(path = "") {
-    Context.set(Router.process({ path }))
-}
 
 export function getTheme() {
     if (!BROWSER) return
@@ -80,25 +24,6 @@ export function setTheme(theme) {
     if (globalThis.document) document.documentElement.dataset.theme = theme
     if (Context.get("theme") === theme) return
     Context.set({ theme })
-}
-
-export async function setLocale(code) {
-    if (code && globalThis?.localStorage?.getItem("locale") !== code) globalThis.localStorage.setItem("locale", code)
-    const locale = Statics.locales?.find?.((e) => e.code == code)
-    Statics.dictionaries = Statics.dictionaries || await Indexes.Statics.get("dictionaries").once() || {}
-    if (!locale) return
-    // Update document lang attribute
-    if (globalThis.document && globalThis.document.documentElement.lang !== locale.code) globalThis.document.documentElement.lang = locale.code
-    // Load dictionary based on new locale code
-    const data = Statics.dictionaries?.[code] || await load(["statics", "locales", `${code}.json`])
-    if (!data) return
-    // Cache loaded dictionary
-    Statics.dictionaries[code] = data
-    Indexes.Statics.get("dictionaries").put(Statics.dictionaries)
-    // Update dictionary
-    globalThis.dictionary = Statics.dictionary = Statics.dictionaries[code]
-    // Only run after dictionary is loaded
-    Context.set({ locale, dictionary: Statics.dictionaries[code] })
 }
 
 export function getFiat() {

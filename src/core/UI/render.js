@@ -4,7 +4,7 @@ import { Context } from "/core/Context.js"
 // Cache imported components
 const components = {}
 
-export async function render() {
+export async function render({ route = "" } = {}) {
     if (!BROWSER) return
     let root = document.getElementById("root")
     if (!root) {
@@ -16,7 +16,7 @@ export async function render() {
     // Clear current page
     root.innerHTML = ""
     // Render new page
-    const route = Context.get("route") || "home"
+    route = route || Context.get("route") || "home"
     const component = components[route] || (await import(`/UI/routes/${route}/index.js`))
     if (!component) return
     components[route] = component
