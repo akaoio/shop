@@ -40,9 +40,7 @@ export const Construct = {
     Context: async function () {
         const router = Router.process()
         Context.set({
-            path: router.path,
-            route: router.route,
-            locale: router.locale,
+            ...router,
             theme: getTheme(),
             fiat: getFiat(),
             referrer: globalThis.localStorage ? globalThis.localStorage.getItem("referrer") : await getReferrer()

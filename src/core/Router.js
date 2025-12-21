@@ -132,13 +132,13 @@ export class Router {
         }
     }
 
-    static setHistory(path = "") {
+    static setHistory({ path = "", locale = {}, route = "", params = {} } = {}) {
         if (!globalThis.history || !globalThis.location) return
         try {
             const url = new URL(globalThis?.location?.href)
             if (path) url.pathname = path
             // Check if the URL has changed from the old URL, then update browser history without reloading
-            if (url.pathname !== globalThis.history.state?.path) globalThis.history.pushState({ path: url.pathname }, "", url)
+            if (url.pathname !== globalThis.history.state?.path) globalThis.history.pushState({ path: url.pathname, locale, route, params }, "", url)
         } catch (error) {
             console.error("Error setting history:", error)
         }
