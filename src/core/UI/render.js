@@ -25,7 +25,9 @@ export async function render(state = {}) {
     const component = components[state.route] || (await import(`/UI/routes/${state.route}/index.js`))
     if (!component) return
     components[state.route] = component
+    // Name of the component class
     const name = state.route?.replace("-", "").toUpperCase()
+    // Every component must have a class with the same name as the route in uppercase
     if (!component[name] && !component?.default) return
     const Component = component[name] || component?.default
     const element = new Component()
