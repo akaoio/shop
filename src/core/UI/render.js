@@ -17,22 +17,21 @@ export async function render(state = {}) {
     // Clear current page
     root.innerHTML = ""
     // Render new page
-    let path = state?.path || Context.get("path")
-    let locale = state?.locale || Context.get("locale") || Statics?.locales?.find?.((e) => e.code === Statics?.site?.locale) || {}
-    let route = state?.route || Context.get("route") || "home"
-    let params = state?.params || Context.get("params") || {}
-
-    const component = components[route] || (await import(`/UI/routes/${route}/index.js`))
+    state.path = state?.path || Context.get("path") || globalThis?.location?.pathname
+    if (!state?.route || !state?.locale || !state.params) state = { ...state, ...Router.process({ path: state.path }) }
+    state.route = state?.route || Context.get("route") || "home"
+    state.locale = state?.locale || Context.get("locale") || Statics?.locales?.find?.((e) => e.code === Statics?.site?.locale) || Statics?.locales?.[0]
+    state.params = state?.params || Context.get("params") || {}
+    const component = components[state.route] || (await import(`/UI/routes/${state.route}/index.js`))
     if (!component) return
-    components[route] = component
-    const name = route?.replace("-", "").toUpperCase()
+    components[state.route] = component
+    const name = state.route?.replace("-", "").toUpperCase()
     if (!component[name] && !component?.default) return
     const Component = component[name] || component?.default
     const element = new Component()
     root.appendChild(element)
-    Router.setHistory({ path, locale, route, params })
-    const word = route?.replace?.("-", "")?.toLowerCase?.()
-    if (word) Router.setHead({ title: Statics?.dictionary?.[word] })
+    Router.setHistory(state)
+    Router.setHead({ title: Statics?.dictionary?.[state.route?.replace?.("-", "")?.toLowerCase?.()] || "" })
 }
 
 export default render
