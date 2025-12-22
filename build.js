@@ -1,38 +1,17 @@
-import { write, load, copy, dir, hash, remove } from "./src/core/Utils/files.js"
+import { write, load, copy, dir, remove } from "./src/core/Utils/files.js"
 import { color, icons } from "./src/core/Colors.js"
-
-// ============ Configuration ============
-const YAML_EXTENSIONS = ['.yaml', '.yml']
-const isYamlFile = file => YAML_EXTENSIONS.some(ext => file.endsWith(ext))
-const toJsonFilename = file => file.replace(/\.(yaml|yml)$/, '.json')
-
-const paths = {
-    src: {
-        index: ["src", "index.html"],
-        statics: ["src", "statics"],
-        i18n: ["src", "statics", "i18n"],
-        items: ["src", "statics", "items"],
-        sites: ["src", "statics", "sites"],
-        core: ["src", "core"],
-        UI: ["src", "UI"],
-        routes: ["src", "UI", "routes"],
-        importmap: ["importmap.json"]
-    },
-    build: {
-        root: ["build"],
-        statics: ["build", "statics"],
-        locales: ["build", "statics", "locales"],
-        core: ["build", "core"],
-        UI: ["build", "UI"]
-    }
-}
+import { paths } from "./src/core/Build/config.js"
+import { log } from "./src/core/Build/logger.js"
+import { generateRoutes } from "./src/core/Build/routes.js"
+import { processI18n } from "./src/core/Build/i18n.js"
+import { generateHashFiles } from "./src/core/Build/hash.js"
 
 // ============ Helper Functions ============
-const log = {
-    start: msg => console.log(`${icons.start} ${color.header(msg)}`),
-    info: msg => console.log(`${icons.sync} ${color.info(msg)}`),
-    ok: msg => console.log(`${icons.done} ${color.ok(msg)}`),
-    section: msg => console.log(`\n${color.header(msg)}`)
+async function copyAssets(assets) {
+    for (const { src, dest, label } of assets) {
+        await copy(src, dest)
+        log.ok(`Copied ${label}`)
+    }
 }
 
 async function processYamlDirectory(srcPath, destPath, { recursive = false, filter = null } = {}) {
@@ -46,68 +25,26 @@ async function processYamlDirectory(srcPath, destPath, { recursive = false, filt
         if (recursive) {
             const subFiles = await dir(fullSrcPath)
             for (const subFile of subFiles) {
-                if (isYamlFile(subFile)) {
-                    const data = await load([...fullSrcPath, subFile])
-                    await write([...destPath, file, toJsonFilename(subFile)], data)
+                const data = await load([...fullSrcPath, subFile])
+                if (data) {
+                    const jsonName = subFile.replace(/\.(yaml|yml)$/, '.json')
+                    await write([...destPath, file, jsonName], data)
                     processed++
                 } else {
                     await copy([...fullSrcPath, subFile], [...destPath, file, subFile])
                 }
             }
-        } else if (isYamlFile(file)) {
+        } else {
             const data = await load(fullSrcPath)
-            await write([...destPath, toJsonFilename(file)], data)
-            processed++
+            if (data) {
+                const jsonName = file.replace(/\.(yaml|yml)$/, '.json')
+                await write([...destPath, jsonName], data)
+                processed++
+            }
         }
     }
 
     return { total: filtered.length, processed }
-}
-
-async function copyAssets(assets) {
-    for (const { src, dest, label } of assets) {
-        await copy(src, dest)
-        log.ok(`Copied ${label}`)
-    }
-}
-
-
-async function generateRoutes(locales, items, tags, indexContent) {
-    const routes = [
-        { path: [...paths.build.root, "index.html"], label: "Root" }
-    ]
-
-    for (const locale of locales) {
-        routes.push(
-            { path: [...paths.build.root, locale, "index.html"], label: `/${locale}` },
-            { path: [...paths.build.root, locale, "item", "index.html"], label: `/${locale}/item` }
-        )
-
-        for (const item of items) {
-            routes.push({
-                path: [...paths.build.root, locale, "item", item, "index.html"],
-                label: `/${locale}/item/${item}`
-            })
-        }
-
-        routes.push({
-            path: [...paths.build.root, locale, "tag", "index.html"],
-            label: `/${locale}/tag`
-        })
-
-        for (const tag of tags) {
-            routes.push({
-                path: [...paths.build.root, locale, "tag", tag, "index.html"],
-                label: `/${locale}/tag/${tag}`
-            })
-        }
-    }
-
-    for (const route of routes) {
-        await write(route.path, indexContent)
-    }
-
-    return routes.length
 }
 
 // ============ Main Build Process ============
@@ -143,7 +80,7 @@ log.info("Building static files...")
 const { processed: staticCount } = await processYamlDirectory(
     paths.src.statics,
     paths.build.statics,
-    { filter: file => isYamlFile(file) || file.endsWith('.json') }
+    { filter: file => file.endsWith('.yaml') || file.endsWith('.yml') || file.endsWith('.json') }
 )
 log.ok(`Built ${staticCount} static files`)
 
@@ -187,28 +124,8 @@ log.ok(`Built routes list with ${routeDirs.length} routes`)
 
 // Process i18n
 log.info("Processing i18n files...")
-const i18nFiles = await dir(paths.src.i18n)
-const localeData = Object.fromEntries(locales.map(l => [l, {}]))
-
-for (const file of i18nFiles.filter(f => isYamlFile(f) || f.endsWith('.json'))) {
-    const keyName = file.replace(/\.(json|yaml|yml)$/, '')
-    const translations = await load([...paths.src.i18n, file])
-
-    for (const locale of locales) {
-        if (translations?.[locale]) {
-            localeData[locale][keyName] = translations[locale]
-        }
-    }
-}
-
-for (const locale of locales) {
-    const sorted = Object.keys(localeData[locale]).sort().reduce((obj, key) => {
-        obj[key] = localeData[locale][key]
-        return obj
-    }, {})
-    await write([...paths.build.locales, `${locale}.json`], sorted)
-}
-log.ok(`Created ${locales.length} locale files`)
+const localeCount = await processI18n(locales)
+log.ok(`Created ${localeCount} locale files`)
 
 // Generate routes
 log.info("Generating routes...")
@@ -216,11 +133,10 @@ const indexContent = await load(paths.src.index)
 const routeCount = await generateRoutes(locales, items, allTags, indexContent)
 log.ok(`Created ${routeCount} route files`)
 
-// Generate version hash
-log.info("Generating version hash...")
-const buildHash = await hash(paths.build.root, ["statics/version.json"])
-await write([...paths.build.root, "statics", "version.json"], { version: buildHash })
-log.ok(`Generated version hash: ${buildHash}`)
+// Generate hash files for all JSON files in build directory
+log.info("Generating hash files...")
+const hashCount = await generateHashFiles(paths.build.root)
+log.ok(`Created ${hashCount} hash files`)
 
 // Summary
 log.section("========================================")
@@ -228,5 +144,6 @@ console.log(`${icons.done} ${color.ok("Locales")}: ${locales.length}`)
 console.log(`${icons.done} ${color.ok("Items")}: ${items.length}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
+console.log(`${icons.done} ${color.ok("Hash Files")}: ${hashCount}`)
 log.section("========================================")
 log.start("Build completed successfully!")

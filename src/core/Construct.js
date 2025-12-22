@@ -8,15 +8,10 @@ export const Construct = {
     Site: async function () {
         const hostname = BROWSER && globalThis.location?.hostname
         Statics.domain = /^(localhost|\d+\.\d+\.\d+\.\d+)$/.test(hostname) ? "localhost" : hostname.split(".").slice(-2).join(".")
-        const { version } = await load(["statics", "version.json"])
         Statics.site = await Indexes.Statics.get("site").once()
-        if (!Statics.site || version !== Statics?.site?.version) {
-            const domain = await load(["statics", "domains", `${Statics.domain}.json`])
-            Statics.site = await load(["statics", "sites", domain.site, "configs.json"])
-            if (!Statics.site) return
-            Statics.site.version = version
-            Indexes.Statics.get("site").put(Statics.site)
-        }
+        const domain = await load(["statics", "domains", `${Statics.domain}.json`])
+        Statics.site = await load(["statics", "sites", domain.site, "configs.json"])
+        if (Statics.site) Indexes.Statics.get("site").put(Statics.site)
         console.log("Constructed: Site")
         return true
     },
