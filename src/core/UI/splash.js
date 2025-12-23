@@ -1,4 +1,4 @@
-import { BROWSER } from "/core/Utils/environments.js"
+import { BROWSER } from "/core/Utils/environment.js"
 import { SPLASH } from "/UI/components/splash/index.js"
 
 export function splash(state = false) {

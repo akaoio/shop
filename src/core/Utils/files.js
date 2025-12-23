@@ -1,5 +1,5 @@
 // Import environment detection flags to determine runtime context
-import { NODE, BROWSER, WIN } from "./environments.js"
+import { NODE, BROWSER, WIN } from "./environment.js"
 import { sha256 } from "./crypto.js"
 
 // Lazy-loaded modules that are only available in Node.js environment

@@ -3,7 +3,7 @@
  * Abstracts platform-specific event handling differences.
  */
 
-import { NODE, BROWSER } from "./Utils/environments.js"
+import { NODE, BROWSER } from "./Utils/environment.js"
 
 // Global event dispatcher that uses platform-appropriate API
 let EVENTS = null

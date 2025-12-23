@@ -1,4 +1,4 @@
-import { NODE, BROWSER } from "./Utils/environments.js"
+import { NODE, BROWSER } from "./Utils/environment.js"
 import { get, _get } from "./Indexed/get.js"
 import { put, _put } from "./Indexed/put.js"
 import { del, _del } from "./Indexed/del.js"

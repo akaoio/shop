@@ -1,4 +1,4 @@
-import { BROWSER } from "/core/Utils/environments.js"
+import { BROWSER } from "/core/Utils/environment.js"
 import { Context } from "/core/Context.js"
 import Router from "/core/Router.js"
 

@@ -1,4 +1,4 @@
-import { BROWSER } from "./Utils/environments.js"
+import { BROWSER } from "./Utils/environment.js"
 import { States } from "./States.js"
 import { Statics } from "./Stores.js"
 
