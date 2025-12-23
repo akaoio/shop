@@ -2,10 +2,8 @@ import { events } from "/core/Events.js"
 import { Context } from "/core/Context.js"
 import { Indexes, Statics, Chains, Dexs, Wallets } from "/core/Stores.js"
 import Thread from "/core/Thread.js"
-import { loop } from "/core/Utils/loop.js"
+import { loop, clone, loadContract } from "/core/Utils.js"
 import { Construct } from "/core/Construct.js"
-import { loadContract } from "/core/core/Utils/contracts.js"
-import { clone } from "/core/Utils/data.js"
 import { authenticate } from "/core/Gun.js"
 
 const thread = new Thread()

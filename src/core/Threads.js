@@ -4,9 +4,7 @@
  * Provides API for calling methods on threads and receiving responses via callbacks.
  */
 
-import { NODE } from "./Utils/environments.js"
-import { randomKey } from "./Utils/random.js"
-import { join } from "./Utils/files.js"
+import { NODE, randomKey, join } from "./Utils.js"
 
 export class Threads {
     // Map of registered threads by name

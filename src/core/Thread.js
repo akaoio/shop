@@ -6,8 +6,7 @@
 
 // This class is used by each thread (main thread, worker threads)
 // We want all threads to have the same behaviors and procedures.
-import { isPromise, clone } from "./Utils/data.js"
-import { NODE } from "./Utils/environments.js"
+import { NODE, isPromise, clone } from "./Utils.js"
 import { Construct } from "./Construct.js"
 
 export default class Thread {
