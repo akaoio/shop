@@ -156,37 +156,32 @@ export async function load(items) {
             }
         }
         // Node.js environment - use fs module for file operations
-        if (!NODE) return
-        try {
-            if (!fs.existsSync(filePath)) return console.error("Path doesn't exist", filePath)
-            // Check if filePath is a directory
-            const stats = fs.statSync(filePath)
-            if (stats.isDirectory()) {
-                // Load all files from the directory recursively
-                const files = {}
-                const entries = fs.readdirSync(filePath, { withFileTypes: true })
-                // Iterate through directory entries
-                for (const entry of entries) {
-                    const entryName = entry.name
-                    if (entry.isDirectory()) {
-                        // For directories, recursively load their contents
-                        const dirContent = await load([...items, entryName])
-                        if (Object.keys(dirContent).length > 0) files[entryName] = dirContent
-                    } else if (entry.isFile() && (entryName.endsWith(".json") || entryName.endsWith(".yaml") || entryName.endsWith(".yml"))) {
-                        // For JSON/YAML files, load them directly and strip extension from key
-                        const base = entryName.replace(/\.\w{2,4}$/, "")
-                        const content = await load([...items, entryName])
-                        if (content) files[base] = content
+        else if (NODE) {
+            try {
+                if (!fs.existsSync(filePath)) return console.error("Path doesn't exist", filePath)
+                // Check if filePath is a directory
+                const stats = fs.statSync(filePath)
+                if (stats.isDirectory()) {
+                    // Load all files from the directory recursively
+                    const files = {}
+                    const entries = fs.readdirSync(filePath, { withFileTypes: true })
+                    // Iterate through directory entries
+                    for (const entry of entries) {
+                        const content = await load([...items, entry.name])
+                        if (content) {
+                            const base = entry.name.replace(/\.\w{2,4}$/, "")
+                            files[base] = content
+                        }
                     }
+                    return files
                 }
-                return files
-            }
 
-            // Read file as text
-            text = fs.readFileSync(filePath, "utf8")
-        } catch (error) {
-            console.error("Error reading from", filePath)
-            return
+                // Read file as text
+                text = fs.readFileSync(filePath, "utf8")
+            } catch (error) {
+                console.error("Error reading from", filePath)
+                return
+            }
         }
         text = text.trim()
         let ext = filePath.match(/\.(json|yaml|yml)$/)?.[1]
