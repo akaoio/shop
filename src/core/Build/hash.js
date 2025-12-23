@@ -57,7 +57,7 @@ async function generateHashesRecursive(pathSegments) {
 
     // Add subdirectory hashes
     for (const subDir of subDirs) {
-        const subDirHashPath = [...pathSegments, subDir, '.hash']
+        const subDirHashPath = [...pathSegments, subDir, '_.hash']
         if (await exist(subDirHashPath)) {
             const hashContent = await load(subDirHashPath)
             if (hashContent) {
@@ -67,10 +67,10 @@ async function generateHashesRecursive(pathSegments) {
         }
     }
 
-    // Generate directory .hash if there are any hashes to combine
+    // Generate directory _.hash if there are any hashes to combine
     if (childHashes.length > 0) {
         const combinedHash = sha256(childHashes.sort().join(''))
-        await write([...pathSegments, '.hash'], combinedHash)
+        await write([...pathSegments, '_.hash'], combinedHash)
         hashCount++
         allHashes.add(combinedHash) // Collect hash for static database
     }
