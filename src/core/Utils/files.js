@@ -175,8 +175,6 @@ export async function load(items) {
                     }
                     return files
                 }
-
-                // Read file as text
                 text = fs.readFileSync(filePath, "utf8")
             } catch (error) {
                 console.error("Error reading from", filePath)
@@ -184,21 +182,23 @@ export async function load(items) {
             }
         }
         text = text.trim()
-        let ext = filePath.match(/\.(json|yaml|yml)$/)?.[1]
-        // Return raw text if not JSON or YAML
-        if (!["json", "yaml", "yml"].includes(ext) || !/^(\[.*\]|\{.*\})$/s.test(text)) return text
-        // Parse JSON or YAML if possible else return raw data
-        try {
-            let data
-            if (ext === "json") data = JSON.parse(text)
-            else if (YAML && ["yaml", "yml"].includes(ext)) data = YAML.parse(text)
-            // Return ABI property if present, otherwise return full data
-            // ABI stands for Application Binary Interface commonly used in smart contracts
-            return data?.abi || data
-        } catch {
-            // If parsing fails, return raw text
-            return text
+        let ext = filePath.match(/\.\w+$/)?.[0]?.slice(1).toLowerCase() || ""
+        // Parse JSON or YAML files
+        if (["json", "yaml", "yml"].includes(ext)) {
+            try {
+                let data
+                if (ext === "json") data = JSON.parse(text)
+                else if (YAML && ["yaml", "yml"].includes(ext)) data = YAML.parse(text)
+                // Return ABI property if present, otherwise return full data
+                return data?.abi || data
+            } catch {
+                // If parsing fails, return raw text
+                return text
+            }
         }
+
+        // Return raw text for other file types
+        return text
     }
     // Handle object input - load multiple paths as key-value pairs
     if (typeof items === "object" && items !== null && !Array.isArray(items)) {
