@@ -1,4 +1,4 @@
-import { write, load, copy, dir, remove } from "./src/core/Utils/files.js"
+import { write, load, copy, dir, remove, isDirectory } from "./src/core/Utils/files.js"
 import { color, icons } from "./src/core/Colors.js"
 import { paths } from "./src/core/Build/config.js"
 import { log } from "./src/core/Build/logger.js"
@@ -25,13 +25,22 @@ async function processYamlDirectory(srcPath, destPath, { recursive = false, filt
         if (recursive) {
             const subFiles = await dir(fullSrcPath)
             for (const subFile of subFiles) {
-                const data = await load([...fullSrcPath, subFile])
+                const fullSubPath = [...fullSrcPath, subFile]
+
+                // Check if it's a directory - if so, copy it entirely
+                if (await isDirectory(fullSubPath)) {
+                    await copy(fullSubPath, [...destPath, file, subFile])
+                    continue
+                }
+
+                // Otherwise, try to load and convert YAML/JSON
+                const data = await load(fullSubPath)
                 if (data) {
                     const jsonName = subFile.replace(/\.(yaml|yml)$/, '.json')
                     await write([...destPath, file, jsonName], data)
                     processed++
                 } else {
-                    await copy([...fullSrcPath, subFile], [...destPath, file, subFile])
+                    await copy(fullSubPath, [...destPath, file, subFile])
                 }
             }
         } else {
@@ -135,8 +144,8 @@ log.ok(`Created ${routeCount} route files`)
 
 // Generate hash files for all JSON files in build directory
 log.info("Generating hash files...")
-const hashCount = await generateHashFiles(paths.build.root)
-log.ok(`Created ${hashCount} hash files`)
+const hashResult = await generateHashFiles(paths.build.root)
+log.ok(`Created ${hashResult.hashFiles} hash files and ${hashResult.hashDatabase} hash database entries`)
 
 // Summary
 log.section("========================================")
@@ -144,6 +153,7 @@ console.log(`${icons.done} ${color.ok("Locales")}: ${locales.length}`)
 console.log(`${icons.done} ${color.ok("Items")}: ${items.length}`)
 console.log(`${icons.done} ${color.ok("Unique Tags")}: ${allTags.size}`)
 console.log(`${icons.done} ${color.ok("Routes Created")}: ${routeCount}`)
-console.log(`${icons.done} ${color.ok("Hash Files")}: ${hashCount}`)
+console.log(`${icons.done} ${color.ok("Hash Files")}: ${hashResult.hashFiles}`)
+console.log(`${icons.done} ${color.ok("Hash Database")}: ${hashResult.hashDatabase}`)
 log.section("========================================")
 log.start("Build completed successfully!")

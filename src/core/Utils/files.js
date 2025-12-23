@@ -104,26 +104,38 @@ export async function remove(items) {
  * @returns {Promise<{success: boolean, path: string}|undefined>} Result object or undefined
  */
 export async function write(items = [], content) {
-    if (!content) return
+    if (content === undefined || content === null) return
     const file = items[items.length - 1]
-    // If the last item of items is a file, remove it from items to make dir
-    if (file.includes(".")) items.pop()
+    const hasExtension = file.includes(".")
+
+    // Smart detection: treat as file if:
+    // 1. Has extension (explicit file like .json, .txt, etc.)
+    // 2. Content is string/number/boolean (not object/array) - indicates text file
+    // This prevents accidentally writing to directories while supporting extension-less files
+    const isFile = hasExtension || (typeof content !== 'object' || content instanceof String)
+
+    if (!isFile) {
+        console.error("Attempted to write object/array to path without extension:", join(items))
+        return
+    }
+
+    // If the last item is a file, remove it from items to make dir
+    items.pop()
     const dir = join(items)
     const filePath = join([...items, file])
     // Ensure directory exists before writing
     if (!(await ensure(dir))) return
-    if (file.includes(".")) {
-        try {
-            let data
-            // Serialize content based on file extension
-            if (file.endsWith(".json")) data = JSON.stringify(content, null, 4)
-            else if (file.endsWith(".yaml") || file.endsWith(".yml")) data = YAML.stringify(content)
-            else data = content
-            fs.writeFileSync(filePath, data, "utf8")
-            return { success: true, path: filePath }
-        } catch (error) {
-            console.error("Error writing to", filePath)
-        }
+
+    try {
+        let data
+        // Serialize content based on file extension
+        if (file.endsWith(".json")) data = JSON.stringify(content, null, 4)
+        else if (file.endsWith(".yaml") || file.endsWith(".yml")) data = YAML.stringify(content)
+        else data = content
+        fs.writeFileSync(filePath, data, "utf8")
+        return { success: true, path: filePath }
+    } catch (error) {
+        console.error("Error writing to", filePath)
     }
 }
 
@@ -181,7 +193,7 @@ export async function load(items) {
                 return
             }
         }
-        text = text.trim()
+        if (typeof text === "string") text = text.trim()
         let ext = filePath.match(/\.\w+$/)?.[0]?.slice(1).toLowerCase() || ""
         // Parse JSON or YAML files
         if (["json", "yaml", "yml"].includes(ext)) {
