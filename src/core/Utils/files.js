@@ -108,25 +108,17 @@ export async function write(items = [], content) {
     const file = items[items.length - 1]
     // If the last item of items is a file, remove it from items to make dir
     if (file.includes(".")) items.pop()
-
     const dir = join(items)
     const filePath = join([...items, file])
-
     // Ensure directory exists before writing
     if (!(await ensure(dir))) return
-
     if (file.includes(".")) {
         try {
             let data
             // Serialize content based on file extension
-            if (file.endsWith(".json")) {
-                data = JSON.stringify(content, null, 4)
-            } else if (file.endsWith(".yaml") || file.endsWith(".yml")) {
-                data = YAML.stringify(content)
-            } else {
-                // Plain text or other format - write as-is
-                data = content
-            }
+            if (file.endsWith(".json")) data = JSON.stringify(content, null, 4)
+            else if (file.endsWith(".yaml") || file.endsWith(".yml")) data = YAML.stringify(content)
+            else data = content
             fs.writeFileSync(filePath, data, "utf8")
             return { success: true, path: filePath }
         } catch (error) {
@@ -148,7 +140,7 @@ export async function load(items) {
     // Handle array of path segments (file or directory path)
     if (Array.isArray(items)) {
         const filePath = join(items)
-
+        let text
         // Browser environment - use fetch API to load files
         if (BROWSER) {
             try {
@@ -157,106 +149,71 @@ export async function load(items) {
                     console.error("Path doesn't exist", filePath)
                     return
                 }
-                const text = await response.text()
-                // Parse JSON or YAML if possible else return raw data
-                try {
-                    let data
-                    if (filePath.endsWith(".json")) {
-                        data = JSON.parse(text)
-                    } else if (filePath.endsWith(".yaml") || filePath.endsWith(".yml")) {
-                        // In browser, we'd need to load YAML parser dynamically
-                        // For now, return raw text or implement YAML browser support
-                        data = text
-                    } else {
-                        data = text
-                    }
-                    // Return ABI property if present, otherwise return full data
-                    return data?.abi || data
-                } catch {
-                    // If parsing fails, return raw text
-                    return text
-                }
+                text = await response.text()
             } catch (error) {
                 console.error("Error loading from", filePath)
                 return
             }
         }
-
         // Node.js environment - use fs module for file operations
         if (!NODE) return
-
         try {
-            if (!fs.existsSync(filePath)) {
-                return console.error("Path doesn't exist", filePath)
-            }
-
+            if (!fs.existsSync(filePath)) return console.error("Path doesn't exist", filePath)
             // Check if filePath is a directory
             const stats = fs.statSync(filePath)
             if (stats.isDirectory()) {
                 // Load all files from the directory recursively
                 const files = {}
                 const entries = fs.readdirSync(filePath, { withFileTypes: true })
-
                 // Iterate through directory entries
                 for (const entry of entries) {
                     const entryName = entry.name
                     if (entry.isDirectory()) {
                         // For directories, recursively load their contents
                         const dirContent = await load([...items, entryName])
-                        if (Object.keys(dirContent).length > 0) {
-                            files[entryName] = dirContent
-                        }
+                        if (Object.keys(dirContent).length > 0) files[entryName] = dirContent
                     } else if (entry.isFile() && (entryName.endsWith(".json") || entryName.endsWith(".yaml") || entryName.endsWith(".yml"))) {
                         // For JSON/YAML files, load them directly and strip extension from key
-                        let baseName
-                        if (entryName.endsWith(".json")) {
-                            baseName = entryName.substring(0, entryName.length - 5) // Remove .json
-                        } else if (entryName.endsWith(".yaml")) {
-                            baseName = entryName.substring(0, entryName.length - 5) // Remove .yaml
-                        } else if (entryName.endsWith(".yml")) {
-                            baseName = entryName.substring(0, entryName.length - 4) // Remove .yml
-                        }
-                        const fileContent = await load([...items, entryName])
-                        if (fileContent) {
-                            files[baseName] = fileContent
-                        }
+                        const base = entryName.replace(/\.\w{2,4}$/, "")
+                        const content = await load([...items, entryName])
+                        if (content) files[base] = content
                     }
                 }
                 return files
             }
 
             // Read file as text
-            const raw = fs.readFileSync(filePath, "utf8")
-            // Parse JSON or YAML if possible else return raw data
-            let data
-            if (filePath.endsWith(".json")) {
-                data = JSON.parse(raw)
-            } else if (filePath.endsWith(".yaml") || filePath.endsWith(".yml")) {
-                data = YAML.parse(raw)
-            } else {
-                data = raw
-            }
-            // Return ABI if data has key "abi", else return the whole data object
-            if (data) return data?.abi || data
+            text = fs.readFileSync(filePath, "utf8")
         } catch (error) {
             console.error("Error reading from", filePath)
             return
         }
+        text = text.trim()
+        let ext = filePath.match(/\.(json|yaml|yml)$/)?.[1]
+        // Return raw text if not JSON or YAML
+        if (!["json", "yaml", "yml"].includes(ext) || !/^(\[.*\]|\{.*\})$/s.test(text)) return text
+        // Parse JSON or YAML if possible else return raw data
+        try {
+            let data
+            if (ext === "json") data = JSON.parse(text)
+            else if (YAML && ["yaml", "yml"].includes(ext)) data = YAML.parse(text)
+            // Return ABI property if present, otherwise return full data
+            // ABI stands for Application Binary Interface commonly used in smart contracts
+            return data?.abi || data
+        } catch {
+            // If parsing fails, return raw text
+            return text
+        }
     }
     // Handle object input - load multiple paths as key-value pairs
-    if (typeof items === "object" && items !== null) {
-        if (!Array.isArray(items)) {
-            // Process all entries in parallel for better performance
-            const promises = Object.entries(items).map(async ([key, value]) => {
-                // Recursively handle nested objects
-                if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-                    content[key] = await load(value)
-                } else {
-                    content[key] = await load(value)
-                }
-            })
-            await Promise.all(promises)
-        }
+    if (typeof items === "object" && items !== null && !Array.isArray(items)) {
+        // Process all entries in parallel for better performance
+        const promises = Object.entries(items).map(async ([key, value]) => {
+            // Recursively handle nested objects
+            if (typeof value === "object" && value !== null && !Array.isArray(value)) content[key] = await load(value)
+            else content[key] = await load(value)
+        })
+        await Promise.all(promises)
     }
     return content
 }
