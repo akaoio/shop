@@ -1,6 +1,5 @@
-import { Statics } from "./Stores.js"
+import { Indexes, Statics } from "./Stores.js"
 import { Context } from "./Context.js"
-import { Indexes } from "./Stores.js"
 import { load } from "./Utils/files.js"
 
 export class Router {

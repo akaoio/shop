@@ -30,7 +30,7 @@
     "format": "prettier --write \"src/**/*.js\""
   },
   "devDependencies": {
-    "bootstrap-icons": "^1.11.3",
+    "bootstrap-icons": "^1.13.1",
     "chokidar": "^3.6.0",
     "live-server": "^1.2.2",
     "prettier": "^3.7.2",

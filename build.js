@@ -118,7 +118,8 @@ log.ok(`Built ${siteDirs.length} sites`)
 await copyAssets([
     { src: paths.src.core, dest: paths.build.core, label: "core folder" },
     { src: paths.src.UI, dest: paths.build.UI, label: "UI folder" },
-    { src: paths.src.importmap, dest: [...paths.build.root, "importmap.json"], label: "importmap.json" }
+    { src: paths.src.importmap, dest: [...paths.build.root, "importmap.json"], label: "importmap.json" },
+    { src: ["node_modules", "bootstrap-icons", "icons"], dest: [...paths.build.root, "images", "icons"], label: "bootstrap icons" }
 ])
 
 // Build routes list using regex pattern and post-process

@@ -1,10 +1,10 @@
 import { NODE, BROWSER } from "./Utils/environment.js"
-import { get, _get } from "./Indexed/get.js"
-import { put, _put } from "./Indexed/put.js"
-import { del, _del } from "./Indexed/del.js"
-import { loadFromDisk, saveToDisk, initDisk } from "./Indexed/disk.js"
+import { get, _get } from "./IDB/get.js"
+import { put, _put } from "./IDB/put.js"
+import { del, _del } from "./IDB/del.js"
+import { loadFromDisk, saveToDisk, initDisk } from "./IDB/disk.js"
 
-class Indexed {
+class IDB {
     constructor({ name = "system" } = {}) {
         this.name = name
         this.data = {}
@@ -51,4 +51,4 @@ class Indexed {
     saveToDisk = saveToDisk
 }
 
-export default Indexed
+export default IDB

@@ -8,17 +8,15 @@ export function reset() {
     console.log("sessionStorage has been cleared.")
 
     // Delete all databases in indexedDB
-    const request = indexedDB.open("")
-    request.onsuccess = (event) => {
-        const db = event.target.result
-        indexedDB.databases().onsuccess = (e) => {
-            const databases = e.target.result
-            // Loop through each database and delete it
+    if ("indexedDB" in window) {
+        indexedDB.databases().then((databases) => {
             databases.forEach((database) => {
                 indexedDB.deleteDatabase(database.name)
                 console.log(`Database ${database.name} has been deleted.`)
             })
-        }
+        }).catch((error) => {
+            console.error("Error accessing IndexedDB:", error)
+        })
     }
 
     // Clear all caches

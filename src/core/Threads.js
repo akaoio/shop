@@ -26,9 +26,9 @@ export class Threads {
         if (this.threads[name]) return this.threads[name]
 
         // Create path to thread file
-        const path = join(["threads", `${name}.js`].filter(Boolean))
+        const path = join(["core", "threads", `${name}.js`])
         // If main thread, import the module directly
-        if (configs?.main) this.threads[name] = import(`./threads/${name}.js`)
+        if (configs?.main) this.threads[name] = import(`/core/threads/${name}.js`)
         // If worker thread, create a new Worker
         else if (configs?.worker) {
             // Get Worker class (Web Worker for browser, worker_threads.Worker for Node.js)

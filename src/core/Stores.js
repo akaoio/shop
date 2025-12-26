@@ -1,9 +1,10 @@
-import Indexed from "./Indexed.js"
+import IDB from "./IDB.js"
 export const Indexes = {
-    Statics: new Indexed({ name: "Statics" }),
-    Auth: new Indexed({ name: "Auth" }),
-    Wallet: new Indexed({ name: "Wallet" }),
-    Lives: new Indexed({ name: "Lives" })
+    Hashes: new IDB({ name: "Hashes" }),
+    Statics: new IDB({ name: "Statics" }),
+    Auth: new IDB({ name: "Auth" }),
+    Wallet: new IDB({ name: "Wallet" }),
+    Lives: new IDB({ name: "Lives" })
 }
 
 globalThis.Statics = globalThis.Statics || {}

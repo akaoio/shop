@@ -1,8 +1,8 @@
 name: localhost
 brand:
-  text: /images/akao-text.svg
-  symbol: /images/akao-symbol.svg
-favicon: /images/favicon.svg
+  text: /statics/sites/localhost/images/branding.svg
+  symbol: /statics/sites/localhost/images/logo.svg
+favicon: /statics/sites/localhost/images/mimiza.svg
 env: development
 locale: en
 fiat: USD
