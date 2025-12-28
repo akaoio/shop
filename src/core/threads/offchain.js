@@ -9,7 +9,7 @@ const thread = new Thread()
 const forex = {}
 
 thread.init = async function () {
-    await Construct.DB()
+    await Construct.GDB()
     await thread.forex()
 }
 

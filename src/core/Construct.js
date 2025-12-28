@@ -13,12 +13,12 @@ export const Construct = {
         console.log("Constructed: Site")
         return true
     },
-    DB: async function () {
+    GDB: async function () {
         if (!Statics.site) return
-        await import("./DB.js")
+        await import("./GDB.js")
         globalThis.gun = GUN({ peers: Statics.site?.peers || [] })
         globalThis.sea = SEA
-        console.log("Constructed: DB")
+        console.log("Constructed: GDB")
         return true
     },
     User: async function () {

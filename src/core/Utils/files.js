@@ -360,14 +360,14 @@ export async function dir(items, pattern = null) {
  * @param {string[]} items - Path segments to check
  * @returns {Promise<boolean>} True if path exists, false otherwise
  */
-export async function exist(items) {
-    if (!fs) {
-        console.error("File system not available in browser environment")
-        return false
-    }
+export async function exist(path = []) {
+    path = join(path)
     try {
-        const filePath = join(items)
-        return fs.existsSync(filePath)
+        if (BROWSER) {
+            const response = await fetch(path)
+            return response.ok
+        }
+        if (NODE) return fs.existsSync(path)
     } catch (error) {
         console.error("Error checking file existence:", error)
         return false

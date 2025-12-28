@@ -17,7 +17,7 @@ thread.init = async function () {
     await Construct.Chains()
     await Construct.Dexs()
     await Construct.Wallets()
-    await Construct.DB()
+    await Construct.GDB()
     await Construct.User()
     // Start scanning pools and update to main thread's Lives object
     thread.scanPools()
