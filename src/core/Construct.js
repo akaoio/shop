@@ -1,6 +1,7 @@
 import { Indexes, Statics } from "./Stores.js"
 import { Context, getTheme, getFiat, getReferrer } from "./Context.js"
-import { BROWSER, load } from "./Utils.js"
+import { BROWSER } from "./Utils.js"
+import { load } from "./FS.js"
 import Router from "./Router.js"
 
 export const Construct = {

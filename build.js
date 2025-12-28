@@ -1,4 +1,4 @@
-import { write, load, copy, dir, remove, isDirectory } from "./src/core/Utils/files.js"
+import { write, load, copy, dir, remove, isDirectory } from "./src/core/FS.js"
 import { color, icons } from "./src/core/Colors.js"
 import { paths } from "./src/core/Build/config.js"
 import { log } from "./src/core/Build/logger.js"

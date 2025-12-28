@@ -1,4 +1,4 @@
-import { join, ensure, load, exist, write } from "../Utils/files.js"
+import { join, ensure, load, exist, write } from "../FS.js"
 
 export async function initDisk() {
     // Create indexed directory if it doesn't exist

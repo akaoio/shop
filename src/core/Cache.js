@@ -1,4 +1,4 @@
-import { exist, load, join } from "./Utils/files.js"
+import { exist, load, join } from "./FS.js"
 import { Indexes } from "./Stores.js"
 
 export class Cache {

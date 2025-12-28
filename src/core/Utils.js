@@ -1,6 +1,6 @@
 export { NODE, BROWSER, WIN } from "./Utils/environment.js"
 
-export { root, join, write, load, copy, find, dir, exist, isDirectory, hash, ensure, remove } from "./Utils/files.js"
+export { root, join, write, load, copy, find, dir, exist, isDirectory, hash, ensure, remove } from "./FS.js"
 
 export { notify, prompt } from "./Utils/browser.js"
 

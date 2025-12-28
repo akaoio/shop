@@ -1,6 +1,6 @@
 import { Indexes, Statics } from "./Stores.js"
 import { Context } from "./Context.js"
-import { load } from "./Utils/files.js"
+import { load } from "./FS.js"
 
 export class Router {
     // This function takes a URL path as input and returns an object. It works step by step as following:

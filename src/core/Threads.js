@@ -4,7 +4,8 @@
  * Provides API for calling methods on threads and receiving responses via callbacks.
  */
 
-import { NODE, randomKey, join } from "./Utils.js"
+import { NODE, randomKey } from "./Utils.js"
+import { join } from "./FS.js"
 
 export class Threads {
     // Map of registered threads by name

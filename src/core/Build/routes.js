@@ -1,4 +1,4 @@
-import { write } from "../Utils/files.js"
+import { write } from "../FS.js"
 import { paths } from "./config.js"
 
 // ============ Routes Generation ============
