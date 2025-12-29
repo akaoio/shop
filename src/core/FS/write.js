@@ -10,7 +10,7 @@ import { ensure } from "./ensure.js"
  */
 export async function write(items = [], content) {
     if (content === undefined || content === null) return
-    const file = items[items.length - 1]
+    const file = items.at(-1)
     const hasExtension = file.includes(".")
 
     // Smart detection: treat as file if:

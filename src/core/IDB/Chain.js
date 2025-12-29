@@ -1,8 +1,8 @@
 export class Chain {
-    constructor(db, key, parentPath = []) {
+    constructor(db, key, path = []) {
         this.db = db
         this.key = key
-        this.path = [...parentPath, key]
+        this.path = [...path, key]
     }
 
     get(key) {
@@ -20,31 +20,23 @@ export class Chain {
     }
 
     async on(callback) {
-        const pathString = this.path.join(".")
-        if (!this.db.callbacks.has(pathString)) {
-            this.db.callbacks.set(pathString, new Set())
-        }
-
+        const key = JSON.stringify(this.path)
+        if (!this.db.callbacks.has(key)) this.db.callbacks.set(key, new Set())
         // Get and send initial value first
-        const initialValue = await this.db._get(this.path)
-        callback(initialValue)
-
+        const value = await this.db._get(this.path)
+        callback(value)
         // Then add callback for future updates
-        this.db.callbacks.get(pathString).add(callback)
-
+        this.db.callbacks.get(key).add(callback)
         // Return unsubscribe function
         return () => this.off(callback)
     }
 
     off(callback) {
-        const pathString = this.path.join(".")
-        const callbacks = this.db.callbacks.get(pathString)
-        if (callbacks) {
-            callbacks.delete(callback)
-            if (callbacks.size === 0) {
-                this.db.callbacks.delete(pathString)
-            }
-        }
+        const key = JSON.stringify(this.path)
+        const callbacks = this.db.callbacks.get(key)
+        if (!callbacks) return
+        callbacks.delete(callback)
+        if (callbacks.size === 0) this.db.callbacks.delete(key)
     }
 
     async map(callback) {

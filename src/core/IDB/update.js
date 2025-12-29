@@ -23,9 +23,7 @@ export async function update(db, path, value) {
         const parentPath = path.slice(0, i)
         if (parentPath.length > 0) {
             const parentValue = await db._get(parentPath)
-            if (parentValue !== undefined) {
-                notify(db.callbacks, parentPath, parentValue)
-            }
+            if (parentValue !== undefined) notify(db.callbacks, parentPath, parentValue)
         }
     }
 }

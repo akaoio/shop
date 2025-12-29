@@ -23,9 +23,7 @@ class IDB {
                 }
                 request.onupgradeneeded = (event) => {
                     const db = event.target.result
-                    if (!db.objectStoreNames.contains("data")) {
-                        db.createObjectStore("data")
-                    }
+                    if (!db.objectStoreNames.contains("data")) db.createObjectStore("data")
                 }
                 request.onsuccess = (event) => {
                     this.db = event.target.result

@@ -96,7 +96,7 @@ export function authenticate(...args) {
     const callback = args && args.length > 1 ? args.filter((arg) => typeof arg === "function")[0] : null
 
     // options is the last object in the arguments
-    const options = args && args.length > 2 && typeof args[args.length - 1] === "object" ? args[args.length - 1] : {}
+    const options = args && args.length > 2 && typeof args.at(-1) === "object" ? args.at(-1) : {}
 
     user.auth(
         ...credentials,

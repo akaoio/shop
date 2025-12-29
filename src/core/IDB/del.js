@@ -6,9 +6,8 @@ async function _del(path) {
     if (this.BROWSER) {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(["data"], "readwrite")
-            const objectStore = transaction.objectStore("data")
-            const request = objectStore.delete(path.join("."))
-
+            const store = transaction.objectStore("data")
+            const request = store.delete(path)
             request.onerror = () => reject(request.error)
             request.onsuccess = async () => {
                 await update(this, path, undefined)
@@ -26,7 +25,7 @@ async function _del(path) {
             current = current[parts[i]]
         }
 
-        const lastKey = parts[parts.length - 1]
+        const lastKey = parts.at(-1)
         if (lastKey in current) {
             delete current[lastKey]
             // Notify all subscribers in the path hierarchy

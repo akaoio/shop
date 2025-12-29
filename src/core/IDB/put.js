@@ -6,9 +6,8 @@ async function _put(path, value) {
     if (this.BROWSER) {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(["data"], "readwrite")
-            const objectStore = transaction.objectStore("data")
-            const request = objectStore.put(value, path.join("."))
-
+            const store = transaction.objectStore("data")
+            const request = store.put(value, path)
             request.onerror = () => reject(request.error)
             request.onsuccess = async () => {
                 await update(this, path, value)
@@ -22,8 +21,7 @@ async function _put(path, value) {
             if (!(key in current)) current[key] = {}
             current = current[key]
         }
-        const lastKey = path[path.length - 1]
-        current[lastKey] = value
+        current[path.at(-1)] = value
 
         await update(this, path, value)
         await this.saveToDisk()

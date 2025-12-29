@@ -6,9 +6,8 @@ async function _get(path) {
     if (this.BROWSER) {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(["data"], "readonly")
-            const objectStore = transaction.objectStore("data")
-            const request = objectStore.get(path.join("."))
-
+            const store = transaction.objectStore("data")
+            const request = store.get(path)
             request.onerror = () => reject(request.error)
             request.onsuccess = () => resolve(request.result)
         })
