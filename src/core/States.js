@@ -1,11 +1,11 @@
-import { same } from "./same.js"
-import { notify } from "./notify.js"
-import { has } from "./has.js"
-import { get } from "./get.js"
-import { set } from "./set.js"
-import { on } from "./on.js"
-import { off } from "./off.js"
-import { clear } from "./clear.js"
+import { same } from "./States/same.js"
+import { notify } from "./States/notify.js"
+import { has } from "./States/has.js"
+import { get } from "./States/get.js"
+import { set } from "./States/set.js"
+import { on } from "./States/on.js"
+import { off } from "./States/off.js"
+import { clear } from "./States/clear.js"
 
 /**
  * State management system with reactive updates.
