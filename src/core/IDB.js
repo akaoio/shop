@@ -9,7 +9,7 @@ class IDB {
         this.name = name
         this.data = {}
         this.callbacks = new Map()
-        this.database = null
+        this.db = null
 
         this.ready = new Promise(async (resolve) => {
             if (BROWSER) {
@@ -24,7 +24,7 @@ class IDB {
                     if (!db.objectStoreNames.contains("data")) db.createObjectStore("data")
                 }
                 request.onsuccess = (event) => {
-                    this.database = event.target.result
+                    this.db = event.target.result
                     resolve()
                 }
             } else if (NODE) {

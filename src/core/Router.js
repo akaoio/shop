@@ -1,6 +1,6 @@
-import { Indexes, Statics } from "./Stores.js"
+import { Statics } from "./Stores.js"
 import { Context } from "./Context.js"
-import { load } from "./FS.js"
+import DB from "./DB.js"
 
 export class Router {
     // This function takes a URL path as input and returns an object. It works step by step as following:
@@ -146,22 +146,16 @@ export class Router {
     static async setLocale(code) {
         if (code && globalThis?.localStorage?.getItem("locale") !== code) globalThis.localStorage.setItem("locale", code)
         const locale = Statics.locales?.find?.((e) => e.code == code)
-        Statics.dictionaries = Statics.dictionaries || await Indexes.Statics.get("dictionaries").once() || {}
         if (!locale) return
         // Update document lang attribute
         if (globalThis.document && globalThis.document.documentElement.lang !== locale.code) globalThis.document.documentElement.lang = locale.code
         // Load dictionary based on new locale code
-        const data = Statics.dictionaries?.[code] || await load(["statics", "locales", `${code}.json`])
-        if (!data) return
-        // Cache loaded dictionary
-        Statics.dictionaries[code] = data
-        Indexes.Statics.get("dictionaries").put(Statics.dictionaries)
+        Statics.dictionary = await DB.get(["statics", "locales", `${code}.json`])
+        if (!Statics.dictionary) return
         // Update dictionary
-        globalThis.dictionary = Statics.dictionary = Statics.dictionaries[code]
+        globalThis.dictionary = Statics.dictionary
         // Only run after dictionary is loaded
-        const payload = { dictionary: Statics.dictionaries[code] }
-        if (Context.get("locale")?.code !== code) payload.locale = locale
-        Context.set(payload)
+        Context.set({ dictionary: Statics.dictionary, locale })
     }
 
     static navigate(path = "") {

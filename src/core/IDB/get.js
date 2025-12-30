@@ -6,7 +6,7 @@ export async function $get(path) {
     await this.ready
     if (BROWSER) {
         return new Promise((resolve, reject) => {
-            const transaction = this.database.transaction(["data"], "readonly")
+            const transaction = this.db.transaction(["data"], "readonly")
             const store = transaction.objectStore("data")
             const request = store.get(path)
             request.onerror = () => reject(request.error)
@@ -25,5 +25,5 @@ export async function $get(path) {
 
 // Public method
 export function get(key) {
-    return new Chain({ db: this?.db || this, key, path: this?.path || [] })
+    return new Chain({ db: this, key, path: this?.path })
 }

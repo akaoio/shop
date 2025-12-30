@@ -3,11 +3,11 @@ import { events } from "/core/Events.js"
 import { Progress } from "/core/Progress.js"
 import { Statics } from "/core/Stores.js"
 import { merge } from "/core/Utils.js"
-import { load } from "/core/FS.js"
 import { Construct } from "/core/Construct.js"
 import Thread from "/core/Thread.js"
 import { Context } from "/core/Context.js"
 import Router from "/core/Router.js"
+import DB from "/core/DB.js"
 
 const thread = new Thread()
 
@@ -33,12 +33,12 @@ thread.init = async function () {
     UI.splash(true)
     merge(
         Statics,
-        await load({
-            routes: ["statics", "routes.json"],
-            locales: ["statics", "locales.json"],
-            fiats: ["statics", "fiats.json"],
-            themes: ["statics", "themes.json"]
-        })
+        {
+            routes: await DB.get(["statics", "routes.json"]),
+            locales: await DB.get(["statics", "locales.json"]),
+            fiats: await DB.get(["statics", "fiats.json"]),
+            themes: await DB.get(["statics", "themes.json"])
+        }
     )
     Progress.set({ Site: true })
     Progress.set({ GDB: await Construct.GDB() })

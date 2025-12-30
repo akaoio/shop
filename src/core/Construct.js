@@ -1,16 +1,15 @@
 import { Indexes, Statics } from "./Stores.js"
 import { Context, getTheme, getFiat, getReferrer } from "./Context.js"
 import { BROWSER } from "./Utils.js"
-import { load } from "./FS.js"
 import Router from "./Router.js"
+import DB from "./DB.js"
 
 export const Construct = {
     Site: async function () {
         const hostname = BROWSER && globalThis.location?.hostname
         Statics.domain = /^(localhost|\d+\.\d+\.\d+\.\d+)$/.test(hostname) ? "localhost" : hostname.split(".").slice(-2).join(".")
-        const domain = await load(["statics", "domains", `${Statics.domain}.json`])
-        Statics.site = await Indexes.Statics.get("site").once() || await load(["statics", "sites", domain.site, "configs.json"])
-        if (Statics.site) Indexes.Statics.get("site").put(Statics.site)
+        const domain = await DB.get(["statics", "domains", `${Statics.domain}.json`])
+        Statics.site = await DB.get(["statics", "sites", domain.site, "configs.json"])
         console.log("Constructed: Site")
         return true
     },
