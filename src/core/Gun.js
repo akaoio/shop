@@ -28,20 +28,20 @@ export function signup(data, callback) {
                     // Check if this user is referred by someone else
                     if (referrer) userData.referrer = referrer
 
-                    const _user = await signAndHash(userData)
+                    const $user = await signAndHash(userData)
 
                     // Add user to public users list
-                    gun.get("#user").get(_user.hash).put(_user.data)
+                    gun.get("#user").get($user.hash).put($user.data)
 
                     if (referrer) {
                         // In gundb, to put immutable data to the graph, we use the letter "#" in path, then hash in the key, then value of the hash in put()
                         // hash can be a full hash or hash.slice(-20) which is last 20 characters of the hash (this is in our own modified version of gundb)
                         // hash could be in hex format or base64 format
                         // Use Frozen to make sure even the user can't edit this data
-                        gun.get(`#${user.is.pub}/referrer`).get(_user.hash).put(_user.data)
+                        gun.get(`#${user.is.pub}/referrer`).get($user.hash).put($user.data)
 
                         // Add user to the immutable referrer's referrals graph
-                        gun.get(`#${referrer}/referral`).get(_user.hash).put(_user.data)
+                        gun.get(`#${referrer}/referral`).get($user.hash).put($user.data)
 
                         // Remove referrer from localStorage
                         localStorage.removeItem("referrer")

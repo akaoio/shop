@@ -2,11 +2,11 @@ import { Chain } from "./Chain.js"
 import { BROWSER, NODE } from "/core/Utils.js"
 
 // Internal implementation
-export async function _get(path) {
+export async function $get(path) {
     await this.ready
     if (BROWSER) {
         return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(["data"], "readonly")
+            const transaction = this.database.transaction(["data"], "readonly")
             const store = transaction.objectStore("data")
             const request = store.get(path)
             request.onerror = () => reject(request.error)

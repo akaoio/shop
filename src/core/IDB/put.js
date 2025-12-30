@@ -2,11 +2,11 @@ import { update } from "./update.js"
 import { BROWSER, NODE } from "/core/Utils.js"
 
 // Internal implementation
-export async function _put(path, value) {
+export async function $put(path, value) {
     await this.ready
     if (BROWSER) {
         return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(["data"], "readwrite")
+            const transaction = this.database.transaction(["data"], "readwrite")
             const store = transaction.objectStore("data")
             const request = store.put(value, path)
             request.onerror = () => reject(request.error)
@@ -33,5 +33,5 @@ export async function _put(path, value) {
 
 // Public method
 export async function put(value) {
-    return await this.db._put(this.path, value)
+    return await this.db.$put(this.path, value)
 }

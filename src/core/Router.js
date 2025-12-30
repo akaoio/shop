@@ -104,29 +104,29 @@ export class Router {
         document.title = title + (title ? " | " : "") + Statics?.site?.name
 
         // Update or create description meta tag
-        const _description = document.querySelector('meta[name="description"]')
-        if (_description) _description.setAttribute("content", description)
+        const $description = document.querySelector('meta[name="description"]')
+        if ($description) $description.setAttribute("content", description)
         else {
-            const _description = document.createElement("meta")
-            _description.name = "description"
-            _description.content = description
-            document.head.appendChild(_description)
+            const $description = document.createElement("meta")
+            $description.name = "description"
+            $description.content = description
+            document.head.appendChild($description)
         }
 
         // Update or create favicon link
         if (Statics?.site?.favicon) {
             // Check if the favicon link tag already exists
-            const _favicon = document.querySelector('link[rel="icon"]')
+            const $favicon = document.querySelector('link[rel="icon"]')
             // Update existing favicon href if different
-            if (_favicon?.href && _favicon.href !== Statics?.site?.favicon) _favicon.href = Statics?.site?.favicon
+            if ($favicon?.href && $favicon.href !== Statics?.site?.favicon) $favicon.href = Statics?.site?.favicon
             // Create new favicon link tag if not present
             else {
-                const _favicon = document.createElement("link")
-                _favicon.rel = "icon"
+                const $favicon = document.createElement("link")
+                $favicon.rel = "icon"
                 // Determine favicon type based on file extension
-                _favicon.type = Statics?.site?.favicon.endsWith(".svg") ? "image/svg+xml" : "image/x-icon"
-                _favicon.href = Statics?.site?.favicon
-                document.head.appendChild(_favicon)
+                $favicon.type = Statics?.site?.favicon.endsWith(".svg") ? "image/svg+xml" : "image/x-icon"
+                $favicon.href = Statics?.site?.favicon
+                document.head.appendChild($favicon)
             }
         }
     }

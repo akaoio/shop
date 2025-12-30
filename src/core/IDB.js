@@ -1,7 +1,7 @@
 import { NODE, BROWSER } from "./Utils/environment.js"
-import { get, _get } from "./IDB/get.js"
-import { put, _put } from "./IDB/put.js"
-import { del, _del } from "./IDB/del.js"
+import { get, $get } from "./IDB/get.js"
+import { put, $put } from "./IDB/put.js"
+import { del, $del } from "./IDB/del.js"
 import { loadFromDisk, saveToDisk, initDisk } from "./IDB/disk.js"
 
 class IDB {
@@ -9,7 +9,7 @@ class IDB {
         this.name = name
         this.data = {}
         this.callbacks = new Map()
-        this.db = null
+        this.database = null
 
         this.ready = new Promise(async (resolve) => {
             if (BROWSER) {
@@ -24,7 +24,7 @@ class IDB {
                     if (!db.objectStoreNames.contains("data")) db.createObjectStore("data")
                 }
                 request.onsuccess = (event) => {
-                    this.db = event.target.result
+                    this.database = event.target.result
                     resolve()
                 }
             } else if (NODE) {
@@ -40,9 +40,9 @@ class IDB {
     del = del
 
     // Internal methods
-    _get = _get
-    _put = _put
-    _del = _del
+    $get = $get
+    $put = $put
+    $del = $del
     loadFromDisk = loadFromDisk
     saveToDisk = saveToDisk
 }

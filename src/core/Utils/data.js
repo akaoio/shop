@@ -1,6 +1,6 @@
 export function encodeQuery(data) {
     return Object.entries(data)
-        .map((_) => _.map((__) => (typeof __ === "object" ? encodeURIComponent(JSON.stringify(__)) : encodeURIComponent(__))).join("="))
+        .map((i) => i.map((j) => (typeof j === "object" ? encodeURIComponent(JSON.stringify(j)) : encodeURIComponent(j))).join("="))
         .join("&")
 }
 

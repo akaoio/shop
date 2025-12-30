@@ -22,7 +22,7 @@ export async function update(db, path, value) {
     for (let i = path.length - 1; i >= 0; i--) {
         const parentPath = path.slice(0, i)
         if (parentPath.length > 0) {
-            const parentValue = await db._get(parentPath)
+            const parentValue = await db.$get(parentPath)
             if (parentValue !== undefined) notify(db.callbacks, parentPath, parentValue)
         }
     }

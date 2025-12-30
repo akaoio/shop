@@ -2,11 +2,11 @@ import { update } from "./update.js"
 import { BROWSER, NODE } from "/core/Utils.js"
 
 // Internal implementation
-export async function _del(path) {
+export async function $del(path) {
     await this.ready
     if (BROWSER) {
         return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(["data"], "readwrite")
+            const transaction = this.database.transaction(["data"], "readwrite")
             const store = transaction.objectStore("data")
             const request = store.delete(path)
             request.onerror = () => reject(request.error)
@@ -42,5 +42,5 @@ export async function _del(path) {
 
 // Public method
 export async function del() {
-    return this.db._del(this.path)
+    return this.db.$del(this.path)
 }

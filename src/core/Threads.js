@@ -33,9 +33,9 @@ export class Threads {
         // If worker thread, create a new Worker
         else if (configs?.worker) {
             // Get Worker class (Web Worker for browser, worker_threads.Worker for Node.js)
-            let _Worker = typeof Worker !== "undefined" ? Worker : NODE && typeof Worker === "undefined" ? (await import("worker_threads"))?.Worker : undefined
-            if (typeof _Worker === "undefined") throw new Error("Worker class not found")
-            this.threads[name] = new _Worker(path, configs)
+            let $Worker = typeof Worker !== "undefined" ? Worker : NODE && typeof Worker === "undefined" ? (await import("worker_threads"))?.Worker : undefined
+            if (typeof $Worker === "undefined") throw new Error("Worker class not found")
+            this.threads[name] = new $Worker(path, configs)
 
             // Set up error and message handlers for the worker
             if (NODE) {
