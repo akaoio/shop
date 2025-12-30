@@ -1,9 +1,10 @@
 import { update } from "./update.js"
+import { BROWSER, NODE } from "/core/Utils.js"
 
 // Internal implementation
-async function _del(path) {
+export async function _del(path) {
     await this.ready
-    if (this.BROWSER) {
+    if (BROWSER) {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(["data"], "readwrite")
             const store = transaction.objectStore("data")
@@ -14,7 +15,8 @@ async function _del(path) {
                 resolve()
             }
         })
-    } else {
+    }
+    if (NODE) {
         const key = path.join(".")
         let current = this.data
         const parts = key.split(".")
@@ -42,5 +44,3 @@ async function _del(path) {
 export async function del() {
     return this.db._del(this.path)
 }
-
-export { _del }

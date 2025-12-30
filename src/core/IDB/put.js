@@ -1,9 +1,10 @@
 import { update } from "./update.js"
+import { BROWSER, NODE } from "/core/Utils.js"
 
 // Internal implementation
-async function _put(path, value) {
+export async function _put(path, value) {
     await this.ready
-    if (this.BROWSER) {
+    if (BROWSER) {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(["data"], "readwrite")
             const store = transaction.objectStore("data")
@@ -14,7 +15,8 @@ async function _put(path, value) {
                 resolve(value)
             }
         })
-    } else {
+    }
+    if (NODE) {
         let current = this.data
         for (let i = 0; i < path.length - 1; i++) {
             const key = path[i]
@@ -33,5 +35,3 @@ async function _put(path, value) {
 export async function put(value) {
     return await this.db._put(this.path, value)
 }
-
-export { _put }

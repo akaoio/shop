@@ -1,9 +1,10 @@
 import { Chain } from "./Chain.js"
+import { BROWSER, NODE } from "/core/Utils.js"
 
 // Internal implementation
-async function _get(path) {
+export async function _get(path) {
     await this.ready
-    if (this.BROWSER) {
+    if (BROWSER) {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(["data"], "readonly")
             const store = transaction.objectStore("data")
@@ -11,7 +12,8 @@ async function _get(path) {
             request.onerror = () => reject(request.error)
             request.onsuccess = () => resolve(request.result)
         })
-    } else {
+    }
+    if (NODE) {
         let current = this.data
         for (const key of path) {
             if (current === undefined || current === null) return undefined
@@ -23,7 +25,5 @@ async function _get(path) {
 
 // Public method
 export function get(key) {
-    return new Chain(this, key)
+    return new Chain({ db: this?.db || this, key, path: this?.path || [] })
 }
-
-export { _get }

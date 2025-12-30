@@ -10,8 +10,6 @@ class IDB {
         this.data = {}
         this.callbacks = new Map()
         this.db = null
-        this.NODE = NODE
-        this.BROWSER = BROWSER
 
         this.ready = new Promise(async (resolve) => {
             if (BROWSER) {

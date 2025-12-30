@@ -1,4 +1,5 @@
-import { join, ensure, load, exist, write } from "../FS.js"
+import { join, ensure, load, exist, write } from "/core/FS.js"
+import { NODE } from "/core/Utils.js"
 
 export async function initDisk() {
     // Create indexed directory if it doesn't exist
@@ -20,7 +21,7 @@ export async function loadFromDisk() {
 }
 
 export async function saveToDisk() {
-    if (this.NODE) {
+    if (NODE) {
         try {
             await write(["indexed", this.name + ".json"], this.data)
         } catch (error) {
