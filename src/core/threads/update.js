@@ -1,5 +1,5 @@
 import Thread from "/core/Thread.js"
-import { loop } from "/core/Utils.js"
+import { loop, load, exist } from "/core/Utils.js"
 import { Indexes, Statics } from "/core/Stores.js"
 import DB from "/core/DB.js"
 
@@ -17,7 +17,12 @@ thread.init = async function () {
     loop({
         process: async () => {
             for (const path of paths) {
-                // const hash = await DB.get(path)
+                let hash = await Indexes.Hashes.get(path).once()
+                if (hash && !await exist(["statics", "hashes", hash])) continue
+                hash = await load(path)
+                await Indexes.Hashes.get(path).put(hash)
+                // Now look for all IDB keys start with this path and check their hashes
+                
             }
             // try {
             //     const currency = await loadContract({ chain: chain.id, address })
