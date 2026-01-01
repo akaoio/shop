@@ -1,7 +1,7 @@
 export function off(callback) {
     const key = JSON.stringify(this.path)
-    const callbacks = this.db.callbacks.get(key)
+    const callbacks = this.idb.callbacks.get(key)
     if (!callbacks) return
     callbacks.delete(callback)
-    if (callbacks.size === 0) this.db.callbacks.delete(key)
+    if (callbacks.size === 0) this.idb.callbacks.delete(key)
 }

@@ -4,18 +4,10 @@ import { BROWSER, NODE } from "/core/Utils.js"
 // Internal implementation
 export async function $put(path, value) {
     await this.ready
-    if (BROWSER) {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(["data"], "readwrite")
-            const store = transaction.objectStore("data")
-            const request = store.put(value, path)
-            request.onerror = () => reject(request.error)
-            request.onsuccess = async () => {
-                await update(this, path, value)
-                resolve(value)
-            }
-        })
-    }
+    if (BROWSER) await this.execute({
+        mode: "readwrite",
+        operation: store => store.put(value, path)
+    })
     if (NODE) {
         let current = this.data
         for (let i = 0; i < path.length - 1; i++) {
@@ -24,14 +16,13 @@ export async function $put(path, value) {
             current = current[key]
         }
         current[path.at(-1)] = value
-
-        await update(this, path, value)
         await this.saveToDisk()
-        return value
     }
+    await update(this, path, value)
+    return value
 }
 
 // Public method
 export async function put(value) {
-    return await this.db.$put(this.path, value)
+    return await this.idb.$put(this.path, value)
 }

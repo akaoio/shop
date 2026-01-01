@@ -5,16 +5,12 @@ import { BROWSER, NODE } from "/core/Utils.js"
 export async function $del(path) {
     await this.ready
     if (BROWSER) {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(["data"], "readwrite")
-            const store = transaction.objectStore("data")
-            const request = store.delete(path)
-            request.onerror = () => reject(request.error)
-            request.onsuccess = async () => {
-                await update(this, path, undefined)
-                resolve()
-            }
+        const request = await this.execute({
+            mode: "readwrite",
+            operation: store => store.delete(path)
         })
+        await update(this, path, undefined)
+        return request.result
     }
     if (NODE) {
         const key = path.join(".")
@@ -42,5 +38,5 @@ export async function $del(path) {
 
 // Public method
 export async function del() {
-    return this.db.$del(this.path)
+    return this.idb.$del(this.path)
 }

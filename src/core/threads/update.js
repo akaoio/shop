@@ -10,40 +10,51 @@ thread.init = async function () {
         [],
         ["statics"],
         ["statics", "locales"],
-        ["statics", "themes"],
         ["statics", "items"]
-    ].map(path => [...path, "_.hash"])
+    ]
 
     loop({
         process: async () => {
+            const stables = []
             for (const path of paths) {
-                let hash = await Indexes.Hashes.get(path).once()
-                if (hash && !await exist(["statics", "hashes", hash])) continue
+                // Check if path is in stables by comparing it to the items of stables
+                // For example, if path is ["statics", "items", "item1"] and stables contains ["statics", "items"], then we can skip this path
+                // This requires that stables are always parent paths of the paths we check later
+                if (stables.length && stables.some(stable => {
+                    for (let i = 0; i < stable.length; i++) {
+                        if (stable[i] !== path[i]) return false
+                    }
+                    return true
+                })) {
+                    continue
+                }
+
+                // Get existing hash
+                let hash = await Indexes.Hashes.get([...path, "_.hash"]).once()
+                if (hash && await exist(["statics", "hashes", hash])) {
+                    stables.push(path)
+                    continue
+                }
+
+                // Load new hash
                 hash = await load(path)
-                await Indexes.Hashes.get(path).put(hash)
+                await Indexes.Hashes.get([...path, "_.hash"]).put(hash)
+
                 // Now look for all IDB keys start with this path and check their hashes
-                
+                const range = IDBKeyRange.bound(path, [...path, []], false, true)
+                const cursor = await Indexes.Hashes.execute({
+                    operation: store => store.openCursor(range)
+                })
+                cursor.onsuccess = async event => {
+                    const result = event.target.result
+                    if (result) {
+                        await DB.get(result.key)
+                        result.continue()
+                    }
+                }
             }
-            // try {
-            //     const currency = await loadContract({ chain: chain.id, address })
-            //     if (!currency) return
-
-            //     // Get balance directly
-            //     const balance = await wallet.balance({ currency })
-            //     if (balance === null || balance === undefined) {
-            //         console.error(`Failed to get balance for ${currency.name} on chain ${chain.id}`)
-            //         return null
-            //     }
-
-            //     // Return minimal object structure
-            //     return { balances: { [currency.chain]: { [address]: balance } } }
-            // } catch (error) {
-            //     console.error(`Error fetching balance for ${address} on chain ${id}:`, error)
-            //     return null
-            // }
         },
-        // callback: (result) => thread.send({ Lives: clone(result) }),
-        delay: [0, 10000]
+        delay: 10000
     })
 
 }

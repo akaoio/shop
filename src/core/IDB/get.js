@@ -5,13 +5,10 @@ import { BROWSER, NODE } from "/core/Utils.js"
 export async function $get(path) {
     await this.ready
     if (BROWSER) {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(["data"], "readonly")
-            const store = transaction.objectStore("data")
-            const request = store.get(path)
-            request.onerror = () => reject(request.error)
-            request.onsuccess = () => resolve(request.result)
+        const request = await this.execute({
+            operation: store => store.get(path)
         })
+        return request.result
     }
     if (NODE) {
         let current = this.data
@@ -25,5 +22,5 @@ export async function $get(path) {
 
 // Public method
 export function get(key) {
-    return new Chain({ db: this, key, path: this?.path })
+    return new Chain({ idb: this instanceof Chain ? this.idb : this, key, path: this?.path })
 }

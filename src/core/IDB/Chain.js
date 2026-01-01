@@ -7,8 +7,8 @@ import { off } from "./off.js"
 import { map } from "./map.js"
 
 export class Chain {
-    constructor({ db, key, path = [] } = {}) {
-        this.db = db instanceof Chain ? db.db : db
+    constructor({ idb, key, path = [] } = {}) {
+        this.idb = idb
         this.key = key
         this.path = [...path, key]
     }

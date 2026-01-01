@@ -15,12 +15,7 @@ export function loop({ data, process, callback, delay = [1000, 5000], index = 0,
         if (typeof callback === "function") callback(result)
 
         let nextDelay = delay
-        if (Array.isArray(delay)) {
-            // If this is the first loop, set delay to min (which means speed max)
-            if (iterations == index) nextDelay = Math.min(...delay)
-            // Else set delay to max, which means speed min
-            else nextDelay = Math.max(...delay)
-        }
+        if (Array.isArray(delay)) nextDelay = iterations === 0 ? Math.min(...delay) : Math.max(...delay)
 
         setTimeout(
             () =>
@@ -30,7 +25,7 @@ export function loop({ data, process, callback, delay = [1000, 5000], index = 0,
                     callback,
                     delay,
                     index: index + 1,
-                    iterations: iterations == index ? iterations + 1 : iterations
+                    iterations: iterations + 1
                 }),
             nextDelay
         )
