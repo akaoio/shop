@@ -28,17 +28,17 @@ thread.init = async function () {
                 })) {
                     continue
                 }
-
+                const _ = [...path, "_.hash"]
                 // Get existing hash
-                let hash = await Indexes.Hashes.get([...path, "_.hash"]).once()
+                let hash = await Indexes.Hashes.get(_).once()
                 if (hash && await exist(["statics", "hashes", hash])) {
                     stables.push(path)
                     continue
                 }
 
                 // Load new hash
-                hash = await load(path)
-                await Indexes.Hashes.get([...path, "_.hash"]).put(hash)
+                hash = await load(_)
+                await Indexes.Hashes.get(_).put(hash)
 
                 // Now look for all IDB keys start with this path and check their hashes
                 const range = IDBKeyRange.bound(path, [...path, []], false, true)
@@ -54,7 +54,7 @@ thread.init = async function () {
                 }
             }
         },
-        delay: 10000
+        delay: 3600000
     })
 
 }
