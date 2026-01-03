@@ -3,7 +3,7 @@ import { join } from "./join.js"
 
 /**
  * Check if a file or directory exists at the given path
- * @param {string[]} items - Path segments to check
+ * @param {string[]} path - Path segments to check
  * @returns {Promise<boolean>} True if path exists, false otherwise
  */
 export async function exist(path = []) {

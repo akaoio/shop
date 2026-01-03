@@ -3,16 +3,16 @@ import { join } from "./join.js"
 
 /**
  * Read directory contents and return list of file/folder names
- * @param {string[]} items - Path segments to the directory
+ * @param {string[]} path - Path segments to the directory
  * @returns {Promise<string[]>} Array of file and directory names, or empty array on error
  */
-export async function dir(items, pattern = null) {
+export async function dir(path, pattern = null) {
     if (!fs) {
         console.error("File system not available in browser environment")
         return []
     }
 
-    const dirPath = join(items)
+    const dirPath = join(path)
     try {
         if (!fs.existsSync(dirPath)) {
             console.error("Directory doesn't exist:", dirPath)
@@ -41,7 +41,7 @@ export async function dir(items, pattern = null) {
             }
         }
 
-        await walk(items, "")
+        await walk(path, "")
         return results
     } catch (error) {
         console.error("Error reading directory:", dirPath, error)

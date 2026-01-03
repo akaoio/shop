@@ -3,16 +3,16 @@ import { join } from "./join.js"
 
 /**
  * Remove a file or directory recursively
- * @param {string|string[]} items - Path segments to remove
+ * @param {string|string[]} path - Path segments to remove
  * @returns {Promise<boolean>} True if removed successfully, false on error
  */
-export async function remove(items) {
+export async function remove(path) {
     if (!fs) {
         console.error("File system not available in browser environment")
         return false
     }
 
-    const path = join(items)
+    path = join(path)
     try {
         if (!fs.existsSync(path)) {
             return true // Already doesn't exist

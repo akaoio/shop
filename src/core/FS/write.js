@@ -4,13 +4,13 @@ import { ensure } from "./ensure.js"
 
 /**
  * Write content to a file in JSON, YAML, or plain text format
- * @param {string[]} items - Path segments including filename
+ * @param {string[]} path - Path segments including filename
  * @param {*} content - Content to write (will be serialized based on file extension)
  * @returns {Promise<{success: boolean, path: string}|undefined>} Result object or undefined
  */
-export async function write(items = [], content) {
+export async function write(path = [], content) {
     if (content === undefined || content === null) return
-    const file = items.at(-1)
+    const file = path.at(-1)
     const hasExtension = file.includes(".")
 
     // Smart detection: treat as file if:
@@ -20,14 +20,14 @@ export async function write(items = [], content) {
     const isFile = hasExtension || (typeof content !== 'object' || content instanceof String)
 
     if (!isFile) {
-        console.error("Attempted to write object/array to path without extension:", join(items))
+        console.error("Attempted to write object/array to path without extension:", join(path))
         return
     }
 
-    // If the last item is a file, remove it from items to make dir
-    items.pop()
-    const dir = join(items)
-    const filePath = join([...items, file])
+    // If the last item is a file, remove it from path to make dir
+    path.pop()
+    const dir = join(path)
+    const filePath = join([...path, file])
     // Ensure directory exists before writing
     if (!(await ensure(dir))) return
 
