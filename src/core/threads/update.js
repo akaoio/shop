@@ -1,6 +1,6 @@
 import Thread from "/core/Thread.js"
 import { loop, load, exist } from "/core/Utils.js"
-import { Indexes, Statics } from "/core/Stores.js"
+import { Indexes } from "/core/Stores.js"
 import DB from "/core/DB.js"
 
 const thread = new Thread()
@@ -15,12 +15,12 @@ thread.init = async function () {
 
     loop({
         process: async () => {
-            const stables = []
+            const skippables = []
             for (const path of paths) {
-                // Check if path is in stables by comparing it to the items of stables
-                // For example, if path is ["statics", "items", "item1"] and stables contains ["statics", "items"], then we can skip this path
-                // This requires that stables are always parent paths of the paths we check later
-                if (stables.length && stables.some(stable => {
+                // Check if path is in skippables by comparing it to the items of skippables
+                // For example, if path is ["statics", "items", "item1"] and skippables contains ["statics", "items"], then we can skip this path
+                // This requires that skippables are always parent paths of the paths we check later
+                if (skippables.length && skippables.some(stable => {
                     for (let i = 0; i < stable.length; i++) {
                         if (stable[i] !== path[i]) return false
                     }
@@ -32,7 +32,7 @@ thread.init = async function () {
                 // Get existing hash
                 let hash = await Indexes.Hashes.get(_).once()
                 if (hash && await exist(["statics", "hashes", hash])) {
-                    stables.push(path)
+                    skippables.push(path)
                     continue
                 }
 

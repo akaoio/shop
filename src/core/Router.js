@@ -3,17 +3,34 @@ import { Context } from "./Context.js"
 import DB from "./DB.js"
 
 export class Router {
-    // This function takes a URL path as input and returns an object. It works step by step as following:
-    // 1. Extracts the locale from the beginning of the path if it matches one of the supported locales.
-    // 2. Compares the remaining part of the path against known route patterns (like item and tag).
-    // 3. Create a new path containing locale
-    // 4. Returns an object containing the extracted locale and any other relevant information based on the route pattern.
-    // Example:
-    // - Patterns from /build/statics/routes.json:
-    //   - "/item/[slug]"
-    //   - "/tag/[tag]"
-    // - Input: "/fr/tag/some-tag" -> Output: { locale: "fr", params: { tag: "some-tag" } }
-    // - Input: "/vi/item/asdf-qwer-zxvc" -> Output: { locale: "vi", params: { slug: "asdf-qwer-zxvc" } }
+    /**
+     * Processes a URL path and returns route information with locale and parameters.
+     * 
+     * Steps:
+     * 1. Normalizes the path (strips trailing slashes and file extensions)
+     * 2. Determines locale from: path prefix → localStorage → site config → first available locale
+     * 3. Matches remaining path segments against known route patterns
+     * 4. Constructs normalized path with locale prefix
+     * 
+     * @param {Object} options - Configuration object
+     * @param {string} options.path - URL path to process (defaults to current location)
+     * @param {Array} options.routes - Route patterns (defaults to Statics.routes)
+     * @param {Array} options.locales - Supported locales (defaults to Statics.locales)
+     * @param {Object} options.site - Site configuration (defaults to Statics.site)
+     * 
+     * @returns {Object} Route information: { locale, params, route, path }
+     * 
+     * @example
+     * // Route patterns from /build/statics/routes.json: "/item/[slug]", "/tag/[tag]"
+     * process({ path: "/fr/tag/some-tag" })
+     * // => { locale: {code: "fr", ...}, params: { tag: "some-tag" }, route: "/tag/[tag]", path: "/fr/tag/some-tag/" }
+     * 
+     * process({ path: "/vi/item/asdf-qwer-zxvc" })
+     * // => { locale: {code: "vi", ...}, params: { slug: "asdf-qwer-zxvc" }, route: "/item/[slug]", path: "/vi/item/asdf-qwer-zxvc/" }
+     * 
+     * process({ path: "/" })
+     * // => { locale: {code: "en", ...}, params: {}, route: "home", path: "/en/" }
+     */
     static process({ path = "", routes = [], locales = [], site = {} } = {}) {
         // Remove last segment if it's a file (contains a file extension)
         path = path || globalThis?.location?.pathname
@@ -48,6 +65,32 @@ export class Router {
         return result
     }
 
+    /**
+     * Matches URL segments against a route pattern and extracts parameters.
+     * 
+     * Supports multiple parameter types:
+     * - Dynamic segments: `[param]` - matches single segment
+     * - Catch-all: `[...param]` - matches remaining segments (required)
+     * - Optional catch-all: `[[...param]]` - matches remaining segments (optional)
+     * 
+     * @param {Array<string>} segments - URL path segments to match
+     * @param {string|Object} route - Route pattern string or object with path property
+     * 
+     * @returns {Object|null} Extracted parameters object, or null if no match
+     * 
+     * @example
+     * match(["item", "abc-123"], "/item/[slug]")
+     * // => { slug: "abc-123" }
+     * 
+     * match(["tag", "electronics"], "/tag/[tag]")
+     * // => { tag: "electronics" }
+     * 
+     * match(["docs", "api", "router"], "/docs/[...path]")
+     * // => { path: ["api", "router"] }
+     * 
+     * match(["about"], "/item/[slug]")
+     * // => null (no match)
+     */
     static match(segments, route) {
         const pattern = typeof route === "string" ? route : route?.path
         if (!pattern) return null
@@ -92,8 +135,14 @@ export class Router {
     }
 
     /**
-     * Update page metadata (title, description, favicon).
+     * Updates page metadata including title, description, and favicon.
      * Creates or updates HTML head elements for SEO and branding.
+     * 
+     * - Sets page title with site name appended
+     * - Creates/updates meta description tag
+     * - Creates/updates favicon link (from Statics.site.favicon)
+     * - Auto-detects favicon MIME type (.svg vs .ico)
+     * 
      * @param {Object} options - Configuration object
      * @param {string} options.title - Page title (site name appended automatically)
      * @param {string} options.description - Meta description for SEO
@@ -131,6 +180,24 @@ export class Router {
         }
     }
 
+    /**
+     * Updates browser history without reloading the page (client-side navigation).
+     * Pushes new state to history stack only if the path has changed.
+     * 
+     * @param {Object} options - Configuration object
+     * @param {string} options.path - New URL pathname to navigate to
+     * @param {Object} options.locale - Locale object to store in history state
+     * @param {string} options.route - Route identifier to store in history state
+     * @param {Object} options.params - Route parameters to store in history state
+     * 
+     * @example
+     * setHistory({ 
+     *   path: "/fr/item/abc-123", 
+     *   locale: { code: "fr" }, 
+     *   route: "/item/[slug]", 
+     *   params: { slug: "abc-123" } 
+     * })
+     */
     static setHistory({ path = "", locale = {}, route = "", params = {} } = {}) {
         if (!globalThis.history || !globalThis.location) return
         try {
@@ -143,6 +210,22 @@ export class Router {
         }
     }
 
+    /**
+     * Changes the application locale and loads the corresponding translations.
+     * 
+     * Performs the following operations:
+     * 1. Saves locale code to localStorage
+     * 2. Updates document lang attribute for accessibility/SEO
+     * 3. Loads translation dictionary from DB
+     * 4. Updates global dictionary reference
+     * 5. Updates Context with new locale and dictionary
+     * 
+     * @param {string} code - Locale code (e.g., "en", "fr", "zh-TW")
+     * 
+     * @example
+     * await setLocale("fr") // Switches to French
+     * await setLocale("ja") // Switches to Japanese
+     */
     static async setLocale(code) {
         if (code && globalThis?.localStorage?.getItem("locale") !== code) globalThis.localStorage.setItem("locale", code)
         const locale = Statics.locales?.find?.((e) => e.code == code)
@@ -158,6 +241,16 @@ export class Router {
         Context.set({ dictionary: Statics.dictionary, locale })
     }
 
+    /**
+     * Navigates to a new path by processing it and updating the Context.
+     * Triggers route matching and extracts locale/parameters from the path.
+     * 
+     * @param {string} path - URL path to navigate to (e.g., "/fr/item/abc-123")
+     * 
+     * @example
+     * navigate("/en/item/wireless-headphones")
+     * navigate("/fr/tag/electronics")
+     */
     static navigate(path = "") {
         Context.set(Router.process({ path }))
     }
