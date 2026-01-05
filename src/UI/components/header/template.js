@@ -9,7 +9,7 @@ export const template = html`
     ${styles}
     <header>
         <nav>
-            <a is="ui-a" href="home">
+            <a is="ui-a" to="/">
                 <ui-svg class="brand" src="${Statics?.site?.brand?.text}" />
             </a>
             <div>

@@ -9,16 +9,16 @@ export class SELECT extends HTMLElement {
         this.attachShadow({ mode: "open" })
         this.shadowRoot.appendChild(template.cloneNode(true))
         this.subscriptions = []
-        this.subscriptions.push(this.states.on("options", () => this.render()))
+        this.subscriptions.push(this.states.on("options", this.render.bind(this)))
     }
 
     static get observedAttributes() {
         return ["name", "selected"]
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue === newValue) return
-        this.states.set({ [name]: newValue })
+    attributeChangedCallback(name, last, value) {
+        if (last === value) return
+        this.states.set({ [name]: value })
     }
 
     connectedCallback() {

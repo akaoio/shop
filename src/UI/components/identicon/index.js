@@ -12,8 +12,8 @@ export class IDENTICON extends HTMLElement {
         return ["seed", "size"]
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if ((name === "seed" || name === "size") && oldValue !== newValue) {
+    attributeChangedCallback(name, last, value) {
+        if ((name === "seed" || name === "size") && last !== value) {
             this.generateIdenticon(this.getAttribute("seed"))
         }
     }

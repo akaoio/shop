@@ -12,8 +12,8 @@ export class MODAL extends HTMLElement {
         return ["header"]
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === "header" && oldValue !== newValue) this.header({ value: newValue })
+    attributeChangedCallback(name, last, value) {
+        if (name === "header" && last !== value) this.header({ value })
     }
 
     header = ({ value } = {}) => {

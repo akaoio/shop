@@ -21,7 +21,7 @@ export class USER extends HTMLElement {
             Access.on("authenticated", () => {
                 if (!Access.get("authenticated")) return this.identicon.removeAttribute("seed")
             }),
-            Access.on("wallet", () => this.render())
+            Access.on("wallet", this.render.bind(this))
         )
         if (Access.get("authenticated")) this.render()
     }

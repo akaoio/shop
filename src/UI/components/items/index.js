@@ -13,7 +13,7 @@ export class ITEMS extends HTMLElement {
 
     connectedCallback() {
         DB.get(["statics", "items", "meta.json"]).then(data => this.states.set(data))
-        this.states.on("pages", () => this.render())
+        this.states.on("pages", this.render.bind(this))
     }
 
     async render() {

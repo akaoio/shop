@@ -18,8 +18,9 @@ export class ITEM extends HTMLElement {
         const name = this.shadowRoot.querySelector("#name")
         const description = this.shadowRoot.querySelector("#description")
         const price = this.shadowRoot.querySelector("#price")
+        this.shadowRoot.querySelector("a[is='ui-a']").setAttribute("to", `/item/${this.getAttribute("key")}`)
         this.subscriptions.push(
-            Context.on("locale", () => this.render()),
+            Context.on("locale", this.render.bind(this)),
             this.states.on("name", [name, "textContent"]),
             this.states.on("description", [description, "textContent"]),
             this.states.on("price", [price, "textContent"])
@@ -33,10 +34,7 @@ export class ITEM extends HTMLElement {
     }
 
     async render() {
-        const locale = Context.get("locale").code
-        const data = await DB.get(["statics", "items", this.getAttribute("key"), `${locale}.json`])
-        const { path } = Router.process({ path: `/item/${this.getAttribute("key")}`, locale })
-        this.shadowRoot.querySelector("a[is='ui-a']").setAttribute("href", path)
+        const data = await DB.get(["statics", "items", this.getAttribute("key"), `${Context.get("locale").code}.json`])
         this.states.set(data)
     }
 }

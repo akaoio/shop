@@ -16,14 +16,11 @@ export class ICON extends HTMLElement {
         this.shadowRoot.querySelector("ui-svg").setAttribute("src", this.getAttribute("icon"))
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
+    attributeChangedCallback(name, last, value) {
         if (name === "icon") {
             const svg = this.shadowRoot.querySelector("ui-svg")
-            if (newValue) {
-                svg.setAttribute("src", newValue)
-            } else {
-                svg.removeAttribute("src")
-            }
+            if (value) svg.setAttribute("src", value)
+            else svg.removeAttribute("src")
         }
     }
 }

@@ -30,16 +30,16 @@ export class WALLETS extends HTMLElement {
 
     connectedCallback() {
         this.wallets = this.shadowRoot.querySelector("#wallets")
-        this.shadowRoot.querySelector("#increase").addEventListener("click", this.increase)
-        this.shadowRoot.querySelector("#decrease").addEventListener("click", this.decrease)
+        this.shadowRoot.querySelector("#increase").addEventListener("click", this.increase.bind(this))
+        this.shadowRoot.querySelector("#decrease").addEventListener("click", this.decrease.bind(this))
         this.subscriptions.push(
             Access.on("authenticated", ({ value }) => {
                 this.style.display = value ? "flex" : "none"
                 if (!value) while (this.wallets.firstChild) this.wallets.removeChild(this.wallets.firstChild)
             }),
-            Access.on("wallet", () => this.render()),
-            () => this.shadowRoot.querySelector("#increase").removeEventListener("click", this.increase),
-            () => this.shadowRoot.querySelector("#decrease").removeEventListener("click", this.decrease)
+            Access.on("wallet", this.render.bind(this)),
+            () => this.shadowRoot.querySelector("#increase").removeEventListener("click", this.increase.bind(this)),
+            () => this.shadowRoot.querySelector("#decrease").removeEventListener("click", this.decrease.bind(this))
         )
         if (Access.get("authenticated")) this.render()
     }

@@ -14,9 +14,9 @@ export const template = html`
     ${styles}
     <footer>
         <ui-navigator>
-            <a is="ui-a" href="home"><ui-icon icon="/images/icons/house.svg" /></a>
-            <a is="ui-a" href="deposit"><ui-icon icon="/images/icons/download.svg" /></a>
-            <a is="ui-a" href="withdraw"><ui-icon icon="/images/icons/upload.svg" /></a>
+            <a is="ui-a" to="/"><ui-icon icon="/images/icons/house.svg" /></a>
+            <a is="ui-a" to="/deposit"><ui-icon icon="/images/icons/download.svg" /></a>
+            <a is="ui-a" to="/withdraw"><ui-icon icon="/images/icons/upload.svg" /></a>
             <ui-user />
             <ui-navigator icon="/images/icons/sliders.svg">
                 <ui-locales />
