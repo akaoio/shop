@@ -38,17 +38,17 @@ export class Router {
         routes = routes.length ? routes : Statics?.routes || []
         locales = locales.length ? locales : Statics?.locales || []
         let segments = path.replace(/^\/+|\/+$|\/\w+\.\w+$/g, "").split("/").filter(Boolean)
-        locale = locale || globalThis?.localStorage?.getItem?.("locale") || site?.locale || locales?.[0]?.code
+        let code = locale || globalThis?.localStorage?.getItem?.("locale") || site?.locale || locales?.[0]?.code
         const result = {
-            locale: locales.find(l => l.code === locale),
+            locale: locales.find(l => l.code === code),
             params: {},
             route: "home"
         }
         if (segments.length) {
             // Check if first part is a supported locale or matches locale pattern
             if (locales.some(l => l.code === segments?.[0]) || /^[a-z]{2}(-[A-Z]{2})?$/.test(segments[0])) {
-                locale = segments.shift()
-                result.locale = locales.find(l => l.code === locale)
+                code = segments.shift()
+                if (!locale) result.locale = locales.find(l => l.code === code)
             }
             // Check against known route patterns
             for (const route of routes) {
@@ -231,13 +231,15 @@ export class Router {
         const locale = Statics.locales?.find?.((e) => e.code == code)
         if (!locale) return
         // Update document lang attribute
-        if (globalThis.document && globalThis.document.documentElement.lang !== locale.code) globalThis.document.documentElement.lang = locale.code
+        if (globalThis.document && globalThis.document.documentElement.lang !== code) globalThis.document.documentElement.lang = code
         // Load dictionary based on new locale code
         Statics.dictionary = await DB.get(["statics", "locales", `${code}.json`])
         if (!Statics.dictionary) return
         // Update dictionary
         globalThis.dictionary = Statics.dictionary
         // Only run after dictionary is loaded
+        const state = this.process({ locale: code })
+        if (state.path !== Context.get("path")) this.setHistory(state)
         Context.set({ dictionary: Statics.dictionary, locale })
     }
 
