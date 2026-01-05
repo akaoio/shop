@@ -37,7 +37,7 @@ export class WALLETS extends HTMLElement {
                 this.style.display = value ? "flex" : "none"
                 if (!value) while (this.wallets.firstChild) this.wallets.removeChild(this.wallets.firstChild)
             }),
-            Access.on("wallet", this.render),
+            Access.on("wallet", () => this.render()),
             () => this.shadowRoot.querySelector("#increase").removeEventListener("click", this.increase),
             () => this.shadowRoot.querySelector("#decrease").removeEventListener("click", this.decrease)
         )
@@ -48,13 +48,13 @@ export class WALLETS extends HTMLElement {
         this.subscriptions.forEach((off) => off())
     }
 
-    increase = () => (this.total += this.step)
+    increase() { (this.total += this.step) }
 
-    decrease = () => {
+    decrease() {
         if (this.total - this.step > this.id) this.total -= this.step
     }
 
-    create = async () => {
+    async create() {
         if (this.wallets.children.length >= this.total) return
         const fragment = document.createDocumentFragment()
         const currentId = this.id
@@ -75,7 +75,7 @@ export class WALLETS extends HTMLElement {
         this.wallets.appendChild(fragment)
     }
 
-    remove = () => {
+    remove() {
         const count = this.wallets.children.length
         const min = Math.max(this.step, this.id + 1)
         if (count <= min) return
@@ -83,12 +83,12 @@ export class WALLETS extends HTMLElement {
         if (this.wallets.children.length > this.total) this.remove()
     }
 
-    select = async ({ id }) => {
+    async select({ id }) {
         if (!this.wallets.querySelector(`input#i${id}`)) await this.create()
         this.id = id
     }
 
-    render = async () => {
+    async render() {
         if (!Access.get("authenticated")) return
         if (this.wallets.children.length < this.total) await this.create()
         if (this.wallets.children.length > this.total) this.remove()

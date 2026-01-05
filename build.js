@@ -68,6 +68,7 @@ log.ok("Cleaned build folder")
 log.info("Loading configuration and data...")
 const localesConfig = await load([...paths.src.statics, "locales.yaml"])
 const locales = localesConfig.map(locale => locale.code)
+const system = await load([...paths.src.statics, "system.yaml"]) || { pagination: 10 }
 
 // Load items metadata
 const itemDirs = await dir(paths.src.items)
@@ -107,6 +108,61 @@ log.ok(`Built ${domainCount} domain mappings`)
 log.info("Building items (YAML → JSON)...")
 await processYamlDirectory(paths.src.items, [...paths.build.statics, "items"], { recursive: true })
 log.ok(`Built ${items.length} items`)
+
+// Generate items pagination
+log.info("Generating items pagination...")
+const pagination = system.pagination
+const totalItemPages = Math.ceil(items.length / pagination)
+await write([...paths.build.statics, "items", "meta.json"], {
+    children: items.length,
+    pages: totalItemPages
+})
+for (let page = 1; page <= totalItemPages; page++) {
+    const start = (page - 1) * pagination
+    const pageItems = items.slice(start, start + pagination)
+    await write([...paths.build.statics, "items", `${page}.json`], pageItems)
+}
+log.ok(`Generated ${totalItemPages} item pages`)
+
+// Generate tags pagination
+log.info("Generating tags pagination...")
+const tagsList = Array.from(allTags).sort()
+const totalTagPages = Math.ceil(tagsList.length / pagination)
+await write([...paths.build.statics, "tags", "meta.json"], {
+    children: tagsList.length,
+    pages: totalTagPages
+})
+
+// Generate paginated tag list files
+for (let page = 1; page <= totalTagPages; page++) {
+    const start = (page - 1) * pagination
+    const pageTags = tagsList.slice(start, start + pagination)
+    await write([...paths.build.statics, "tags", `${page}.json`], pageTags)
+}
+
+// Generate per-tag item lists with pagination
+for (const tag of tagsList) {
+    const tagItems = []
+    for (const itemName of items) {
+        const meta = await load([...paths.build.statics, "items", itemName, "meta.json"])
+        if (meta?.tags?.includes(tag)) {
+            tagItems.push(itemName)
+        }
+    }
+
+    const tagPages = Math.ceil(tagItems.length / pagination)
+    await write([...paths.build.statics, "tags", tag, "meta.json"], {
+        children: tagItems.length,
+        pages: tagPages
+    })
+
+    for (let page = 1; page <= tagPages; page++) {
+        const start = (page - 1) * pagination
+        const pageItems = tagItems.slice(start, start + pagination)
+        await write([...paths.build.statics, "tags", tag, `${page}.json`], pageItems)
+    }
+}
+log.ok(`Generated ${totalTagPages} tag pages and ${tagsList.length} tag-specific pagination structures`)
 
 // Build sites
 log.info("Building sites (YAML → JSON)...")

@@ -31,14 +31,14 @@ export class Router {
      * process({ path: "/" })
      * // => { locale: {code: "en", ...}, params: {}, route: "home", path: "/en/" }
      */
-    static process({ path = "", routes = [], locales = [], site = {} } = {}) {
+    static process({ path = "", routes = [], locales = [], site = {}, locale } = {}) {
         // Remove last segment if it's a file (contains a file extension)
         path = path || globalThis?.location?.pathname
         site = Object.keys(site).length ? site : Statics?.site || {}
         routes = routes.length ? routes : Statics?.routes || []
         locales = locales.length ? locales : Statics?.locales || []
         let segments = path.replace(/^\/+|\/+$|\/\w+\.\w+$/g, "").split("/").filter(Boolean)
-        let locale = globalThis?.localStorage?.getItem?.("locale") || site?.locale || locales?.[0]?.code
+        locale = locale || globalThis?.localStorage?.getItem?.("locale") || site?.locale || locales?.[0]?.code
         const result = {
             locale: locales.find(l => l.code === locale),
             params: {},

@@ -21,22 +21,22 @@ export class USER extends HTMLElement {
             Access.on("authenticated", () => {
                 if (!Access.get("authenticated")) return this.identicon.removeAttribute("seed")
             }),
-            Access.on("wallet", this.render)
+            Access.on("wallet", () => this.render())
         )
         if (Access.get("authenticated")) this.render()
     }
 
-    disconnectedCallback = () => {
+    disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
     }
 
-    toggle = () => {
+    toggle() {
         const check = Elements.Access?.checkpoint()
         if (!check) return
         Elements.User.toggle()
     }
 
-    render = async () => {
+    async render() {
         if (Access.get("wallet")?.id == null) return
         const { sea } = globalThis
         if (!sea) return

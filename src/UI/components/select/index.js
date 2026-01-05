@@ -9,7 +9,7 @@ export class SELECT extends HTMLElement {
         this.attachShadow({ mode: "open" })
         this.shadowRoot.appendChild(template.cloneNode(true))
         this.subscriptions = []
-        this.subscriptions.push(this.states.on("options", this.render))
+        this.subscriptions.push(this.states.on("options", () => this.render()))
     }
 
     static get observedAttributes() {
@@ -30,11 +30,11 @@ export class SELECT extends HTMLElement {
         this.subscriptions.forEach((off) => off())
     }
 
-    show = () => {
+    show() {
         this.modal.showModal()
     }
 
-    close = () => {
+    close() {
         this.modal.close()
     }
 
@@ -46,13 +46,13 @@ export class SELECT extends HTMLElement {
         return this.states.get("selected") || this.getAttribute("selected")
     }
 
-    select = (value) => {
+    select(value) {
         this.states.set({ selected: value })
         this.setAttribute("selected", value)
         if (typeof this.callback == "function") this.callback(value)
     }
 
-    render = () => {
+    render() {
         const name = this.states.get("name") || this.getAttribute("name")
         const options = this.states
             .get("options")

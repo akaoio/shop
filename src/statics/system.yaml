@@ -1,0 +1,3 @@
+# System-wide configuration settings
+# Number of items per page in paginated lists
+pagination: 10
