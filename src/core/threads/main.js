@@ -45,7 +45,10 @@ thread.init = async function () {
     Progress.set({ User: await Construct.User() })
     // Listen to the popstate event, which is triggered when the user navigates back to the previous page
     // Updates Context with the new route info
-    globalThis.addEventListener("popstate", data => UI.render(data?.state || {}))
+    globalThis.addEventListener("popstate", data => {
+        if (Context.get("locale")?.code !== data?.state?.locale?.code) Router.setLocale(data.state.locale.code)
+        UI.render(data?.state || {})
+    })
     Context.on("path", ({ value: path }) => UI.render({ path }))
     Context.on("locale", ({ value: locale }) => Router.setLocale(locale.code))
     Progress.set({ Context: await Construct.Context() })

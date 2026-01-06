@@ -3,7 +3,7 @@ import { css } from "/core/UI.js"
 export const styles = css`
     :host {
         header {
-            height: var(--header-height);
+            min-height: var(--header-height);
             position: fixed;
             top: 0;
             width: 100%;
