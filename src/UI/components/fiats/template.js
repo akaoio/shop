@@ -1,4 +1,4 @@
-import "../select/index.js"
+import "/UI/components/select/index.js"
 import { Context } from "/core/Context.js"
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"

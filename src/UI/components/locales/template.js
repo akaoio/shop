@@ -1,5 +1,5 @@
-import "../select/index.js"
-import "../icon/index.js"
+import "/UI/components/select/index.js"
+import "/UI/components/icon/index.js"
 import styles from "./styles.css.js"
 import { Context } from "/core/Context.js"
 import { html } from "/core/UI.js"

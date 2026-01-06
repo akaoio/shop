@@ -8,6 +8,8 @@ export class USER extends HTMLElement {
         this.attachShadow({ mode: "open" })
         this.shadowRoot.appendChild(template.cloneNode(true))
         this.subscriptions = []
+        this.toggle = this.toggle.bind(this)
+        this.render = this.render.bind(this)
     }
 
     get identicon() {
@@ -21,7 +23,7 @@ export class USER extends HTMLElement {
             Access.on("authenticated", () => {
                 if (!Access.get("authenticated")) return this.identicon.removeAttribute("seed")
             }),
-            Access.on("wallet", this.render.bind(this))
+            Access.on("wallet", this.render)
         )
         if (Access.get("authenticated")) this.render()
     }

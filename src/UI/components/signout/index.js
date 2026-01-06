@@ -8,6 +8,8 @@ export class SIGNOUT extends HTMLElement {
         this.attachShadow({ mode: "open" })
         this.shadowRoot.appendChild(template.cloneNode(true))
         this.subscriptions = []
+        this.toggle = this.toggle.bind(this)
+        this.signout = this.signout.bind(this)
     }
 
     connectedCallback() {
@@ -21,16 +23,16 @@ export class SIGNOUT extends HTMLElement {
         )
     }
 
-    disconnectedCallback = () => {
+    disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
     }
 
-    signout = () => {
+    signout() {
         signout()
         this.shadowRoot.querySelector("ui-modal").close()
     }
 
-    toggle = () => {
+    toggle() {
         const check = Elements.Access?.checkpoint()
         if (!check) return
         this.shadowRoot.querySelector("ui-modal").toggleModal()

@@ -4,6 +4,8 @@ import { Context } from "/core/Context.js"
 export class A extends HTMLAnchorElement {
     constructor() {
         super()
+        this.click = this.click.bind(this)
+        this.render = this.render.bind(this)
     }
 
     static get observedAttributes() {
@@ -16,12 +18,12 @@ export class A extends HTMLAnchorElement {
     }
 
     connectedCallback() {
-        this.addEventListener("click", this.click.bind(this))
-        this.subscription = Context.on("locale", this.render.bind(this))
+        this.addEventListener("click", this.click)
+        this.subscription = Context.on("locale", this.render)
     }
 
     disconnectedCallback() {
-        this.removeEventListener("click", this.click.bind(this))
+        this.removeEventListener("click", this.click)
         this.subscription.off()
     }
 

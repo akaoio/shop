@@ -1,7 +1,7 @@
-import "../../layouts/main/index.js"
-import "../context/index.js"
-import "../modal/index.js"
-import "../button/index.js"
+import "/UI/layouts/main/index.js"
+import "/UI/components/context/index.js"
+import "/UI/components/modal/index.js"
+import "/UI/components/button/index.js"
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"
 

@@ -1,5 +1,5 @@
 import { Statics } from "/core/Stores.js"
-import "../svg/index.js"
+import "/UI/components/svg/index.js"
 import { Progress } from "/core/Progress.js"
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"

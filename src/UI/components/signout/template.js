@@ -1,10 +1,10 @@
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"
-import "../context/index.js"
-import "../icon/index.js"
-import "../identicon/index.js"
-import "../modal/index.js"
-import "../button/index.js"
+import "/UI/components/context/index.js"
+import "/UI/components/icon/index.js"
+import "/UI/components/identicon/index.js"
+import "/UI/components/modal/index.js"
+import "/UI/components/button/index.js"
 
 export const template = html`
     ${styles}

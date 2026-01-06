@@ -1,5 +1,5 @@
-import "../../components/header/index.js"
-import "../../components/footer/index.js"
+import "/UI/components/header/index.js"
+import "/UI/components/footer/index.js"
 import styles from "./styles.css.js"
 import { html } from "/core/UI.js"
 

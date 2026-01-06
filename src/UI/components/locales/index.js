@@ -7,13 +7,17 @@ export class LOCALES extends HTMLElement {
         super()
         this.attachShadow({ mode: "open" })
         this.shadowRoot.appendChild(template.cloneNode(true))
+        this.subscriptions = []
     }
 
     connectedCallback() {
         const button = this.shadowRoot.querySelector("ui-icon")
         const select = this.shadowRoot.querySelector("ui-select")
 
-        button.addEventListener("click", () => select.show())
+        button.addEventListener("click", select.show)
+        this.subscriptions.push(
+            () => button.removeEventListener("click", select.show)
+        )
 
         const options = Statics.locales.map((locale) => {
             return {
@@ -23,6 +27,10 @@ export class LOCALES extends HTMLElement {
         })
         select.states.set({ options, selected: Context.get("locale")?.code })
         select.callback = code => Context.set({ locale: Statics.locales.find(l => l.code === code) })
+    }
+
+    disconnectedCallback() {
+        this.subscriptions.forEach((off) => off())
     }
 }
 

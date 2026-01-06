@@ -6,6 +6,11 @@ export class MODAL extends HTMLElement {
         super()
         this.attachShadow({ mode: "open" })
         this.shadowRoot.appendChild(template.cloneNode(true))
+        this.show = this.show.bind(this)
+        this.showModal = this.showModal.bind(this)
+        this.close = this.close.bind(this)
+        this.toggle = this.toggle.bind(this)
+        this.toggleModal = this.toggleModal.bind(this)
     }
 
     static get observedAttributes() {
@@ -35,23 +40,23 @@ export class MODAL extends HTMLElement {
         if ([...this.shadowRoot.querySelectorAll("dialog, .close, footer")].includes(event.composedPath?.()?.[0])) this.dialog.close()
     }
 
-    show = () => {
+    show() {
         this.dialog.show()
     }
 
-    showModal = () => {
+    showModal() {
         this.dialog.showModal()
     }
 
-    close = () => {
+    close() {
         this.dialog.close()
     }
 
-    toggle = () => {
+    toggle() {
         this.dialog.open ? this.dialog.close() : this.dialog.show()
     }
 
-    toggleModal = () => {
+    toggleModal() {
         this.dialog.open ? this.dialog.close() : this.dialog.showModal()
     }
 }

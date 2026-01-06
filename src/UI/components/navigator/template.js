@@ -1,5 +1,5 @@
 import { html } from "/core/UI.js"
-import "../icon/index.js"
+import "/UI/components/icon/index.js"
 import styles from "./styles.css.js"
 
 export const template = html`

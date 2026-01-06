@@ -12,6 +12,7 @@ export class ITEM extends HTMLElement {
         this.attachShadow({ mode: "open" })
         this.shadowRoot.appendChild(template.cloneNode(true))
         this.subscriptions = []
+        this.render = this.render.bind(this)
     }
 
     connectedCallback() {
@@ -20,7 +21,7 @@ export class ITEM extends HTMLElement {
         const price = this.shadowRoot.querySelector("#price")
         this.shadowRoot.querySelector("a[is='ui-a']").setAttribute("to", `/item/${this.getAttribute("key")}`)
         this.subscriptions.push(
-            Context.on("locale", this.render.bind(this)),
+            Context.on("locale", this.render),
             this.states.on("name", [name, "textContent"]),
             this.states.on("description", [description, "textContent"]),
             this.states.on("price", [price, "textContent"])

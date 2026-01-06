@@ -1,9 +1,9 @@
 import { Elements } from "/core/Stores.js"
 import { Access } from "/core/Access.js"
 import { html, css } from "/core/UI.js"
-import "../modal/index.js"
-import "../signout/index.js"
-import "../wallets/index.js"
+import "/UI/components/modal/index.js"
+import "/UI/components/signout/index.js"
+import "/UI/components/wallets/index.js"
 
 const styles = css`
     :host {
@@ -38,6 +38,7 @@ export class USERMODAL extends HTMLElement {
         Elements.User = this
         this.shadowRoot.appendChild(template.cloneNode(true))
         this.subscriptions = []
+        this.toggle = this.toggle.bind(this)
     }
 
     get modal() {
@@ -48,11 +49,11 @@ export class USERMODAL extends HTMLElement {
         this.subscriptions.push(Access.on("authenticated", ({ value }) => value === false && this.modal.close()))
     }
 
-    disconnectedCallback = () => {
+    disconnectedCallback() {
         this.subscriptions.forEach((off) => off())
     }
 
-    toggle = () => {
+    toggle() {
         const check = Elements.Access?.checkpoint()
         if (!check) return
         this.modal.toggleModal()

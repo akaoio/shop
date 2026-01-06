@@ -9,7 +9,10 @@ export class SELECT extends HTMLElement {
         this.attachShadow({ mode: "open" })
         this.shadowRoot.appendChild(template.cloneNode(true))
         this.subscriptions = []
-        this.subscriptions.push(this.states.on("options", this.render.bind(this)))
+        this.show = this.show.bind(this)
+        this.close = this.close.bind(this)
+        this.select = this.select.bind(this)
+        this.render = this.render.bind(this)
     }
 
     static get observedAttributes() {
@@ -22,6 +25,7 @@ export class SELECT extends HTMLElement {
     }
 
     connectedCallback() {
+        this.subscriptions.push(this.states.on("options", this.render))
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.modal.setAttribute("header", this.getAttribute("header"))
     }
