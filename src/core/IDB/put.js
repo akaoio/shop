@@ -1,4 +1,4 @@
-import { update } from "./update.js"
+import { update } from "/core/IDB/update.js"
 import { BROWSER, NODE } from "/core/Utils.js"
 
 // Internal implementation

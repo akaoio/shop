@@ -25,7 +25,7 @@
   "author": "mimiza",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
+    "start": "node build.js && node server.js",
     "build": "node build.js",
     "format": "prettier --write \"src/**/*.js\""
   },

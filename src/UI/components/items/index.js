@@ -1,5 +1,5 @@
 import template from "./template.js"
-import { States } from "/core/States.js"
+import States from "/core/States.js"
 import ITEM from "/UI/components/item/index.js"
 import DB from "/core/DB.js"
 

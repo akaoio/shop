@@ -4,8 +4,8 @@
  * Integrates with SEA (Simple End-to-End Cryptography) for encryption and Gun database.
  */
 
-import { webauthn } from "./WebAuthn.js"
-import { States } from "./States.js"
+import { webauthn } from "/core/WebAuthn.js"
+import States from "/core/States.js"
 
 /**
  * Reactive state store for user authentication and access information.

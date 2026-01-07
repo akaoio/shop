@@ -1,8 +1,7 @@
 import template from "./template.js"
 import DB from "/core/DB.js"
 import { Context } from "/core/Context.js"
-import { States } from "/core/States.js"
-import Router from "/core/Router.js"
+import States from "/core/States.js"
 
 
 export class ITEM extends HTMLElement {

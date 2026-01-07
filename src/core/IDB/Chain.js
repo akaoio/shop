@@ -1,10 +1,10 @@
-import { get } from "./get.js"
-import { put } from "./put.js"
-import { del } from "./del.js"
-import { once } from "./once.js"
-import { on } from "./on.js"
-import { off } from "./off.js"
-import { map } from "./map.js"
+import { get } from "/core/IDB/get.js"
+import { put } from "/core/IDB/put.js"
+import { del } from "/core/IDB/del.js"
+import { once } from "/core/IDB/once.js"
+import { on } from "/core/IDB/on.js"
+import { off } from "/core/IDB/off.js"
+import { map } from "/core/IDB/map.js"
 
 export class Chain {
     constructor({ idb, key, path = [] } = {}) {

@@ -1,5 +1,5 @@
 import { BROWSER } from "./Utils/environment.js"
-import { States } from "./States.js"
+import States from "/core/States.js"
 import { Statics } from "./Stores.js"
 
 export const Context = new States({

@@ -21,12 +21,12 @@ export class Router {
      * @returns {Object} Route information: { locale, params, route, path }
      * 
      * @example
-     * // Route patterns from /build/statics/routes.json: "/item/[slug]", "/tag/[tag]"
+     * // Route patterns from /build/statics/routes.json: "/item/[item]", "/tag/[tag]"
      * process({ path: "/fr/tag/some-tag" })
      * // => { locale: {code: "fr", ...}, params: { tag: "some-tag" }, route: "/tag/[tag]", path: "/fr/tag/some-tag/" }
      * 
      * process({ path: "/vi/item/asdf-qwer-zxvc" })
-     * // => { locale: {code: "vi", ...}, params: { slug: "asdf-qwer-zxvc" }, route: "/item/[slug]", path: "/vi/item/asdf-qwer-zxvc/" }
+     * // => { locale: {code: "vi", ...}, params: { item: "asdf-qwer-zxvc" }, route: "/item/[item]", path: "/vi/item/asdf-qwer-zxvc/" }
      * 
      * process({ path: "/" })
      * // => { locale: {code: "en", ...}, params: {}, route: "home", path: "/en/" }
@@ -79,8 +79,8 @@ export class Router {
      * @returns {Object|null} Extracted parameters object, or null if no match
      * 
      * @example
-     * match(["item", "abc-123"], "/item/[slug]")
-     * // => { slug: "abc-123" }
+     * match(["item", "abc-123"], "/item/[item]")
+     * // => { item: "abc-123" }
      * 
      * match(["tag", "electronics"], "/tag/[tag]")
      * // => { tag: "electronics" }
@@ -88,7 +88,7 @@ export class Router {
      * match(["docs", "api", "router"], "/docs/[...path]")
      * // => { path: ["api", "router"] }
      * 
-     * match(["about"], "/item/[slug]")
+     * match(["about"], "/item/[item]")
      * // => null (no match)
      */
     static match(segments, route) {
@@ -194,8 +194,8 @@ export class Router {
      * setHistory({ 
      *   path: "/fr/item/abc-123", 
      *   locale: { code: "fr" }, 
-     *   route: "/item/[slug]", 
-     *   params: { slug: "abc-123" } 
+     *   route: "/item/[item]", 
+     *   params: { item: "abc-123" } 
      * })
      */
     static setHistory({ path = "", locale = {}, route = "", params = {} } = {}) {

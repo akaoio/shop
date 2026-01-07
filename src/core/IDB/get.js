@@ -1,4 +1,4 @@
-import { Chain } from "./Chain.js"
+import { Chain } from "/core/IDB/Chain.js"
 import { BROWSER, NODE } from "/core/Utils.js"
 
 // Internal implementation
