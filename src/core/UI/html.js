@@ -3,11 +3,8 @@ export function html(strings, ...values) {
     const htmlString = strings
         .reduce((result, str, i) => {
             let value = values[i] ?? "" // Ensure undefined values don't cause issues
-            if (Array.isArray(value)) {
-                value = value.map((v) => (v?.nodeType ? serialize(v) : v)).join("")
-            } else if (value?.nodeType) {
-                value = serialize(value)
-            }
+            if (Array.isArray(value)) value = value.map((v) => (v?.nodeType ? serialize(v) : v)).join("")
+            else if (value?.nodeType) value = serialize(value)
             return result + str + value
         }, "")
         .trim()
@@ -23,9 +20,7 @@ export function html(strings, ...values) {
     // Replace self-closing custom element tags with properly closed tags
     const processedHtml = htmlString.replace(selfClosingTagsRegex, (match, group, tagName) => {
         // If it's a standard void element, leave it as is
-        if (voidElements.includes(tagName.toLowerCase())) {
-            return match
-        }
+        if (voidElements.includes(tagName.toLowerCase())) return match
         // Otherwise, convert to opening and closing tags
         return `<${group}></${tagName}>`
     })
