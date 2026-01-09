@@ -9,11 +9,11 @@ export class IDENTICON extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["seed", "size"]
+        return ["data-seed", "data-size"]
     }
 
     attributeChangedCallback(name, last, value) {
-        if ((name === "seed" || name === "size") && last !== value) {
+        if ((name === "data-seed" || name === "data-size") && last !== value) {
             this.generateIdenticon(this.dataset.seed)
         }
     }

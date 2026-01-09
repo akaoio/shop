@@ -17,11 +17,10 @@ export class ICON extends HTMLElement {
     }
 
     attributeChangedCallback(name, last, value) {
-        if (name === "data-icon") {
-            const svg = this.shadowRoot.querySelector("ui-svg")
-            if (value) svg.dataset.src = value
-            else delete svg.dataset.src
-        }
+        if (name !== "data-icon") return
+        const svg = this.shadowRoot.querySelector("ui-svg")
+        if (value) svg.dataset.src = value
+        else delete svg.dataset.src
     }
 }
 

@@ -14,26 +14,22 @@ export class MODAL extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["header"]
+        return ["data-header"]
     }
 
     attributeChangedCallback(name, last, value) {
-        if (name === "header" && last !== value) this.header({ value })
-    }
-
-    header = ({ value } = {}) => {
-        if (typeof this.subscription === "function") this.subscription()
-        this.subscription = Context.on(["dictionary", value], [this.shadowRoot.querySelector("#header"), "innerText"])
+        if (name !== "data-header" || last === value) return
+        this.shadowRoot.querySelector("#header").dataset.key = `dictionary.${this.dataset.header}`
     }
 
     connectedCallback() {
         this.dialog = this.shadowRoot.querySelector("dialog")
         this.shadowRoot.querySelectorAll("dialog, .close, footer").forEach((el) => el.addEventListener("click", this.click))
+        this.shadowRoot.querySelector("#header").dataset.key = `dictionary.${this.dataset.header}`
     }
 
     disconnectedCallback() {
-        this.subscription.off()
-        this.querySelectorAll("dialog, .close, footer").forEach((el) => el.removeEventListener("click", this.click))
+        this.shadowRoot.querySelectorAll("dialog, .close, footer").forEach((el) => el.removeEventListener("click", this.click))
     }
 
     click = (event) => {

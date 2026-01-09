@@ -48,7 +48,7 @@ export const styles = css`
                 text-align: center;
                 gap: var(--space);
 
-                span#header {
+                #header {
                     position: relative;
                     display: flex;
                     align-items: center;
@@ -104,7 +104,7 @@ export const styles = css`
                 padding: 0 var(--space);
                 transform: translateY(50%);
 
-                span#header {
+                #header {
                     left: 50%;
                     transform: translateX(-50%);
                     padding: 0 calc(var(--space) + var(--header-size));

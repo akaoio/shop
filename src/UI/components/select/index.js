@@ -16,12 +16,12 @@ export class SELECT extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["name", "selected"]
+        return ["data-name", "data-selected"]
     }
 
     attributeChangedCallback(name, last, value) {
         if (last === value) return
-        this.states.set({ [name]: value })
+        this.states.set({ [name.replace("data-", "")]: value })
     }
 
     connectedCallback() {

@@ -16,11 +16,10 @@ export class CONTEXT extends HTMLElement {
     }
 
     attributeChangedCallback(name, last, value) {
-        if (name === "data-key" && last !== value) {
-            this.off()
-            this.on()
-            this.states.set({ key: value })
-        }
+        if (name !== "data-key" || last === value) return
+        this.off()
+        this.on()
+        this.states.set({ key: value })
     }
 
     connectedCallback() {
@@ -48,7 +47,7 @@ export class CONTEXT extends HTMLElement {
         let key = this.states.get("key") || this.dataset.key
         if (!key) return
         if (typeof key === "string") key = key.split(".")
-        this.innerText = Context.get(key) || ""
+        this.innerText = Context.get(key) || key.at(-1)
     }
 }
 
