@@ -6,8 +6,8 @@ import "/UI/components/identicon/index.js"
 export const template = html`
     ${styles}
     <div class="user">
-        <ui-icon icon="/images/icons/person.svg" />
-        <button class="icon identicon"><ui-identicon size="7" /></button>
+        <ui-icon data-icon="/images/icons/person.svg" />
+        <button class="icon identicon"><ui-identicon data-size="7" /></button>
     </div>
 `
 

@@ -5,8 +5,8 @@ import "/UI/components/svg/index.js"
 export const template = html`
     ${styles}
     <button type="button" class="icon">
-        <ui-svg class="moon" src="/images/icons/moon-fill.svg" />
-        <ui-svg class="sun" src="/images/icons/sun-fill.svg" />
+        <ui-svg class="moon" data-src="/images/icons/moon-fill.svg" />
+        <ui-svg class="sun" data-src="/images/icons/sun-fill.svg" />
     </button>
 `
 

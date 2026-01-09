@@ -18,10 +18,10 @@ export const styles = css`
             &.full {
                 width: 100%;
             }
-            &:has(.icon[src]) {
+            &:has(.icon[data-src]) {
                 justify-content: stretch;
             }
-            .icon:not([src]) {
+            .icon:not([data-src]) {
                 display: none;
             }
             .icon {

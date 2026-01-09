@@ -5,11 +5,13 @@ import { html } from "/core/UI.js"
 
 export const template = html`
     <layout-main>
-        <h1><ui-context key="dictionary.item" /></h1>
-        <header></header>
-        <section></section>
-        <footer>
-            <ui-button><ui-context key="dictionary.buy" /></ui-button>
+        <div id="image" style="grid-area: image;">
+
+        </div>
+        <header style="grid-area: header;"></header>
+        <section style="grid-area: section;"></section>
+        <footer style="grid-area: footer;">
+            <ui-button><ui-context data-key="dictionary.addToCart" /></ui-button>
         </footer>
     </layout-main>
 `

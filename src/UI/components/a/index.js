@@ -9,7 +9,7 @@ export class A extends HTMLAnchorElement {
     }
 
     static get observedAttributes() {
-        return ["to", "locale"]
+        return ["data-to", "data-locale"]
     }
 
     attributeChangedCallback(name, last, value) {
@@ -35,8 +35,8 @@ export class A extends HTMLAnchorElement {
     render() {
         // Calculate path
         const router = Router.process({
-            path: this.getAttribute("to") || this.getAttribute("href"),
-            locale: this.getAttribute("locale") || Context.get("locale").code
+            path: this.dataset.to || this.getAttribute("href"),
+            locale: this.dataset.locale || Context.get("locale").code
         })
         if (this.getAttribute("href") !== router.path) this.setAttribute("href", router.path)
     }

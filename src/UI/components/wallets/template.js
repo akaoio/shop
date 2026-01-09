@@ -7,17 +7,17 @@ import { html } from "/core/UI.js"
 export const item = html`
     <span class="item">
         <input type="radio" name="wallet" />
-        <label><ui-identicon size="7" /></label>
+        <label><ui-identicon data-size="7" /></label>
     </span>
 `
 
 export const template = html`
     ${styles}
     <header>
-        <ui-context key="dictionary.wallet" />
+        <ui-context data-key="dictionary.wallet" />
         <nav>
-            <ui-icon id="increase" icon="/images/icons/plus-lg.svg" />
-            <ui-icon id="decrease" icon="/images/icons/dash-lg.svg" />
+            <ui-icon id="increase" data-icon="/images/icons/plus-lg.svg" />
+            <ui-icon id="decrease" data-icon="/images/icons/dash-lg.svg" />
         </nav>
     </header>
     <div id="wallets"></div>

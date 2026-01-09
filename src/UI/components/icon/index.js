@@ -8,19 +8,19 @@ export class ICON extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["icon"]
+        return ["data-icon"]
     }
 
     connectedCallback() {
-        if (!this.getAttribute("icon")) return
-        this.shadowRoot.querySelector("ui-svg").setAttribute("src", this.getAttribute("icon"))
+        if (!this.dataset.icon) return
+        this.shadowRoot.querySelector("ui-svg").dataset.src = this.dataset.icon
     }
 
     attributeChangedCallback(name, last, value) {
-        if (name === "icon") {
+        if (name === "data-icon") {
             const svg = this.shadowRoot.querySelector("ui-svg")
-            if (value) svg.setAttribute("src", value)
-            else svg.removeAttribute("src")
+            if (value) svg.dataset.src = value
+            else delete svg.dataset.src
         }
     }
 }

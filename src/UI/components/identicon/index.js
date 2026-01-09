@@ -14,13 +14,13 @@ export class IDENTICON extends HTMLElement {
 
     attributeChangedCallback(name, last, value) {
         if ((name === "seed" || name === "size") && last !== value) {
-            this.generateIdenticon(this.getAttribute("seed"))
+            this.generateIdenticon(this.dataset.seed)
         }
     }
 
     connectedCallback() {
-        if (this.hasAttribute("seed")) {
-            this.generateIdenticon(this.getAttribute("seed"))
+        if (this.dataset.seed) {
+            this.generateIdenticon(this.dataset.seed)
         }
     }
 
@@ -45,7 +45,7 @@ export class IDENTICON extends HTMLElement {
         if (["", "null", "undefined"].includes(seed)) this.removeAttribute("seed")
 
         // Get the size from attribute or use default
-        const size = parseInt(this.getAttribute("size"), 10) || 5
+        const size = parseInt(this.dataset.size, 10) || 5
 
         // Define grid parameters (ensure odd number to have a middle column)
         const adjustedSize = size % 2 === 0 ? size + 1 : size

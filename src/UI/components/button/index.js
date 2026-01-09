@@ -9,8 +9,8 @@ export class BUTTON extends HTMLElement {
 
     connectedCallback() {
         this.shadowRoot.querySelector("button").classList = this.classList
-        if (this.hasAttribute("left")) this.shadowRoot.querySelector("#left").setAttribute("src", this.getAttribute("left"))
-        if (this.hasAttribute("right")) this.shadowRoot.querySelector("#right").setAttribute("src", this.getAttribute("right"))
+        if (this.dataset.left) this.shadowRoot.querySelector("#left").dataset.src = this.dataset.left
+        if (this.dataset.right) this.shadowRoot.querySelector("#right").dataset.src = this.dataset.right
     }
 }
 

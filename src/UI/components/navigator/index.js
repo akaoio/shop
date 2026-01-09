@@ -15,8 +15,8 @@ export class NAVIGATOR extends HTMLElement {
             if ("vibrate" in navigator) navigator.vibrate(20)
         }
         if (icon) {
-            if (this.getAttribute("icon")) icon.setAttribute("icon", this.getAttribute("icon"))
-            else icon.removeAttribute("icon")
+            if (this.dataset.icon) icon.dataset.icon = this.dataset.icon
+            else delete icon.dataset.icon
         }
 
         label.addEventListener("click", vibrate)

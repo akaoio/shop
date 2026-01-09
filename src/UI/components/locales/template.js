@@ -6,8 +6,8 @@ import { html } from "/core/UI.js"
 
 export const template = html`
     ${styles}
-    <ui-icon icon="/images/icons/translate.svg" />
-    <ui-select name="locale" header="locales" selected="${Context.get("locale")?.code}" />
+    <ui-icon data-icon="/images/icons/translate.svg" />
+    <ui-select data-name="locale" data-header="locales" data-selected="${Context.get("locale")?.code}" />
 `
 
 export default template

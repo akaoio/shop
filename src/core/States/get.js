@@ -6,7 +6,7 @@
 export function get(data) {
     if (!data) return
     if (typeof data === "string") return this.states[data]
-    if (Array.isArray(data)) return data.map((k) => this.states[k])
+    if (Array.isArray(data)) return data.reduce((acc, key) => acc === undefined || acc === null ? undefined : acc[key], this.states)
     // Map object values to their state counterparts
     return Object.entries(data).reduce((acc, [k, v]) => ({ ...acc, [k]: v ? this.states[v] : this.states[k] }), {})
 }

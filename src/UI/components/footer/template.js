@@ -14,11 +14,11 @@ export const template = html`
     ${styles}
     <footer>
         <ui-navigator>
-            <a is="ui-a" to="/"><ui-icon icon="/images/icons/house.svg" /></a>
-            <a is="ui-a" to="/deposit"><ui-icon icon="/images/icons/download.svg" /></a>
-            <a is="ui-a" to="/withdraw"><ui-icon icon="/images/icons/upload.svg" /></a>
+            <a is="ui-a" data-to="/"><ui-icon data-icon="/images/icons/house.svg" /></a>
+            <a is="ui-a" data-to="/deposit"><ui-icon data-icon="/images/icons/download.svg" /></a>
+            <a is="ui-a" data-to="/withdraw"><ui-icon data-icon="/images/icons/upload.svg" /></a>
             <ui-user />
-            <ui-navigator icon="/images/icons/sliders.svg">
+            <ui-navigator data-icon="/images/icons/sliders.svg">
                 <ui-locales />
                 <ui-fiats />
                 <ui-themes />

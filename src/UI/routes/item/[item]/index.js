@@ -1,6 +1,7 @@
 import template from "./template.js"
 import { Context } from "/core/Context.js"
 import DB from "/core/DB.js"
+import Router from "/core/Router.js"
 
 export class ITEM extends HTMLElement {
     constructor() {
@@ -27,6 +28,10 @@ export class ITEM extends HTMLElement {
         if (!data) return
         this.shadowRoot.querySelector("header").innerHTML = data.name
         this.shadowRoot.querySelector("section").innerHTML = JSON.stringify({ meta, data })
+        Router.setHead({
+            title: data.name,
+            description: data.description || "",
+        })
     }
 }
 

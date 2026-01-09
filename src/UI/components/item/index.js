@@ -18,14 +18,14 @@ export class ITEM extends HTMLElement {
         const name = this.shadowRoot.querySelector("#name")
         const description = this.shadowRoot.querySelector("#description")
         const price = this.shadowRoot.querySelector("#price")
-        this.shadowRoot.querySelector("a[is='ui-a']").setAttribute("to", `/item/${this.getAttribute("key")}`)
+        this.shadowRoot.querySelector("a[is='ui-a']").dataset.to = `/item/${this.dataset.key}`
         this.subscriptions.push(
             Context.on("locale", this.render),
             this.states.on("name", [name, "textContent"]),
             this.states.on("description", [description, "textContent"]),
             this.states.on("price", [price, "textContent"])
         )
-        DB.get(["statics", "items", this.getAttribute("key"), "meta.json"]).then(data => this.states.set(data))
+        DB.get(["statics", "items", this.dataset.key, "meta.json"]).then(data => this.states.set(data))
         if (!this.states.has(["name", "price"])) this.render()
     }
 
@@ -34,7 +34,7 @@ export class ITEM extends HTMLElement {
     }
 
     async render() {
-        const data = await DB.get(["statics", "items", this.getAttribute("key"), `${Context.get("locale").code}.json`])
+        const data = await DB.get(["statics", "items", this.dataset.key, `${Context.get("locale").code}.json`])
         this.states.set(data)
     }
 }

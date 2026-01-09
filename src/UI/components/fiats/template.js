@@ -6,7 +6,7 @@ import { html } from "/core/UI.js"
 export const template = html`
     ${styles}
     <span class="icon"></span>
-    <ui-select name="fiat" header="fiats" selected="${Context.get("fiat")?.code}" />
+    <ui-select data-name="fiat" data-header="fiats" data-selected="${Context.get("fiat")?.code}" />
 `
 
 export default template

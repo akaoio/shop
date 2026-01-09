@@ -27,7 +27,7 @@ export class SELECT extends HTMLElement {
     connectedCallback() {
         this.subscriptions.push(this.states.on("options", this.render))
         this.modal = this.shadowRoot.querySelector("ui-modal")
-        this.modal.setAttribute("header", this.getAttribute("header"))
+        this.modal.dataset.header = this.dataset.header
     }
 
     disconnectedCallback() {
@@ -43,22 +43,22 @@ export class SELECT extends HTMLElement {
     }
 
     get name() {
-        return this.states.get("name") || this.getAttribute("name")
+        return this.states.get("name") || this.dataset.name
     }
 
     get selected() {
-        return this.states.get("selected") || this.getAttribute("selected")
+        return this.states.get("selected") || this.dataset.selected
     }
 
     select(value) {
         this.states.set({ selected: value })
-        this.setAttribute("selected", value)
+        this.dataset.selected = value
         if (typeof this.callback == "function") this.callback(value)
     }
 
     render() {
-        const name = this.states.get("name") || this.getAttribute("name")
-        const options = this.states
+        const name = this.states.get("name") || this.dataset.name
+        this.modal.append(...this.states
             .get("options")
             .filter((option) => {
                 const exist = this.modal.querySelector(`input[type="radio"][id="${option.value}"]`)
@@ -82,7 +82,7 @@ export class SELECT extends HTMLElement {
                 this.subscriptions.push(() => label.removeEventListener("click", select))
                 return option
             })
-        this.modal.append(...options)
+        )
     }
 }
 

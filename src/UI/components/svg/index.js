@@ -9,11 +9,11 @@ export class SVG extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["src"]
+        return ["data-src"]
     }
 
     attributeChangedCallback(name, last, value) {
-        if (name !== "src" || last === value) return
+        if (name !== "data-src" || last === value) return
         const svg = this.shadowRoot.querySelector("svg")
         if (svg) this.shadowRoot.removeChild(svg)
         fetch(value)

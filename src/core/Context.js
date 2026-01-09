@@ -8,6 +8,8 @@ export const Context = new States({
     referrer: null
 })
 
+globalThis.Context = Context
+
 export function getTheme() {
     if (!BROWSER) return
     const memory = globalThis.localStorage ? globalThis.localStorage.getItem("theme") : null

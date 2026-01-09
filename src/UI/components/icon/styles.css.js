@@ -6,13 +6,13 @@ export const styles = css`
     :host {
         border-radius: 50%;
     }
-    :host([size="sm"]) {
+    :host([data-size="sm"]) {
         --icon: var(--icon-sm);
     }
-    :host([size="md"]) {
+    :host([data-size="md"]) {
         --icon: var(--icon-md);
     }
-    :host([size="lg"]) {
+    :host([data-size="lg"]) {
         --icon: var(--icon-lg);
     }
 `

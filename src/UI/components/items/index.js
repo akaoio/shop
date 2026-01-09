@@ -18,8 +18,8 @@ export class ITEMS extends HTMLElement {
 
     async render() {
         const pages = this.states.get("pages")
-        const start = this.getAttribute("start") ? parseInt(this.getAttribute("start")) : 1
-        let end = this.getAttribute("end") ? parseInt(this.getAttribute("end")) : pages
+        const start = this.dataset.start ? parseInt(this.dataset.start) : 1
+        let end = this.dataset.end ? parseInt(this.dataset.end) : pages
         if (end < start) end = start
         if (end > pages) end = pages
         const data = []
@@ -29,7 +29,7 @@ export class ITEMS extends HTMLElement {
         }
         const children = data.map(item => {
             const element = new ITEM()
-            element.setAttribute("key", item)
+            element.dataset.key = item
             return element
         })
         this.shadowRoot.querySelector("#items").replaceChildren(...children)

@@ -13,7 +13,7 @@ export const styles = css`
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            &:has(ui-identicon[seed]) {
+            &:has(ui-identicon[data-seed]) {
                 ui-icon {
                     display: none;
                 }
@@ -28,7 +28,7 @@ export const styles = css`
 
         ui-identicon {
             display: none;
-            &[seed] {
+            &[data-seed] {
                 display: flex;
             }
         }

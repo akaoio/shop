@@ -24,7 +24,7 @@ export class WALLETS extends HTMLElement {
     }
 
     get total() {
-        return Number(this.hasAttribute("total") ? this.getAttribute("total") : Access.get("wallet")?.total || this.step)
+        return Number(typeof this.dataset.total !== "undefined" ? this.dataset.total : Access.get("wallet")?.total || this.step)
     }
 
     set total(value) {
@@ -72,7 +72,7 @@ export class WALLETS extends HTMLElement {
             const select = () => this.select({ id })
             label.addEventListener("click", select)
             this.subscriptions.push(() => label.removeEventListener("click", select))
-            el.querySelector("ui-identicon").setAttribute("seed", await globalThis.sea.work(Access.get("id"), id))
+            el.querySelector("ui-identicon").dataset.seed = await globalThis.sea.work(Access.get("id"), id)
             fragment.appendChild(el)
         }
         this.wallets.appendChild(fragment)

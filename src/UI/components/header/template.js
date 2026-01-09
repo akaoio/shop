@@ -10,8 +10,8 @@ export const template = html`
     ${styles}
     <header>
         <nav>
-            <a is="ui-a" to="/">
-                <ui-svg class="brand" src="${Statics?.site?.brand?.text}" />
+            <a is="ui-a" data-to="/">
+                <ui-svg class="brand" data-src="${Statics?.site?.brand?.text}" />
             </a>
             <div>
                 <ui-cart />

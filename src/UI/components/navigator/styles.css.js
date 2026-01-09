@@ -64,7 +64,7 @@ export const styles = css`
                 position: absolute;
                 z-index: calc(var(--level) - var(--active));
                 ui-icon {
-                    &:not([icon]) {
+                    &:not([data-icon]) {
                         display: none;
                     }
                     position: absolute;

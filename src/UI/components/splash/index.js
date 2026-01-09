@@ -11,8 +11,8 @@ export class SPLASH extends HTMLElement {
         const template = html`
             ${styles}
             <div class="container">
-                <ui-svg class="brand symbol" src="${Statics?.site?.brand?.symbol}" />
-                <ui-svg class="brand text" src="${Statics?.site?.brand?.text}" />
+                <ui-svg class="brand symbol" data-src="${Statics?.site?.brand?.symbol}" />
+                <ui-svg class="brand text" data-src="${Statics?.site?.brand?.text}" />
                 <div class="progress"></div>
             </div>
         `

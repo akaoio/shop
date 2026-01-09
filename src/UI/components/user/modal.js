@@ -23,7 +23,7 @@ const styles = css`
 
 const template = html`
     ${styles}
-    <ui-modal header="profile" class="center">
+    <ui-modal data-header="profile" class="center">
         <ui-signout slot="header" />
         <section>
             <ui-wallets />

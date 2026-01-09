@@ -3,7 +3,7 @@ import styles from "./styles.css.js"
 
 export const template = html`
     ${styles}
-    <div id="items"></div>
+    <section id="items"></section>
     <slot></slot>
 `
 

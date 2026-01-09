@@ -19,12 +19,12 @@ export class ACCESS extends HTMLElement {
     connectedCallback() {
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.form = this.shadowRoot.querySelector("#signup-form")
-        this.shadowRoot.querySelector("[data-screen=signup-screen]").addEventListener("click", this.signupScreen)
+        this.shadowRoot.querySelector("#signup-screen").addEventListener("click", this.signupScreen)
         this.shadowRoot.querySelector("#back").addEventListener("click", this.unauthenticated)
         this.shadowRoot.querySelector("#signup").addEventListener("click", this.signup)
         this.shadowRoot.querySelector("#signin").addEventListener("click", this.signin)
         this.subscriptions.push(
-            () => this.shadowRoot.querySelector("[data-screen=signup-screen]").removeEventListener("click", this.signupScreen),
+            () => this.shadowRoot.querySelector("#signup-screen").removeEventListener("click", this.signupScreen),
             () => this.shadowRoot.querySelector("#back").removeEventListener("click", this.unauthenticated),
             () => this.shadowRoot.querySelector("#signup").removeEventListener("click", this.signup),
             () => this.shadowRoot.querySelector("#signin").removeEventListener("click", this.signin)
