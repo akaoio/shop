@@ -63,18 +63,17 @@ export class SELECT extends HTMLElement {
             .filter((option) => {
                 const exist = this.modal.querySelector(`input[type="radio"][id="${option.value}"]`)
                 if (!exist) return true
-                return false
+                return option
             })
             .map((option) => {
                 if (!option.value) return
-                return render(html`<input id="${option.value}" type="radio" name="${name}" value="${option.value}" /><label for="${option.value}">${option.label}</label>`)
-            })
-            .filter(Boolean) // Remove undefined values
-            .map((fragment) => {
+                const fragment = render(html`
+                    <input id="${option.value}" type="radio" name="${name}" value="${option.value}" ${option.value == this.selected ? "checked" : ""} />
+                    <label for="${option.value}">${option.label}</label>
+                `)
                 const radio = fragment.querySelector("input")
                 const label = fragment.querySelector("label")
-                if (radio && label) {
-                    if (radio.value === this.selected) radio.checked = true
+                if (label) {
                     const select = () => {
                         this.select(radio.value)
                         this.modal.close()

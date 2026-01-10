@@ -14,10 +14,11 @@ export class ACCESS extends HTMLElement {
         this.unauthenticated = this.unauthenticated.bind(this)
         this.signup = this.signup.bind(this)
         this.signin = this.signin.bind(this)
-        Elements.Access = this
     }
 
     connectedCallback() {
+        // Assign to Elements only after component is fully connected and modal is initialized
+        Elements.Access = this
         this.modal = this.shadowRoot.querySelector("ui-modal")
         this.form = this.shadowRoot.querySelector("#signup-form")
         this.shadowRoot.querySelector("#signup-screen").addEventListener("click", this.signupScreen)
@@ -52,6 +53,7 @@ export class ACCESS extends HTMLElement {
         if (Access.get("authenticated")) return true
         this.modal.showModal()
         if (!Access.get("authenticated")) this.show("unauthenticated-screen")
+        return false
     }
 
     show(id) {
