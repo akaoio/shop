@@ -1,7 +1,6 @@
-import { html } from "./UI/html.js"
-import { css } from "./UI/css.js"
+export { html } from "./UI/html.js"
+export { css } from "./UI/css.js"
+export { create } from "./UI/create.js"
+export { render } from "./UI/render.js"
 
-export { html }
-export { css }
-
-export default { html, css }
+export default { html, css, create, render }
