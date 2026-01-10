@@ -10,7 +10,7 @@ export const styles = css`
             "section"
             "footer";
         gap: var(--space, 1rem);
-        
+
         @media (min-width: 768px) {
             grid-template-columns: 1fr 1fr;
             grid-template-areas:

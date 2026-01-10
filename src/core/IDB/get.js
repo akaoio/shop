@@ -6,7 +6,7 @@ export async function $get(path) {
     await this.ready
     if (BROWSER) {
         const request = await this.execute({
-            operation: store => store.get(path)
+            operation: (store) => store.get(path)
         })
         return request.result
     }

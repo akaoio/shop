@@ -11,7 +11,9 @@ export const template = html`
     <ui-icon data-size="md" data-icon="/images/icons/box-arrow-right.svg" id="signout" />
     <ui-modal data-header="signout" class="center">
         <div class="buttons">
-            <ui-button class="full" data-left="/images/icons/check-lg.svg" id="confirm"><ui-context data-key="dictionary.confirm" /></ui-button>
+            <ui-button class="full" data-left="/images/icons/check-lg.svg" id="confirm">
+                <ui-context data-key="dictionary.confirm" />
+            </ui-button>
             <ui-button class="full" data-left="/images/icons/arrow-left.svg" id="back"><ui-context data-key="dictionary.back" /></ui-button>
         </div>
     </ui-modal>

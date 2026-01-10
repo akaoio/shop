@@ -5,9 +5,7 @@ import { html } from "/core/UI.js"
 
 export const template = html`
     <layout-main>
-        <div id="image" style="grid-area: image;">
-
-        </div>
+        <div id="image" style="grid-area: image;"></div>
         <header style="grid-area: header;"></header>
         <section style="grid-area: section;"></section>
         <footer style="grid-area: footer;">

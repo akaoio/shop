@@ -42,7 +42,7 @@ export async function hash(path, exclude = []) {
                 // If it's a file, add its content
                 if (stats.isFile()) {
                     combined += item // Include path for uniqueness
-                    const content = fs.readFileSync(item, 'utf8')
+                    const content = fs.readFileSync(item, "utf8")
                     combined += content
                 }
                 // If it's a directory, process it recursively
@@ -71,7 +71,7 @@ export async function hash(path, exclude = []) {
 
         // If it's a file, hash its content directly
         if (stats.isFile()) {
-            const content = fs.readFileSync(item, 'utf8')
+            const content = fs.readFileSync(item, "utf8")
             return sha256(content)
         }
 
@@ -108,7 +108,7 @@ async function hashDirectory(path, exclude = []) {
             const relPath = relativePath ? `${relativePath}/${entry.name}` : entry.name
 
             // Skip excluded files/directories
-            if (exclude.some(ex => relPath === ex || relPath.startsWith(ex + "/"))) {
+            if (exclude.some((ex) => relPath === ex || relPath.startsWith(ex + "/"))) {
                 continue
             }
 
@@ -117,7 +117,7 @@ async function hashDirectory(path, exclude = []) {
                 await processDirectory(fullPath, relPath)
             } else if (entry.isFile()) {
                 combined += entry.name
-                const content = fs.readFileSync(fullPath, 'utf8')
+                const content = fs.readFileSync(fullPath, "utf8")
                 combined += content
             }
         }

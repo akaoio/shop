@@ -18,7 +18,7 @@ export class OPTION extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.subscriptions.forEach(off => off())
+        this.subscriptions.forEach((off) => off())
     }
 
     render() {
@@ -26,9 +26,10 @@ export class OPTION extends HTMLElement {
         const data = this.states.get("data")
         const header = this.shadowRoot.querySelector("header ui-context")
         if (Context.get("dictionary")?.[data?.name]) header.dataset.key = ["dictionary", data.name].join(".")
-        const children = data.map(option => {
-            const element = html`<span></span>`
-
+        const children = data.map((option) => {
+            const element = html`
+                <span></span>
+            `
         })
     }
 }

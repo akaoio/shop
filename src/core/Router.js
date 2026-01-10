@@ -5,29 +5,29 @@ import DB from "./DB.js"
 export class Router {
     /**
      * Processes a URL path and returns route information with locale and parameters.
-     * 
+     *
      * Steps:
      * 1. Normalizes the path (strips trailing slashes and file extensions)
      * 2. Determines locale from: path prefix → localStorage → site config → first available locale
      * 3. Matches remaining path segments against known route patterns
      * 4. Constructs normalized path with locale prefix
-     * 
+     *
      * @param {Object} options - Configuration object
      * @param {string} options.path - URL path to process (defaults to current location)
      * @param {Array} options.routes - Route patterns (defaults to Statics.routes)
      * @param {Array} options.locales - Supported locales (defaults to Statics.locales)
      * @param {Object} options.site - Site configuration (defaults to Statics.site)
-     * 
+     *
      * @returns {Object} Route information: { locale, params, route, path }
-     * 
+     *
      * @example
      * // Route patterns from /build/statics/routes.json: "/item/[item]", "/tag/[tag]"
      * process({ path: "/fr/tag/some-tag" })
      * // => { locale: {code: "fr", ...}, params: { tag: "some-tag" }, route: "/tag/[tag]", path: "/fr/tag/some-tag/" }
-     * 
+     *
      * process({ path: "/vi/item/asdf-qwer-zxvc" })
      * // => { locale: {code: "vi", ...}, params: { item: "asdf-qwer-zxvc" }, route: "/item/[item]", path: "/vi/item/asdf-qwer-zxvc/" }
-     * 
+     *
      * process({ path: "/" })
      * // => { locale: {code: "en", ...}, params: {}, route: "home", path: "/en/" }
      */
@@ -37,18 +37,21 @@ export class Router {
         site = Object.keys(site).length ? site : Statics?.site || {}
         routes = routes.length ? routes : Statics?.routes || []
         locales = locales.length ? locales : Statics?.locales || []
-        let segments = path.replace(/^\/+|\/+$|\/\w+\.\w+$/g, "").split("/").filter(Boolean)
+        let segments = path
+            .replace(/^\/+|\/+$|\/\w+\.\w+$/g, "")
+            .split("/")
+            .filter(Boolean)
         let code = locale || globalThis?.localStorage?.getItem?.("locale") || site?.locale || locales?.[0]?.code
         const result = {
-            locale: locales.find(l => l.code === code),
+            locale: locales.find((l) => l.code === code),
             params: {},
             route: "home"
         }
         if (segments.length) {
             // Check if first part is a supported locale or matches locale pattern
-            if (locales.some(l => l.code === segments?.[0]) || /^[a-z]{2}(-[A-Z]{2})?$/.test(segments[0])) {
+            if (locales.some((l) => l.code === segments?.[0]) || /^[a-z]{2}(-[A-Z]{2})?$/.test(segments[0])) {
                 code = segments.shift()
-                if (!locale) result.locale = locales.find(l => l.code === code)
+                if (!locale) result.locale = locales.find((l) => l.code === code)
             }
             // Check against known route patterns
             for (const route of routes) {
@@ -67,27 +70,27 @@ export class Router {
 
     /**
      * Matches URL segments against a route pattern and extracts parameters.
-     * 
+     *
      * Supports multiple parameter types:
      * - Dynamic segments: `[param]` - matches single segment
      * - Catch-all: `[...param]` - matches remaining segments (required)
      * - Optional catch-all: `[[...param]]` - matches remaining segments (optional)
-     * 
+     *
      * @param {Array<string>} segments - URL path segments to match
      * @param {string|Object} route - Route pattern string or object with path property
-     * 
+     *
      * @returns {Object|null} Extracted parameters object, or null if no match
-     * 
+     *
      * @example
      * match(["item", "abc-123"], "/item/[item]")
      * // => { item: "abc-123" }
-     * 
+     *
      * match(["tag", "electronics"], "/tag/[tag]")
      * // => { tag: "electronics" }
-     * 
+     *
      * match(["docs", "api", "router"], "/docs/[...path]")
      * // => { path: ["api", "router"] }
-     * 
+     *
      * match(["about"], "/item/[item]")
      * // => null (no match)
      */
@@ -137,12 +140,12 @@ export class Router {
     /**
      * Updates page metadata including title, description, and favicon.
      * Creates or updates HTML head elements for SEO and branding.
-     * 
+     *
      * - Sets page title with site name appended
      * - Creates/updates meta description tag
      * - Creates/updates favicon link (from Statics.site.favicon)
      * - Auto-detects favicon MIME type (.svg vs .ico)
-     * 
+     *
      * @param {Object} options - Configuration object
      * @param {string} options.title - Page title (site name appended automatically)
      * @param {string} options.description - Meta description for SEO
@@ -183,19 +186,19 @@ export class Router {
     /**
      * Updates browser history without reloading the page (client-side navigation).
      * Pushes new state to history stack only if the path has changed.
-     * 
+     *
      * @param {Object} options - Configuration object
      * @param {string} options.path - New URL pathname to navigate to
      * @param {Object} options.locale - Locale object to store in history state
      * @param {string} options.route - Route identifier to store in history state
      * @param {Object} options.params - Route parameters to store in history state
-     * 
+     *
      * @example
-     * setHistory({ 
-     *   path: "/fr/item/abc-123", 
-     *   locale: { code: "fr" }, 
-     *   route: "/item/[item]", 
-     *   params: { item: "abc-123" } 
+     * setHistory({
+     *   path: "/fr/item/abc-123",
+     *   locale: { code: "fr" },
+     *   route: "/item/[item]",
+     *   params: { item: "abc-123" }
      * })
      */
     static setHistory({ path = "", locale = {}, route = "", params = {} } = {}) {
@@ -212,16 +215,16 @@ export class Router {
 
     /**
      * Changes the application locale and loads the corresponding translations.
-     * 
+     *
      * Performs the following operations:
      * 1. Saves locale code to localStorage
      * 2. Updates document lang attribute for accessibility/SEO
      * 3. Loads translation dictionary from DB
      * 4. Updates global dictionary reference
      * 5. Updates Context with new locale and dictionary
-     * 
+     *
      * @param {string} code - Locale code (e.g., "en", "fr", "zh-TW")
-     * 
+     *
      * @example
      * await setLocale("fr") // Switches to French
      * await setLocale("ja") // Switches to Japanese
@@ -246,9 +249,9 @@ export class Router {
     /**
      * Navigates to a new path by processing it and updating the Context.
      * Triggers route matching and extracts locale/parameters from the path.
-     * 
+     *
      * @param {string} path - URL path to navigate to (e.g., "/fr/item/abc-123")
-     * 
+     *
      * @example
      * navigate("/en/item/wireless-headphones")
      * navigate("/fr/tag/electronics")

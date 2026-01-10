@@ -53,7 +53,9 @@ export class WALLETS extends HTMLElement {
         this.subscriptions.forEach((off) => off())
     }
 
-    increase() { (this.total += this.step) }
+    increase() {
+        this.total += this.step
+    }
 
     decrease() {
         if (this.total - this.step > this.id) this.total -= this.step

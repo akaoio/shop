@@ -33,14 +33,11 @@ export class CONTEXT extends HTMLElement {
     on() {
         if (!this.dataset.key) return
         const key = this.dataset.key.split(".")
-        this.subscriptions.push(
-            Context.on(key, this.render),
-            this.states.on("key", this.render)
-        )
+        this.subscriptions.push(Context.on(key, this.render), this.states.on("key", this.render))
     }
 
     off() {
-        this.subscriptions.forEach(off => off())
+        this.subscriptions.forEach((off) => off())
     }
 
     render() {

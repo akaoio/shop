@@ -7,7 +7,7 @@ export async function $del(path) {
     if (BROWSER) {
         const request = await this.execute({
             mode: "readwrite",
-            operation: store => store.delete(path)
+            operation: (store) => store.delete(path)
         })
         await update(this, path, undefined)
         return request.result

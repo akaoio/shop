@@ -12,8 +12,12 @@ export const template = html`
             <h3><ui-context data-key="dictionary.welcome" /></h3>
             <p><ui-context data-key="dictionary.pleaseCreateAnAccountOrSignin" /></p>
             <div class="buttons">
-                <ui-button class="full" data-left="/images/icons/fingerprint.svg" id="signin"><ui-context data-key="dictionary.signin" /></ui-button>
-                <ui-button class="full" data-left="/images/icons/person-add.svg" id="signup-screen"><ui-context data-key="dictionary.signup" /></ui-button>
+                <ui-button class="full" data-left="/images/icons/fingerprint.svg" id="signin">
+                    <ui-context data-key="dictionary.signin" />
+                </ui-button>
+                <ui-button class="full" data-left="/images/icons/person-add.svg" id="signup-screen">
+                    <ui-context data-key="dictionary.signup" />
+                </ui-button>
             </div>
         </main>
         <main id="signup-screen">
@@ -22,8 +26,12 @@ export const template = html`
                 <input type="text" name="name" />
                 <input type="text" name="displayName" />
                 <div class="buttons">
-                    <ui-button class="full" data-left="/images/icons/check-lg.svg" id="signup"><ui-context data-key="dictionary.confirm" /></ui-button>
-                    <ui-button class="full" data-left="/images/icons/arrow-left.svg" id="back"><ui-context data-key="dictionary.back" /></ui-button>
+                    <ui-button class="full" data-left="/images/icons/check-lg.svg" id="signup">
+                        <ui-context data-key="dictionary.confirm" />
+                    </ui-button>
+                    <ui-button class="full" data-left="/images/icons/arrow-left.svg" id="back">
+                        <ui-context data-key="dictionary.back" />
+                    </ui-button>
                 </div>
             </form>
         </main>

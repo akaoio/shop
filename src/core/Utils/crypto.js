@@ -18,7 +18,7 @@ export function sha256(str) {
     words[words.length] = strBitLength
 
     // Process chunks
-    for (let j = 0; j < words.length;) {
+    for (let j = 0; j < words.length; ) {
         const w = words.slice(j, (j += 16))
         const oldHash = H.slice(0)
 

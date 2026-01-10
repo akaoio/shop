@@ -19,7 +19,7 @@ export class ITEM extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.subscriptions.forEach(off => off())
+        this.subscriptions.forEach((off) => off())
     }
 
     async render() {
@@ -31,7 +31,7 @@ export class ITEM extends HTMLElement {
         this.shadowRoot.querySelector("section").innerHTML = JSON.stringify({ meta, data })
         Router.setHead({
             title: data.name,
-            description: data.description || "",
+            description: data.description || ""
         })
     }
 }

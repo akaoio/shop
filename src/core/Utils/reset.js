@@ -9,14 +9,17 @@ export function reset() {
 
     // Delete all databases in indexedDB
     if ("indexedDB" in window) {
-        indexedDB.databases().then((databases) => {
-            databases.forEach((database) => {
-                indexedDB.deleteDatabase(database.name)
-                console.log(`Database ${database.name} has been deleted.`)
+        indexedDB
+            .databases()
+            .then((databases) => {
+                databases.forEach((database) => {
+                    indexedDB.deleteDatabase(database.name)
+                    console.log(`Database ${database.name} has been deleted.`)
+                })
             })
-        }).catch((error) => {
-            console.error("Error accessing IndexedDB:", error)
-        })
+            .catch((error) => {
+                console.error("Error accessing IndexedDB:", error)
+            })
     }
 
     // Clear all caches

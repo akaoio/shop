@@ -657,7 +657,16 @@
 
                     if (typeof pair === "function") {
                         var r = await pair(data)
-                        return r.authenticatorData ? w(r, j, opt, cb) : n({ m: j, s: typeof r === "string" ? r : r.signature && shim.Buffer.from(r.signature, "binary").toString(opt.encode || "base64") }, opt, cb)
+                        return r.authenticatorData
+                            ? w(r, j, opt, cb)
+                            : n(
+                                  {
+                                      m: j,
+                                      s: typeof r === "string" ? r : r.signature && shim.Buffer.from(r.signature, "binary").toString(opt.encode || "base64")
+                                  },
+                                  opt,
+                                  cb
+                              )
                     }
 
                     return k(pair, j, opt, cb)
@@ -1506,7 +1515,14 @@
             act.f = function (pair) {
                 var half = act.half || {},
                     data = act.data || {}
-                act.g((act.lol = { pub: pair.pub || data.pub, epub: pair.epub || data.epub, priv: pair.priv || half.priv, epriv: pair.epriv || half.epriv }))
+                act.g(
+                    (act.lol = {
+                        pub: pair.pub || data.pub,
+                        epub: pair.epub || data.epub,
+                        priv: pair.priv || half.priv,
+                        epriv: pair.epriv || half.epriv
+                    })
+                )
             }
             act.g = function (pair) {
                 if (!pair || !pair.pub || !pair.epub) {

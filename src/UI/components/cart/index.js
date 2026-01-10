@@ -16,9 +16,7 @@ export class CART extends HTMLElement {
         const modal = this.shadowRoot.querySelector("ui-modal")
 
         button.addEventListener("click", modal.toggleModal)
-        this.subscriptions.push(
-            () => button.removeEventListener("click", modal.toggleModal)
-        )
+        this.subscriptions.push(() => button.removeEventListener("click", modal.toggleModal))
     }
 
     disconnectedCallback() {

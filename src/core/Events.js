@@ -20,7 +20,7 @@ export class Events {
     /**
      * Register an event listener with automatic unsubscribe capability.
      * Works across browser (addEventListener) and Node.js (on) environments.
-     * 
+     *
      * @param {string} event - The event name to listen for
      * @param {Function} listener - Callback function to execute when event fires
      * @returns {Function} Unsubscribe function that removes the listener
@@ -37,7 +37,7 @@ export class Events {
     /**
      * Unregister an event listener.
      * Handles platform differences between browser and Node.js APIs.
-     * 
+     *
      * @param {string} event - The event name to stop listening for
      * @param {Function} listener - The callback function to remove
      */
@@ -49,7 +49,7 @@ export class Events {
     /**
      * Emit/dispatch an event to all registered listeners.
      * Automatically wraps detail in an object for consistency across platforms.
-     * 
+     *
      * @param {string} event - The event name to emit
      * @param {*} detail - Event payload/data to pass to listeners
      */

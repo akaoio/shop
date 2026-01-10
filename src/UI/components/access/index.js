@@ -66,7 +66,9 @@ export class ACCESS extends HTMLElement {
         this.show("signup-screen")
     }
 
-    unauthenticated() { this.show("unauthenticated-screen") }
+    unauthenticated() {
+        this.show("unauthenticated-screen")
+    }
 
     signup() {
         const data = Object.fromEntries(new FormData(this.form))

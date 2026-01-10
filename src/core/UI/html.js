@@ -1,22 +1,22 @@
 /**
  * html() - Create template object instead of direct DOM nodes
- * 
+ *
  * Unlike old html() (returns DocumentFragment), this returns an object
  * containing metadata so render() can process nested templates
- * 
+ *
  * @param {TemplateStringsArray} strings - Array of static strings from template literal
  * @param {...any} values - Array of dynamic values (can be: string, number, node, array, or nested template)
  * @returns {TemplateResult} Object containing strings, values, and HTML string with markers
- * 
+ *
  * @example
  * // Simple usage
  * const template = html`<div>Hello ${name}</div>`
- * 
+ *
  * @example
  * // Nested templates
  * const inner = html`<span>World</span>`
  * const outer = html`<div>Hello ${inner}</div>`
- * 
+ *
  * @example
  * // Array mapping
  * const items = [1, 2, 3]
@@ -40,7 +40,7 @@ function needsMarker(value) {
     if (value.nodeType) return true
 
     // Function → NEEDS marker (will be called during render)
-    if (typeof value === 'function') return true
+    if (typeof value === "function") return true
 
     // Primitive (string, number, boolean) → NO marker needed
     return false
@@ -86,7 +86,7 @@ export function html(strings, ...values) {
             // Check if we're inside a tag (attribute position)
             const isInAttribute = /<[^>]*$/.test(str)
 
-            if (isInAttribute && typeof markerValues[i] === 'function') {
+            if (isInAttribute && typeof markerValues[i] === "function") {
                 // Use special attribute marker for functions in attribute position
                 // IMPORTANT: Use index i which maps to markerValues[i]
                 return result + str + `__attr_mark:${i}__`
@@ -114,26 +114,26 @@ export function html(strings, ...values) {
     /**
      * STEP 3: Return TemplateResult object
      * This object will be processed by render() later
-     * 
+     *
      * Important: We do NOT create DOM nodes here, only save metadata
      * This allows render() to process nested templates recursively
-     * 
-     * Performance optimization: 
+     *
+     * Performance optimization:
      * - mergedStrings: strings already merged with primitive values
      * - markerValues: ONLY complex values that need markers
      * - Primitive values already embedded directly into mergedStrings
      */
     return {
         strings: mergedStrings, // Merged strings (with primitives embedded)
-        values: markerValues,   // ONLY complex values that need markers
-        html: processedHtml,    // HTML string with primitives embedded + markers for complex values
+        values: markerValues, // ONLY complex values that need markers
+        html: processedHtml, // HTML string with primitives embedded + markers for complex values
         _isTemplateResult: true // Flag to identify TemplateResult
     }
 }
 
 /**
  * Type definition (for documentation)
- * 
+ *
  * @typedef {Object} TemplateResult
  * @property {Array<string>} strings - Merged strings (static strings + embedded primitives)
  *                                     Length corresponds to values.length + 1

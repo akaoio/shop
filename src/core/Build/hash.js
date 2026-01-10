@@ -27,7 +27,7 @@ async function generateHashesRecursive(path = []) {
 
         if (await isDirectory(entryPath)) {
             subDirs.push(entry)
-        } else if (entry.endsWith('.json') && !entry.endsWith('.hash')) {
+        } else if (entry.endsWith(".json") && !entry.endsWith(".hash")) {
             jsonFiles.push(entry)
         }
     }
@@ -48,7 +48,7 @@ async function generateHashesRecursive(path = []) {
 
         const fileHash = sha256(JSON.stringify(fileContent))
         // Remove .json extension and add .hash (e.g., mimiza.com.json -> mimiza.com.hash)
-        const hashFileName = jsonFile.replace(/\.json$/, '.hash')
+        const hashFileName = jsonFile.replace(/\.json$/, ".hash")
         await write([...path, hashFileName], fileHash)
         hashCount++
         childHashes.push(fileHash)
@@ -57,7 +57,7 @@ async function generateHashesRecursive(path = []) {
 
     // Add subdirectory hashes
     for (const subDir of subDirs) {
-        const subDirHashPath = [...path, subDir, '_.hash']
+        const subDirHashPath = [...path, subDir, "_.hash"]
         if (await exist(subDirHashPath)) {
             const hashContent = await load(subDirHashPath)
             if (hashContent) {
@@ -69,8 +69,8 @@ async function generateHashesRecursive(path = []) {
 
     // Generate directory _.hash if there are any hashes to combine
     if (childHashes.length > 0) {
-        const combinedHash = sha256(childHashes.sort().join(''))
-        await write([...path, '_.hash'], combinedHash)
+        const combinedHash = sha256(childHashes.sort().join(""))
+        await write([...path, "_.hash"], combinedHash)
         hashCount++
         allHashes.add(combinedHash) // Collect hash for static database
     }
@@ -95,7 +95,7 @@ export async function generateHashFiles(pathArray) {
 
     // Create static hash database - empty files named by hash value
     for (const hash of allHashes) {
-        await write([...pathArray, 'statics', 'hashes', hash], '') // Empty file with hash as filename
+        await write([...pathArray, "statics", "hashes", hash], "") // Empty file with hash as filename
     }
 
     return { hashFiles: count, hashDatabase: allHashes.size }

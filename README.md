@@ -17,7 +17,7 @@ A modern **serverless eCommerce engine** built with pure Web Components. Framewo
 - ⚡ **Fast** - Pre-rendered routes, hash-based caching, offline-first capabilities
 - 🎨 **Themeable** - Built-in light/dark mode with CSS custom properties
 - 📱 **PWA Ready** - Progressive Web App with service worker support
-- 🏪 **Multi-tenant** - Different sites per domain with shared infrastructure
+- 🏪 **Multi-tenant** - Different domains per site with shared infrastructure
 
 ## 🚀 Quick Start
 
@@ -110,10 +110,10 @@ import { html, render } from "/core/UI.js"
 // Define template
 const template = html`
     <div class="card">
-        <h2>\${title}</h2>
-        <p>\${description}</p>
-        \${items.map(item => html`
-            <span>\${item}</span>
+        <h2>${title}</h2>
+        <p>${description}</p>
+        ${items.map(item => html`
+            <span>${item}</span>
         `)}
     </div>
 `

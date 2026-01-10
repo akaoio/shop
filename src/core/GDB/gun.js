@@ -1435,7 +1435,10 @@
                         // TODO: support #LEX !
                         tmp = back.ask && back.ask[get]
                         ;(back.ask || (back.ask = {}))[get] = back.$.get(get)._
-                        back.on("in", { get: get, put: { "#": back.soul, ".": get, ":": back.put[get], ">": state_is(root.graph[back.soul], get) } })
+                        back.on("in", {
+                            get: get,
+                            put: { "#": back.soul, ".": get, ":": back.put[get], ">": state_is(root.graph[back.soul], get) }
+                        })
                         if (tmp) {
                             return
                         }
@@ -1518,7 +1521,11 @@
                         cat.on("in", { $: gun, put: { "#": soul, ".": k, "=": tmp[k], ">": state }, VIA: msg })
                     })
                 }
-                cat.on("in", { $: at.back.$, put: { "#": (soul = at.back.soul), ".": (key = at.has || at.get), "=": tmp, ">": state_is(at.back.put, key) }, via: msg }) // TODO: This could be buggy! It assumes/approxes data, other stuff could have corrupted it.
+                cat.on("in", {
+                    $: at.back.$,
+                    put: { "#": (soul = at.back.soul), ".": (key = at.has || at.get), "=": tmp, ">": state_is(at.back.put, key) },
+                    via: msg
+                }) // TODO: This could be buggy! It assumes/approxes data, other stuff could have corrupted it.
                 return
             }
             if ((msg.seen || "")[cat.id]) {

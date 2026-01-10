@@ -17,7 +17,7 @@ export async function write(path = [], content) {
     // 1. Has extension (explicit file like .json, .txt, etc.)
     // 2. Content is string/number/boolean (not object/array) - indicates text file
     // This prevents accidentally writing to directories while supporting extension-less files
-    const isFile = hasExtension || (typeof content !== 'object' || content instanceof String)
+    const isFile = hasExtension || typeof content !== "object" || content instanceof String
 
     if (!isFile) {
         console.error("Attempted to write object/array to path without extension:", join(path))

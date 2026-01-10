@@ -4,7 +4,6 @@ import { Context } from "/core/Context.js"
 import States from "/core/States.js"
 import { render } from "/core/UI.js"
 
-
 export class ITEM extends HTMLElement {
     constructor() {
         super()
@@ -20,13 +19,8 @@ export class ITEM extends HTMLElement {
         const description = this.shadowRoot.querySelector("#description")
         const price = this.shadowRoot.querySelector("#price")
         this.shadowRoot.querySelector("a[is='ui-a']").dataset.to = `/item/${this.dataset.key}`
-        this.subscriptions.push(
-            Context.on("locale", this.render),
-            this.states.on("name", [name, "textContent"]),
-            this.states.on("description", [description, "textContent"]),
-            this.states.on("price", [price, "textContent"])
-        )
-        DB.get(["statics", "items", this.dataset.key, "meta.json"]).then(data => this.states.set(data))
+        this.subscriptions.push(Context.on("locale", this.render), this.states.on("name", [name, "textContent"]), this.states.on("description", [description, "textContent"]), this.states.on("price", [price, "textContent"]))
+        DB.get(["statics", "items", this.dataset.key, "meta.json"]).then((data) => this.states.set(data))
         if (!this.states.has(["name", "price"])) this.render()
     }
 

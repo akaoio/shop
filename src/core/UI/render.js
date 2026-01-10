@@ -3,7 +3,7 @@
  * ShadowRoot cannot be cloned, so we need special handling
  */
 function getNodesFromContainer(container, shouldClone = true) {
-    const content = container.nodeName === 'TEMPLATE' ? container.content : container
+    const content = container.nodeName === "TEMPLATE" ? container.content : container
 
     // If only 1 child, return that child
     if (content.childNodes.length === 1) {
@@ -13,7 +13,7 @@ function getNodesFromContainer(container, shouldClone = true) {
     // If container is ShadowRoot, create fragment with cloned children
     if (content instanceof ShadowRoot) {
         const fragment = document.createDocumentFragment()
-        Array.from(content.childNodes).forEach(node => {
+        Array.from(content.childNodes).forEach((node) => {
             fragment.appendChild(node.cloneNode(true))
         })
         return fragment
@@ -34,27 +34,27 @@ function getNodesFromContainer(container, shouldClone = true) {
 
 /**
  * UI.render() - Render template object to DOM and optionally mount to container
- * 
+ *
  * This function receives TemplateResult from html() and:
  * 1. Convert HTML string to DOM
  * 2. Find markers (<!--__mark:i-->) using TreeWalker
  * 3. Replace markers with corresponding values
  * 4. Process nested templates recursively
  * 5. Mount to container if provided, always return rendered nodes
- * 
+ *
  * @param {TemplateResult|Node|string|Array} template - Template to render
  * @param {HTMLElement|ShadowRoot} [container] - Container to mount DOM (optional)
  * @returns {DocumentFragment|Node} - Always returns rendered nodes
- * 
+ *
  * @example
  * // Render to container and get nodes
  * const nodes = render(template, document.body)
- * 
+ *
  * @example
  * // Get rendered nodes without container
  * const nodes = render(html`<div>Hello ${name}</div>`)
  * someElement.appendChild(nodes)
- * 
+ *
  * @example
  * // Nested templates
  * const inner = html`<span>World</span>`
@@ -62,18 +62,12 @@ function getNodesFromContainer(container, shouldClone = true) {
  * const nodes = render(outer, shadowRoot)
  */
 export function render(template, container) {
-    // Create temp container if none provided
-    const hasContainer = container && container.nodeType
-    if (!hasContainer) {
-        container = document.createElement("template")
-    }
+    // Check if container was provided by user
+    const hasRealContainer = container && container.nodeType
 
-    // Clear container first
-    // Special handling for <template> element
-    if (container.nodeName === 'TEMPLATE') {
-        container.content.textContent = ""
-    } else {
-        container.innerHTML = ""
+    // Create temp container if none provided
+    if (!hasRealContainer) {
+        container = document.createElement("template")
     }
 
     /**
@@ -83,41 +77,52 @@ export function render(template, container) {
     // If it's a TemplateResult from html()
     if (template?._isTemplateResult) {
         // If container is <template>, render to .content
-        const target = container.nodeName === 'TEMPLATE' ? container.content : container
+        const target = container.nodeName === "TEMPLATE" ? container.content : container
         renderTemplateResult(template, target)
-        // Return nodes WITHOUT cloning (to preserve event listeners)
+
+        // If user provided a real container, nodes are already appended - return container
+        // If temp container, extract and return nodes
+        if (hasRealContainer) {
+            return container
+        }
         return getNodesFromContainer(container, false)
     }
 
     // If it's a direct DOM node
     if (template?.nodeType) {
-        const target = container.nodeName === 'TEMPLATE' ? container.content : container
+        const target = container.nodeName === "TEMPLATE" ? container.content : container
         target.appendChild(template)
-        // Return the appended node
-        return template
+        // Return the appended node or container
+        return hasRealContainer ? container : template
     }
 
     // If it's an array (e.g., items.map(...))
     if (Array.isArray(template)) {
-        template.forEach(item => render(item, container))
-        // Return all rendered nodes WITHOUT cloning
+        template.forEach((item) => render(item, container))
+        // Return container if real, otherwise extract nodes
+        if (hasRealContainer) {
+            return container
+        }
         return getNodesFromContainer(container, false)
     }
 
     // If it's a primitive value (string, number, etc.)
-    if (container.nodeName === 'TEMPLATE') {
+    if (container.nodeName === "TEMPLATE") {
         container.content.textContent = String(template ?? "")
     } else {
         container.textContent = String(template ?? "")
     }
 
-    // Always return the rendered nodes WITHOUT cloning
+    // Return container if real, otherwise extract nodes
+    if (hasRealContainer) {
+        return container
+    }
     return getNodesFromContainer(container, false)
 }
 
 /**
  * renderTemplateResult() - Core logic to process TemplateResult
- * 
+ *
  * @param {TemplateResult} templateResult - Object from html()
  * @param {HTMLElement|ShadowRoot} container - Container to mount
  */
@@ -135,7 +140,7 @@ function renderTemplateResult(templateResult, container) {
         const index = parseInt(indexStr, 10)
         const value = values[index]
 
-        if (typeof value === 'function') {
+        if (typeof value === "function") {
             // Create unique marker attribute
             const attrId = `data-cb-${Date.now()}-${index}`
             attributeCallbacks.push({ attrId, callback: value, index })
@@ -176,7 +181,7 @@ function renderTemplateResult(templateResult, container) {
     let currentNode
 
     // Collect all markers
-    while (currentNode = walker.nextNode()) {
+    while ((currentNode = walker.nextNode())) {
         const match = currentNode.textContent.match(/^__mark:(\d+)$/)
         if (match) {
             const index = parseInt(match[1], 10)
@@ -194,13 +199,13 @@ function renderTemplateResult(templateResult, container) {
         if (!parent) return
 
         // Case 0: Function → call it with context parameters
-        if (typeof value === 'function') {
+        if (typeof value === "function") {
             value = value({
-                node,           // Comment node marker
-                parent,         // Parent element
-                index,          // Marker index
-                container,      // Root container
-                fragment        // DocumentFragment being built
+                node, // Comment node marker
+                parent, // Parent element
+                index, // Marker index
+                container, // Root container
+                fragment // DocumentFragment being built
             })
         }
 
@@ -220,7 +225,7 @@ function renderTemplateResult(templateResult, container) {
 
         // Case 2: Array (e.g., items.map(...))
         if (Array.isArray(value)) {
-            value.forEach(item => {
+            value.forEach((item) => {
                 // If item is TemplateResult
                 if (item?._isTemplateResult) {
                     const temp = document.createElement("div")

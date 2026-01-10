@@ -13,7 +13,7 @@ export class ITEMS extends HTMLElement {
     }
 
     connectedCallback() {
-        DB.get(["statics", "items", "meta.json"]).then(data => this.states.set(data))
+        DB.get(["statics", "items", "meta.json"]).then((data) => this.states.set(data))
         this.states.on("pages", this.render.bind(this))
     }
 
@@ -28,7 +28,7 @@ export class ITEMS extends HTMLElement {
             const page = await DB.get(["statics", "items", `${i}.json`])
             data.push(...page)
         }
-        const children = data.map(item => {
+        const children = data.map((item) => {
             const element = new ITEM()
             element.dataset.key = item
             return element

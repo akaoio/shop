@@ -36,7 +36,7 @@ export function getWallet() {
     try {
         if (memory) data = JSON.parse(memory)
         if (typeof data === "object") wallet = JSON.stringify(data)
-    } catch (error) { }
+    } catch (error) {}
     // Auto-correct and save if data was modified during parsing
     if (wallet && wallet !== memory && globalThis.localStorage) globalThis.localStorage.setItem("wallet", wallet)
     return data
@@ -61,7 +61,7 @@ export function setWallet({ id, total } = {}) {
     let json
     try {
         json = JSON.stringify(data)
-    } catch (error) { }
+    } catch (error) {}
     if (json && globalThis.localStorage) globalThis.localStorage.setItem("wallet", json)
     Access.set({ wallet: data })
     return data

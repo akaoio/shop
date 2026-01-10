@@ -58,6 +58,8 @@ export class SELECT extends HTMLElement {
 
     render() {
         const name = this.states.get("name") || this.dataset.name
+
+        // Create single template with all options
         const options = this.states
             .get("options")
             .filter((option) => {
@@ -70,19 +72,19 @@ export class SELECT extends HTMLElement {
                     this.select(option.value)
                     this.modal.close()
                 }
-                return render(html`
+                return html`
                     <input id="${option.value}" type="radio" name="${name}" value="${option.value}" ${option.value == this.selected ? "checked" : ""} />
-                    <label for="${option.value}" ${({ element }) => {
-                        element.addEventListener("click", select)
-                        this.subscriptions.push(() => element.removeEventListener("click", select))
-                    }}>${option.label}</label>
-                `)
+                    <label
+                        for="${option.value}"
+                        ${({ element }) => {
+                            element.addEventListener("click", select)
+                            this.subscriptions.push(() => element.removeEventListener("click", select))
+                        }}>
+                        ${option.label}
+                    </label>
+                `
             })
-
-        // Only append if there are new options
-        if (options.length > 0) {
-            this.modal.append(...options)
-        }
+        render(options, this.modal)
     }
 }
 

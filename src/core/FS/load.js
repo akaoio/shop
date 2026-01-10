@@ -56,7 +56,11 @@ export async function load(path) {
             }
         }
         if (typeof text === "string") text = text.trim()
-        let ext = _path.match(/\.\w+$/)?.[0]?.slice(1).toLowerCase() || ""
+        let ext =
+            _path
+                .match(/\.\w+$/)?.[0]
+                ?.slice(1)
+                .toLowerCase() || ""
         // Parse JSON or YAML files
         if (["json", "yaml", "yml"].includes(ext)) {
             try {

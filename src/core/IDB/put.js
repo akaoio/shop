@@ -4,10 +4,11 @@ import { BROWSER, NODE } from "/core/Utils.js"
 // Internal implementation
 export async function $put(path, value) {
     await this.ready
-    if (BROWSER) await this.execute({
-        mode: "readwrite",
-        operation: store => store.put(value, path)
-    })
+    if (BROWSER)
+        await this.execute({
+            mode: "readwrite",
+            operation: (store) => store.put(value, path)
+        })
     if (NODE) {
         let current = this.data
         for (let i = 0; i < path.length - 1; i++) {
