@@ -18,6 +18,7 @@ export class SVG extends HTMLElement {
         fetch(value)
             .then((res) => res.text())
             .then((svg) => this.shadowRoot.innerHTML += svg)
+            .catch(console.error)
     }
 }
 
