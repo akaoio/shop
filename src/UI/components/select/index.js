@@ -61,29 +61,28 @@ export class SELECT extends HTMLElement {
         const options = this.states
             .get("options")
             .filter((option) => {
+                // Only process options that don't exist yet
                 const exist = this.modal.querySelector(`input[type="radio"][id="${option.value}"]`)
-                if (!exist) return true
-                return option
+                return !exist && option.value
             })
             .map((option) => {
-                if (!option.value) return
-                const fragment = render(html`
-                    <input id="${option.value}" type="radio" name="${name}" value="${option.value}" ${option.value == this.selected ? "checked" : ""} />
-                    <label for="${option.value}">${option.label}</label>
-                `)
-                const radio = fragment.querySelector("input")
-                const label = fragment.querySelector("label")
-                if (label) {
-                    const select = () => {
-                        this.select(radio.value)
-                        this.modal.close()
-                    }
-                    label.addEventListener("click", select)
-                    this.subscriptions.push(() => label.removeEventListener("click", select))
+                const select = () => {
+                    this.select(option.value)
+                    this.modal.close()
                 }
-                return fragment
+                return render(html`
+                    <input id="${option.value}" type="radio" name="${name}" value="${option.value}" ${option.value == this.selected ? "checked" : ""} />
+                    <label for="${option.value}" ${({ element }) => {
+                        element.addEventListener("click", select)
+                        this.subscriptions.push(() => element.removeEventListener("click", select))
+                    }}>${option.label}</label>
+                `)
             })
-        this.modal.append(...options)
+
+        // Only append if there are new options
+        if (options.length > 0) {
+            this.modal.append(...options)
+        }
     }
 }
 

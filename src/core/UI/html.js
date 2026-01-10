@@ -51,6 +51,7 @@ export function html(strings, ...values) {
      * STEP 1: Classify values and create HTML string with merged strings
      * - Primitive values → embed directly and merge strings (fast path)
      * - Complex values → use markers (slow path)
+     * - Functions in attribute position → use special attribute markers
      */
 
     // Track only values that need markers
@@ -67,8 +68,8 @@ export function html(strings, ...values) {
         // If value is complex → save marker
         else {
             mergedStrings.push(currentString)
-            currentString = strings[i + 1]
             markerValues.push(value)
+            currentString = strings[i + 1]
         }
     })
 
@@ -77,14 +78,25 @@ export function html(strings, ...values) {
         mergedStrings.push(currentString)
     }
 
-    // Build HTML string với markers
+    // Build HTML string with markers - detect attribute vs content position
     const htmlString = mergedStrings
         .reduce((result, str, i) => {
             if (i >= markerValues.length) return result + str
-            return result + str + `<!--__mark:${i}-->`
+
+            // Check if we're inside a tag (attribute position)
+            const isInAttribute = /<[^>]*$/.test(str)
+
+            if (isInAttribute && typeof markerValues[i] === 'function') {
+                // Use special attribute marker for functions in attribute position
+                // IMPORTANT: Use index i which maps to markerValues[i]
+                return result + str + `__attr_mark:${i}__`
+            } else {
+                // Use comment marker for content position
+                return result + str + `<!--__mark:${i}-->`
+            }
         }, "")
         .trim()
-        .replace(/>\s+</g, "><") // Remove whitespace giữa các tags
+        .replace(/>\s+</g, "><") // Remove whitespace between tags
 
     /**
      * STEP 2: Process self-closing custom elements

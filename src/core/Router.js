@@ -239,7 +239,7 @@ export class Router {
         globalThis.dictionary = Statics.dictionary
         // Only run after dictionary is loaded
         const state = this.process({ locale: code })
-        if (state.path !== Context.get("path")) this.setHistory(state)
+        this.setHistory(state)
         Context.set({ dictionary: Statics.dictionary, locale })
     }
 

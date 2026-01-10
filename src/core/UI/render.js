@@ -2,12 +2,12 @@
  * Helper: Safely get nodes from container
  * ShadowRoot cannot be cloned, so we need special handling
  */
-function getNodesFromContainer(container) {
+function getNodesFromContainer(container, shouldClone = true) {
     const content = container.nodeName === 'TEMPLATE' ? container.content : container
 
     // If only 1 child, return that child
     if (content.childNodes.length === 1) {
-        return content.firstChild
+        return shouldClone ? content.firstChild.cloneNode(true) : content.firstChild
     }
 
     // If container is ShadowRoot, create fragment with cloned children
@@ -19,8 +19,17 @@ function getNodesFromContainer(container) {
         return fragment
     }
 
-    // For other containers, clone the whole thing
-    return content.cloneNode(true)
+    // For other containers
+    if (shouldClone) {
+        return content.cloneNode(true)
+    } else {
+        // Move all children to a new fragment
+        const fragment = document.createDocumentFragment()
+        while (content.firstChild) {
+            fragment.appendChild(content.firstChild)
+        }
+        return fragment
+    }
 }
 
 /**
@@ -76,8 +85,8 @@ export function render(template, container) {
         // If container is <template>, render to .content
         const target = container.nodeName === 'TEMPLATE' ? container.content : container
         renderTemplateResult(template, target)
-        // Return nodes after rendering
-        return getNodesFromContainer(container)
+        // Return nodes WITHOUT cloning (to preserve event listeners)
+        return getNodesFromContainer(container, false)
     }
 
     // If it's a direct DOM node
@@ -91,8 +100,8 @@ export function render(template, container) {
     // If it's an array (e.g., items.map(...))
     if (Array.isArray(template)) {
         template.forEach(item => render(item, container))
-        // Return all rendered nodes
-        return getNodesFromContainer(container)
+        // Return all rendered nodes WITHOUT cloning
+        return getNodesFromContainer(container, false)
     }
 
     // If it's a primitive value (string, number, etc.)
@@ -102,8 +111,8 @@ export function render(template, container) {
         container.textContent = String(template ?? "")
     }
 
-    // Always return the rendered nodes
-    return getNodesFromContainer(container)
+    // Always return the rendered nodes WITHOUT cloning
+    return getNodesFromContainer(container, false)
 }
 
 /**
@@ -116,10 +125,32 @@ function renderTemplateResult(templateResult, container) {
     const { html, values } = templateResult
 
     /**
-     * STEP 2: Create DocumentFragment from HTML string
+     * STEP 2a: Handle attribute markers BEFORE parsing HTML
+     * Replace attribute markers with temporary data attributes
+     */
+    let processedHtml = html
+    const attributeCallbacks = []
+
+    processedHtml = processedHtml.replace(/__attr_mark:(\d+)__/g, (match, indexStr) => {
+        const index = parseInt(indexStr, 10)
+        const value = values[index]
+
+        if (typeof value === 'function') {
+            // Create unique marker attribute
+            const attrId = `data-cb-${Date.now()}-${index}`
+            attributeCallbacks.push({ attrId, callback: value, index })
+            return attrId
+        }
+
+        // Non-function values in attributes (shouldn't happen but handle it)
+        return String(value || "")
+    })
+
+    /**
+     * STEP 2b: Create DocumentFragment from processed HTML string
      */
     const template = document.createElement("template")
-    template.innerHTML = html
+    template.innerHTML = processedHtml
     const fragment = template.content.cloneNode(true)
 
     /**
@@ -132,7 +163,7 @@ function renderTemplateResult(templateResult, container) {
     }
 
     /**
-     * STEP 3: Find and replace markers using TreeWalker
+     * STEP 3: Find and replace content markers using TreeWalker
      * TreeWalker allows traversing all comment nodes
      */
     const walker = document.createTreeWalker(
@@ -225,6 +256,21 @@ function renderTemplateResult(templateResult, container) {
      * STEP 5: Mount fragment to container
      */
     container.appendChild(fragment)
+
+    /**
+     * STEP 6: Execute attribute callbacks AFTER appending to DOM
+     * This ensures event listeners are attached to elements in the live DOM tree
+     */
+    attributeCallbacks.forEach(({ attrId, callback }) => {
+        const element = container.querySelector(`[${attrId}]`)
+        if (element) {
+            element.removeAttribute(attrId) // Clean up marker attribute
+            // Call callback with element as both node and element
+            callback({ node: element, element })
+        } else {
+            console.warn("Could not find element with attribute:", attrId, "in container:", container)
+        }
+    })
 }
 
 export default render
