@@ -1,12 +1,13 @@
 import template from "./template.js"
 import { Statics } from "/core/Stores.js"
 import { Context, setFiat } from "/core/Context.js"
+import { render } from "/core/UI.js"
 
 export class FIATS extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
     }
 
     connectedCallback() {

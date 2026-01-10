@@ -1,11 +1,11 @@
-import { Context } from "/core/Context.js"
 import template from "./template.js"
+import { render } from "/core/UI.js"
 
 export class MODAL extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
         this.show = this.show.bind(this)
         this.showModal = this.showModal.bind(this)
         this.close = this.close.bind(this)

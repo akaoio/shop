@@ -2,12 +2,13 @@ import { Elements } from "/core/Stores.js"
 import { Context } from "/core/Context.js"
 import { Access, signup, signin } from "/core/Access.js"
 import template from "./template.js"
+import { render } from "/core/UI.js"
 
 export class ACCESS extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
         this.subscriptions = []
         this.signupScreen = this.signupScreen.bind(this)
         this.unauthenticated = this.unauthenticated.bind(this)

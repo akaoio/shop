@@ -1,12 +1,13 @@
 import { Elements } from "/core/Stores.js"
 import { signout } from "/core/Access.js"
 import template from "./template.js"
+import { render } from "/core/UI.js"
 
 export class SIGNOUT extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
         this.subscriptions = []
         this.toggle = this.toggle.bind(this)
         this.signout = this.signout.bind(this)

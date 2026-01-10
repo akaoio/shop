@@ -2,7 +2,7 @@ import { Statics } from "/core/Stores.js"
 import "/UI/components/svg/index.js"
 import { Progress } from "/core/Progress.js"
 import styles from "./styles.css.js"
-import { html } from "/core/UI.js"
+import { html, render } from "/core/UI.js"
 
 export class SPLASH extends HTMLElement {
     constructor() {
@@ -16,7 +16,7 @@ export class SPLASH extends HTMLElement {
                 <div class="progress"></div>
             </div>
         `
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
     }
 
     connectedCallback() {

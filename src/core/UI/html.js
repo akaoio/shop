@@ -1,43 +1,143 @@
+/**
+ * html() - Create template object instead of direct DOM nodes
+ * 
+ * Unlike old html() (returns DocumentFragment), this returns an object
+ * containing metadata so render() can process nested templates
+ * 
+ * @param {TemplateStringsArray} strings - Array of static strings from template literal
+ * @param {...any} values - Array of dynamic values (can be: string, number, node, array, or nested template)
+ * @returns {TemplateResult} Object containing strings, values, and HTML string with markers
+ * 
+ * @example
+ * // Simple usage
+ * const template = html`<div>Hello ${name}</div>`
+ * 
+ * @example
+ * // Nested templates
+ * const inner = html`<span>World</span>`
+ * const outer = html`<div>Hello ${inner}</div>`
+ * 
+ * @example
+ * // Array mapping
+ * const items = [1, 2, 3]
+ * const list = html`<ul>${items.map(i => html`<li>${i}</li>`)}</ul>`
+ */
+/**
+ * Helper: Check if value needs marker or can be embedded directly
+ * Only use markers for complex values to optimize performance
+ */
+function needsMarker(value) {
+    // null/undefined → no marker needed, embed directly
+    if (value == null) return false
+
+    // Nested TemplateResult → NEEDS marker
+    if (value._isTemplateResult) return true
+
+    // Array → NEEDS marker (may contain nested templates)
+    if (Array.isArray(value)) return true
+
+    // DOM node → NEEDS marker
+    if (value.nodeType) return true
+
+    // Function → NEEDS marker (will be called during render)
+    if (typeof value === 'function') return true
+
+    // Primitive (string, number, boolean) → NO marker needed
+    return false
+}
+
 export function html(strings, ...values) {
-    // Combine the strings and values
-    const htmlString = strings
+    /**
+     * STEP 1: Classify values and create HTML string with merged strings
+     * - Primitive values → embed directly and merge strings (fast path)
+     * - Complex values → use markers (slow path)
+     */
+
+    // Track only values that need markers
+    const markerValues = []
+    // Track merged strings (strings with primitives embedded)
+    const mergedStrings = []
+    let currentString = strings[0]
+
+    values.forEach((value, i) => {
+        // If value is simple → embed into current string and merge with next string
+        if (!needsMarker(value)) {
+            currentString += String(value ?? "") + strings[i + 1]
+        }
+        // If value is complex → save marker
+        else {
+            mergedStrings.push(currentString)
+            currentString = strings[i + 1]
+            markerValues.push(value)
+        }
+    })
+
+    // If no more complex values at the end, only current string remains
+    if (currentString !== undefined) {
+        mergedStrings.push(currentString)
+    }
+
+    // Build HTML string với markers
+    const htmlString = mergedStrings
         .reduce((result, str, i) => {
-            let value = values[i] ?? "" // Ensure undefined values don't cause issues
-            if (Array.isArray(value)) value = value.map((v) => (v?.nodeType ? serialize(v) : v)).join("")
-            else if (value?.nodeType) value = serialize(value)
-            return result + str + value
+            if (i >= markerValues.length) return result + str
+            return result + str + `<!--__mark:${i}-->`
         }, "")
         .trim()
-        .replace(/>\s+</g, "><")
+        .replace(/>\s+</g, "><") // Remove whitespace giữa các tags
 
-    // List of standard void elements that should remain self-closing
+    /**
+     * STEP 2: Process self-closing custom elements
+     * Like old html(), we need to convert <ui-button /> to <ui-button></ui-button>
+     * because browsers don't understand self-closing custom elements
+     */
     const voidElements = ["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]
-
-    // Regex to match self-closing custom elements (containing a hyphen)
-    // but not matching standard void elements
     const selfClosingTagsRegex = new RegExp(`<(([a-z][a-z0-9]*-[a-z0-9\\-\\.]*)(\\s+[^>]*)?)\\/>`, "gi")
 
-    // Replace self-closing custom element tags with properly closed tags
     const processedHtml = htmlString.replace(selfClosingTagsRegex, (match, group, tagName) => {
-        // If it's a standard void element, leave it as is
         if (voidElements.includes(tagName.toLowerCase())) return match
-        // Otherwise, convert to opening and closing tags
         return `<${group}></${tagName}>`
     })
 
-    // Create the template from the processed HTML
-    const template = document.createElement("template")
-    template.innerHTML = processedHtml
-    return template.content.cloneNode(true)
+    /**
+     * STEP 3: Return TemplateResult object
+     * This object will be processed by render() later
+     * 
+     * Important: We do NOT create DOM nodes here, only save metadata
+     * This allows render() to process nested templates recursively
+     * 
+     * Performance optimization: 
+     * - mergedStrings: strings already merged with primitive values
+     * - markerValues: ONLY complex values that need markers
+     * - Primitive values already embedded directly into mergedStrings
+     */
+    return {
+        strings: mergedStrings, // Merged strings (with primitives embedded)
+        values: markerValues,   // ONLY complex values that need markers
+        html: processedHtml,    // HTML string with primitives embedded + markers for complex values
+        _isTemplateResult: true // Flag to identify TemplateResult
+    }
 }
 
-function serialize(node) {
-    if (node instanceof DocumentFragment) {
-        const temp = document.createElement("div")
-        temp.appendChild(node.cloneNode(true))
-        return temp.innerHTML
-    }
-    return node.outerHTML ?? "" // Fallback for elements without outerHTML
-}
+/**
+ * Type definition (for documentation)
+ * 
+ * @typedef {Object} TemplateResult
+ * @property {Array<string>} strings - Merged strings (static strings + embedded primitives)
+ *                                     Length corresponds to values.length + 1
+ *                                     Example: html`<div>${1} ${nested} ${3}</div>`
+ *                                     → strings: ["<div>1 ", " 3</div>"]  (primitives merged)
+ *                                     → values: [nested]  (only complex value)
+ * @property {Array<any>} values - ONLY complex values that need markers (nested templates, arrays, DOM nodes, functions)
+ *                                 Primitive values already merged into strings
+ * @property {string} html - HTML string with primitives embedded + comment markers for complex values
+ * @property {boolean} _isTemplateResult - Flag to identify template result object
+ *
+ * Performance note: Merging primitives into strings reduces:
+ * - Memory usage (no need to store primitive values in array)
+ * - Processing time (no need for TreeWalker to process primitive markers)
+ * - Marker indices match exactly with values indices
+ * - Only process markers when truly needed (nested templates, arrays, nodes)
+ */
 
 export default html

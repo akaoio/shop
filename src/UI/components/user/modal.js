@@ -1,6 +1,6 @@
 import { Elements } from "/core/Stores.js"
 import { Access } from "/core/Access.js"
-import { html, css } from "/core/UI.js"
+import { html, css, render } from "/core/UI.js"
 import "/UI/components/modal/index.js"
 import "/UI/components/signout/index.js"
 import "/UI/components/wallets/index.js"
@@ -36,7 +36,7 @@ export class USERMODAL extends HTMLElement {
         super()
         this.attachShadow({ mode: "open" })
         Elements.User = this
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
         this.subscriptions = []
         this.toggle = this.toggle.bind(this)
     }

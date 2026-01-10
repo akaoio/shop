@@ -2,13 +2,14 @@ import template from "./template.js"
 import States from "/core/States.js"
 import ITEM from "/UI/components/item/index.js"
 import DB from "/core/DB.js"
+import { render } from "/core/UI.js"
 
 export class ITEMS extends HTMLElement {
     constructor() {
         super()
         this.states = new States()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
     }
 
     connectedCallback() {

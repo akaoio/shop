@@ -1,13 +1,13 @@
 import template from "./template.js"
 import States from "/core/States.js"
-import { html } from "/core/UI.js"
+import { html, render } from "/core/UI.js"
 
 export class SELECT extends HTMLElement {
     constructor() {
         super()
         this.states = new States({ options: [], selected: null })
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
         this.subscriptions = []
         this.show = this.show.bind(this)
         this.close = this.close.bind(this)
@@ -58,7 +58,7 @@ export class SELECT extends HTMLElement {
 
     render() {
         const name = this.states.get("name") || this.dataset.name
-        this.modal.append(...this.states
+        const options = this.states
             .get("options")
             .filter((option) => {
                 const exist = this.modal.querySelector(`input[type="radio"][id="${option.value}"]`)
@@ -67,22 +67,24 @@ export class SELECT extends HTMLElement {
             })
             .map((option) => {
                 if (!option.value) return
-                const template = html`<input id="${option.value}" type="radio" name=${name} value="${option.value}" /><label for="${option.value}">${option.label}</label>`
-                return template.cloneNode(true)
+                return render(html`<input id="${option.value}" type="radio" name="${name}" value="${option.value}" /><label for="${option.value}">${option.label}</label>`)
             })
-            .map((option) => {
-                const radio = option.querySelector("input")
-                const label = option.querySelector("label")
-                if (radio.value === this.selected) radio.checked = true
-                const select = () => {
-                    this.select(radio.value)
-                    this.modal.close()
+            .filter(Boolean) // Remove undefined values
+            .map((fragment) => {
+                const radio = fragment.querySelector("input")
+                const label = fragment.querySelector("label")
+                if (radio && label) {
+                    if (radio.value === this.selected) radio.checked = true
+                    const select = () => {
+                        this.select(radio.value)
+                        this.modal.close()
+                    }
+                    label.addEventListener("click", select)
+                    this.subscriptions.push(() => label.removeEventListener("click", select))
                 }
-                label.addEventListener("click", select)
-                this.subscriptions.push(() => label.removeEventListener("click", select))
-                return option
+                return fragment
             })
-        )
+        this.modal.append(...options)
     }
 }
 

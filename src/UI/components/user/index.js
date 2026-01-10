@@ -1,12 +1,13 @@
 import { Elements } from "/core/Stores.js"
 import { Access } from "/core/Access.js"
 import template from "./template.js"
+import { render } from "/core/UI.js"
 
 export class USER extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
         this.subscriptions = []
         this.toggle = this.toggle.bind(this)
         this.render = this.render.bind(this)

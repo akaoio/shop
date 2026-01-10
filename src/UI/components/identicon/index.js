@@ -1,10 +1,11 @@
 import template from "./template.js"
+import { render } from "/core/UI.js"
 
 export class IDENTICON extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
         this.svg = this.shadowRoot.querySelector("svg")
     }
 

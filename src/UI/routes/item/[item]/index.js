@@ -2,12 +2,13 @@ import template from "./template.js"
 import { Context } from "/core/Context.js"
 import DB from "/core/DB.js"
 import Router from "/core/Router.js"
+import { render } from "/core/UI.js"
 
 export class ITEM extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
         this.subscriptions = []
         this.render = this.render.bind(this)
     }

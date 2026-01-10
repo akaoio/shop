@@ -1,11 +1,12 @@
 import template from "./template.js"
 import { Context, setTheme } from "/core/Context.js"
+import { render } from "/core/UI.js"
 
 export class THEMES extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
     }
 
     connectedCallback() {

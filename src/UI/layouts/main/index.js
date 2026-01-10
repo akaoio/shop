@@ -1,10 +1,11 @@
 import template from "./template.js"
+import { render } from "/core/UI.js"
 
 export class MAIN extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
     }
 }
 

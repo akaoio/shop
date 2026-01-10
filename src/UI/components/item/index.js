@@ -2,6 +2,7 @@ import template from "./template.js"
 import DB from "/core/DB.js"
 import { Context } from "/core/Context.js"
 import States from "/core/States.js"
+import { render } from "/core/UI.js"
 
 
 export class ITEM extends HTMLElement {
@@ -9,7 +10,7 @@ export class ITEM extends HTMLElement {
         super()
         this.states = new States()
         this.attachShadow({ mode: "open" })
-        this.shadowRoot.appendChild(template.cloneNode(true))
+        render(template, this.shadowRoot)
         this.subscriptions = []
         this.render = this.render.bind(this)
     }

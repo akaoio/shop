@@ -1,10 +1,12 @@
 import template, { item } from "./template.js"
 import { Access, setWallet } from "/core/Access.js"
+import { render } from "/core/UI.js"
 
 export class WALLETS extends HTMLElement {
     constructor() {
         super()
-        this.attachShadow({ mode: "open" }).appendChild(template.cloneNode(true))
+        this.attachShadow({ mode: "open" })
+        render(template, this.shadowRoot)
         this.subscriptions = []
         this.step = 5
         this.increase = this.increase.bind(this)
@@ -62,7 +64,7 @@ export class WALLETS extends HTMLElement {
         const fragment = document.createDocumentFragment()
         const currentId = this.id
         for (let id = this.wallets.children.length; id < this.total; id++) {
-            const el = item.cloneNode(true)
+            const el = render(item)
             const radio = el.querySelector('input[type="radio"]')
             const label = el.querySelector("label")
             radio.id = `i${id}`
