@@ -3,6 +3,7 @@ import { notify } from "./States/notify.js"
 import { has } from "./States/has.js"
 import { get } from "./States/get.js"
 import { set } from "./States/set.js"
+import { del } from "./States/del.js"
 import { on } from "./States/on.js"
 import { off } from "./States/off.js"
 import { clear } from "./States/clear.js"
@@ -43,6 +44,7 @@ export class States {
     has = has
     get = get
     set = set
+    del = del
     on = on
     off = off
     clear = clear
